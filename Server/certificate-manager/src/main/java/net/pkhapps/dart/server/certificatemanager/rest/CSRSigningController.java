@@ -2,6 +2,7 @@ package net.pkhapps.dart.server.certificatemanager.rest;
 
 import net.pkhapps.dart.server.certificatemanager.domain.CSRSigningService;
 import net.pkhapps.dart.server.certificatemanager.domain.CSRTokenService;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
@@ -18,7 +19,7 @@ import java.io.IOException;
 import java.io.StringReader;
 
 @RestController
-@RequestMapping("/rest/sign/{tokenHash}")
+@RequestMapping("/rest/csr")
 class CSRSigningController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CSRSigningController.class);
@@ -32,7 +33,7 @@ class CSRSigningController {
         this.signingService = signingService;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value = "sign/{tokenHash}", method = RequestMethod.POST)
     public ResponseEntity<String> sign(@PathVariable String tokenHash, @RequestBody String csrString) throws CSRTokenService.NoSuchTokenException,
             CSRTokenService.TokenExpiredException, InvalidCSRException {
         tokenService.validateToken(tokenHash);
@@ -40,13 +41,12 @@ class CSRSigningController {
             Object pem = pemParser.readObject();
             if (pem instanceof PKCS10CertificationRequest) {
                 final PKCS10CertificationRequest csr = (PKCS10CertificationRequest) pem;
-                //final CMSSignedData certificate = signingService.sign(csr);
-                final ByteArrayOutputStream out = new ByteArrayOutputStream();
-                out.write("-----BEGIN PKCS #7 SIGNED DATA-----\n".getBytes("ISO-8859-1"));
-                //out.write(Base64.encode(certificate.getEncoded()));
-                out.write("\n-----END PKCS #7 SIGNED DATA-----\n".getBytes("ISO-8859-1"));
-                out.close();
-                return ResponseEntity.ok(new String(out.toByteArray(), "ISO-8859-1"));
+                final X509CertificateHolder certificate = signingService.sign(csr);
+                final StringBuilder sb = new StringBuilder();
+                sb.append("-----BEGIN CERTIFICATE-----\n");
+                sb.append(Base64.toBase64String(certificate.getEncoded()));
+                sb.append("\n-----END CERTIFICATE-----\n");
+                return ResponseEntity.ok(sb.toString());
             } else {
                 throw new InvalidCSRException();
             }
