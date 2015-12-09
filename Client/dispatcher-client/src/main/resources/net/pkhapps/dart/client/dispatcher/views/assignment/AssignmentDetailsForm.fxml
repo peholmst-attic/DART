@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<fx:root type="javafx.scene.layout.GridPane" xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.0">
+    <children>
+        <Label text="Opened" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="Closed" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <Label text="Number" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+        <Label text="Status" GridPane.columnIndex="4" GridPane.rowIndex="1"/>
+
+        <TextField fx:id="opened" GridPane.columnIndex="1" GridPane.rowIndex="2" editable="false"/>
+        <TextField fx:id="closed" GridPane.columnIndex="2" GridPane.rowIndex="2" editable="false"/>
+        <TextField fx:id="number" GridPane.columnIndex="3" GridPane.rowIndex="2" editable="false"/>
+        <TextField fx:id="status" GridPane.columnIndex="4" GridPane.rowIndex="2" editable="false"/>
+
+
+        <!--
+<Label text="Identification" GridPane.columnIndex="1">
+<font>
+<Font size="18.0" />
+</font>
+</Label>
+<Label text="Status" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+<Separator prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
+<GridPane.margin>
+<Insets bottom="5.0" top="5.0" />
+</GridPane.margin>
+</Separator>
+<TextArea prefHeight="0.0" prefWidth="538.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="8" GridPane.rowSpan="3" />
+<ComboBox editable="true" GridPane.columnIndex="4" GridPane.rowIndex="8" />
+<Label text="Type" GridPane.columnIndex="4" GridPane.rowIndex="7" />
+<Label text="Details" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+<Label text="Urgency" GridPane.columnIndex="4" GridPane.rowIndex="9" />
+<ComboBox editable="true" GridPane.columnIndex="4" GridPane.rowIndex="10" />
+<Label text="Assignment" GridPane.columnIndex="1" GridPane.rowIndex="5">
+<font>
+<Font size="18.0" />
+</font>
+</Label>
+<Separator prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.rowIndex="11">
+<GridPane.margin>
+<Insets bottom="5.0" top="5.0" />
+</GridPane.margin>
+</Separator>
+<Label text="Address" GridPane.columnIndex="1" GridPane.rowIndex="12">
+<font>
+<Font size="18.0" />
+</font>
+</Label>
+<ComboBox editable="true" GridPane.columnIndex="1" GridPane.rowIndex="14" />
+<Label text="Municipality" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+<Label text="Street address" GridPane.columnIndex="2" GridPane.rowIndex="13" />-->
+    </children>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+</fx:root>

@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>dispatcher-client</module>
+        <module>common</module>
     </modules>
     <packaging>pom</packaging>
 
