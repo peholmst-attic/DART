@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.pkhapps.dart.server</groupId>
+    <artifactId>dart-server</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <project.build.encoding>UTF-8</project.build.encoding>
+        <project.build.source>1.8</project.build.source>
+        <project.build.target>1.8</project.build.target>
+
+        <project.jdbc.url>jdbc:postgresql:dart</project.jdbc.url>
+        <project.jdbc.user>dart</project.jdbc.user>
+        <project.jdbc.password>dart</project.jdbc.password>
+
+        <akka.version>2.4.2</akka.version>
+        <postgresql-jdbc.version>9.4.1208.jre7</postgresql-jdbc.version>
+        <jooq.version>3.7.3</jooq.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.11</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql-jdbc.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <encoding>${project.build.encoding}</encoding>
+                    <source>${project.build.source}</source>
+                    <target>${project.build.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <encoding>${project.build.encoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>4.0</version>
+                <configuration>
+                    <driver>org.postgresql.Driver</driver>
+                    <url>${project.jdbc.url}</url>
+                    <user>${project.jdbc.user}</user>
+                    <password>${project.jdbc.password}</password>
+                    <baselineVersion>0</baselineVersion>
+                    <baselineDescription>Base Migration</baselineDescription>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jooq.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jdbc>
+                        <driver>org.postgresql.Driver</driver>
+                        <url>${project.jdbc.url}</url>
+                        <user>${project.jdbc.user}</user>
+                        <password>${project.jdbc.password}</password>
+                    </jdbc>
+                    <generator>
+                        <database>
+                            <name>org.jooq.util.postgres.PostgresDatabase</name>
+                            <includes>.*</includes>
+                            <excludes></excludes>
+                            <inputSchema>public</inputSchema>
+                        </database>
+                        <target>
+                            <packageName>net.pkhapps.dart.db</packageName>
+                            <directory>target/generated-sources/jooq</directory>
+                        </target>
+                    </generator>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
