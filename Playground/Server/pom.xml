@@ -21,6 +21,7 @@
         <akka.version>2.4.2</akka.version>
         <postgresql-jdbc.version>9.4.1208.jre7</postgresql-jdbc.version>
         <jooq.version>3.7.3</jooq.version>
+        <commons-codec.version>1.10</commons-codec.version>
     </properties>
 
     <dependencies>
@@ -38,6 +39,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql-jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
         </dependency>
     </dependencies>
 
@@ -94,8 +100,22 @@
                         <database>
                             <name>org.jooq.util.postgres.PostgresDatabase</name>
                             <includes>.*</includes>
-                            <excludes></excludes>
+                            <excludes>st_.*|_st.*</excludes>
                             <inputSchema>public</inputSchema>
+                            <customTypes>
+                                <customType>
+                                    <name>Coordinates</name>
+                                    <type>net.pkhapps.dart.types.Coordinates</type>
+                                    <binding>net.pkhapps.dart.types.CoordinatesBinding</binding>
+                                </customType>
+                            </customTypes>
+                            <forcedTypes>
+                                <forcedType>
+                                    <name>Coordinates</name>
+                                    <expression>location</expression>
+                                    <!--<types>geometry\(Point,4326\)</types>-->
+                                </forcedType>
+                            </forcedTypes>
                         </database>
                         <target>
                             <packageName>net.pkhapps.dart.db</packageName>
