@@ -9,6 +9,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Objects;
 
+/**
+ * A converter that converts between {@link Coordinates} and PostGIS {@code geometry(Point,4326)}.
+ * The converter reads and decodes EWKBHEX from the database and writes byte arrays to the database. It will
+ * not work with any other WKB type than Point and any other SRID than 4326 (WGS 84).
+ */
 public class CoordinatesConverter implements Converter<Object, Coordinates> {
 
     @Override
@@ -48,8 +53,17 @@ public class CoordinatesConverter implements Converter<Object, Coordinates> {
 
     @Override
     public Object to(Coordinates userObject) {
-        return userObject == null ? null : String.format("ST_SetSRID(ST_Point(%f, %f), 4326)",
-                userObject.getLongitude(), userObject.getLatitude());
+        if (userObject == null) {
+            return null;
+        } else {
+            final ByteBuffer ewkb = ByteBuffer.allocate(25).order(ByteOrder.LITTLE_ENDIAN);
+            ewkb.put((byte) 0x01); // byte order
+            ewkb.putInt(0x20000001); // wkbType (SRID and point)
+            ewkb.putInt(4326); // SRID
+            ewkb.putDouble(userObject.getLongitude().doubleValue()); // x
+            ewkb.putDouble(userObject.getLatitude().doubleValue()); // y
+            return ewkb.array();
+        }
     }
 
     @Override

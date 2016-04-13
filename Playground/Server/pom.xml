@@ -45,6 +45,11 @@
             <artifactId>commons-codec</artifactId>
             <version>${commons-codec.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -106,7 +111,7 @@
                                 <customType>
                                     <name>Coordinates</name>
                                     <type>net.pkhapps.dart.types.Coordinates</type>
-                                    <binding>net.pkhapps.dart.types.CoordinatesBinding</binding>
+                                    <converter>net.pkhapps.dart.types.CoordinatesConverter</converter>
                                 </customType>
                             </customTypes>
                             <forcedTypes>

@@ -21,6 +21,8 @@ public class TestApp {
             DSLContext create = DSL.using(connection, SQLDialect.POSTGRES_9_4);
             Coordinates coordinates = create.select(STATIONS.LOCATION).from(STATIONS).fetchAny(STATIONS.LOCATION);
             System.out.println(coordinates);
+            create.insertInto(STATIONS).set(STATIONS.LOCATION, coordinates).set(STATIONS.NAME_FI, "test_fi")
+                    .set(STATIONS.NAME_SV, "test_sv").set(STATIONS.MUNICIPALITY_ID, 1L).execute();
         }
     }
 }
