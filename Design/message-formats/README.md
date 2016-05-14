@@ -21,7 +21,9 @@ Generally, messages can be grouped into four different classes:
 * **Response**: The message is a response to a previously received request. It should be possible to relate the response
 to the request in some way, for example by using the `conversation-id`.
 * **Command**: The message orders the system to perform a specific operation. Some operations are fire-and-forget and do not require a response, whereas other operations require a response (normally success/failure). Operations that require a response must use the `conversation-id`.
-* **Broadcast**: The message is sent to many subscribing listeners without being explicitly requested. No responses.
+* **Broadcast**: The message is sent to many subscribing listeners without being explicitly requested. No responses are sent to a broadcast message, but a broadcast message can trigger receivers to send other messages.
+
+All messages except broadcasts are sent using queues. The broadcasts are sent using publish/subscribe.
 
 ## General message format
 
