@@ -18,12 +18,12 @@ Request:
     "version": "1.0"
   },
   "body": {
-    "include_disabled": true
+    "disabled_included": true
   }
 }
 ```
 
-* `include_disabled`: specifies whether disabled ("softly deleted") resources should be included in the response.
+* `disabled_included`: specifies whether disabled ("softly deleted") resources should be included in the response.
 *Optional*, default value is `false`.
 
 Response:
@@ -142,7 +142,7 @@ Response:
           "en": "Unavailable",
           "fi": "Ei hälytettävissä"
         },
-        "track_location": false,
+        "location_tracking": false,
         "color": "#ff0000",
       },
       {
@@ -151,7 +151,7 @@ Response:
           "en": "En route",
           "fi": "Matkalla"
         },
-        "track_location": true,
+        "location_tracking": true,
         "color": "#00ff00"
       }
     ]
@@ -164,7 +164,7 @@ this array is empty. *Required.*
   * `state`: identifier of the state, used in other messages. *Required.*
   * `description`: human readable descriptions in different languages.
   The keys are ISO 639 language codes. *Optional.*
-  * `track_location`: wether the sender should report the real time location of the resource whenever this
+  * `location_tracking`: wether the sender should report the real time location of the resource whenever this
   state is active or not. *Required.*
   * `color`: the color of the status to be used in UIs, in hexadecimal #RRGGBB format. *Optional.*
 

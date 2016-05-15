@@ -36,7 +36,7 @@ a body part:
     "type": "my-message-type",
     "version": "1.0",
     "timestamp": "2016-05-13T21:30:59Z",
-    "conversation-id": 12345
+    "conversation-id": "ABCD-12345"
   },
   "body": {
   }
@@ -48,7 +48,7 @@ The `header` is always required and consists of the following fields:
 * `type`: The type of the message. *Required.*
 * `version`: The version of the message format (in this case always 1.0). *Required.*
 * `timestamp`: The timestamp when the client first created the message, in ISO 8601. *Optional* for requests, *required* for all other message classes.
-* `conversation-id`: A numeric ID that can be used to group together related messages,
+* `conversation-id`: A textual ID that can be used to group together related messages,
 for example when the sender expects a response. *Optional* except for some commands.
 
 Messages can also contain additional header fields.
