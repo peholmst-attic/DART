@@ -1,4 +1,4 @@
-package net.pkhapps.dart.messaging.messages;
+package net.pkhapps.dart.messaging.routing;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -11,4 +11,17 @@
 
     <artifactId>resources-server</artifactId>
     <name>Resources - Server Application</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>resources-messages</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.pkhapps.dart.messaging</groupId>
+            <artifactId>messaging-amqp</artifactId>
+            <version>${dart.messaging.version}</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -9,4 +9,13 @@ public interface GetCurrentResourceStatus extends Request<CurrentResourceStatus>
 
     @NotNull
     Set<String> getResources();
+
+    interface Builder extends Request.Builder<GetCurrentResourceStatus, CurrentResourceStatus, GetCurrentResourceStatus.Builder> {
+
+        @NotNull
+        Builder withResource(@NotNull String resource);
+
+        @NotNull
+        Builder withResources(@NotNull Iterable<String> resources);
+    }
 }

@@ -1,4 +1,4 @@
-package net.pkhapps.dart.messaging.messages;
+package net.pkhapps.dart.messaging.routing;
 
 public interface Destination {
 

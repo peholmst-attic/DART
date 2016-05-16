@@ -16,7 +16,22 @@
         <dependency>
             <groupId>net.pkhapps.dart.messaging</groupId>
             <artifactId>messaging-api</artifactId>
-            <version>${project.version}</version>
+            <version>${dart.messaging.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.pkhapps.dart.messaging</groupId>
+            <artifactId>messaging-gson</artifactId>
+            <version>${dart.messaging.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.pkhapps.dart</groupId>
+            <artifactId>common</artifactId>
+            <version>${dart.common.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.pkhapps.dart</groupId>
+            <artifactId>database</artifactId>
+            <version>${dart.database.version}</version>
         </dependency>
     </dependencies>
 </project>

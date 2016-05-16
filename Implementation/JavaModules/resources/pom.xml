@@ -14,6 +14,12 @@
     <packaging>pom</packaging>
     <name>Resources - Master POM</name>
 
+    <properties>
+        <dart.messaging.version>1.0-SNAPSHOT</dart.messaging.version>
+        <dart.common.version>1.0-SNAPSHOT</dart.common.version>
+        <dart.database.version>1.0-SNAPSHOT</dart.database.version>
+    </properties>
+
     <modules>
         <module>resources-messages</module>
         <module>resources-server</module>

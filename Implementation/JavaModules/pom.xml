@@ -13,6 +13,8 @@
     <modules>
         <module>messaging</module>
         <module>resources</module>
+        <module>common</module>
+        <module>database</module>
     </modules>
 
     <properties>
@@ -20,8 +22,16 @@
         <project.build.source>1.8</project.build.source>
         <project.build.target>1.8</project.build.target>
 
+        <project.jdbc.url>jdbc:postgresql:dart</project.jdbc.url>
+        <project.jdbc.user>dart</project.jdbc.user>
+        <project.jdbc.password>dart</project.jdbc.password>
+
         <rabbitmq.version>3.6.1</rabbitmq.version>
         <gson.version>2.6.2</gson.version>
+        <postgresql-jdbc.version>9.4.1208.jre7</postgresql-jdbc.version>
+        <jooq.version>3.7.3</jooq.version>
+        <commons-codec.version>1.10</commons-codec.version>
+        <flyway-plugin.version>4.0</flyway-plugin.version>
     </properties>
 
     <build>
@@ -29,6 +39,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.3</version>
                     <configuration>
                         <source>${project.build.source}</source>
                         <target>${project.build.target}</target>
@@ -37,9 +48,15 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.7</version>
                     <configuration>
                         <encoding>${project.build.encoding}</encoding>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.flywaydb</groupId>
+                    <artifactId>flyway-maven-plugin</artifactId>
+                    <version>${flyway-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -65,6 +82,21 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq</artifactId>
+                <version>${jooq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql-jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

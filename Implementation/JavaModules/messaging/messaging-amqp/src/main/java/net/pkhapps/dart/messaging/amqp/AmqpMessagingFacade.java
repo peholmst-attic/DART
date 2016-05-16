@@ -7,6 +7,8 @@ import net.pkhapps.dart.messaging.facade.ResponseCallback;
 import net.pkhapps.dart.messaging.facade.SendFailureException;
 import net.pkhapps.dart.messaging.messages.*;
 import net.pkhapps.dart.messaging.converters.MessageConverterException;
+import net.pkhapps.dart.messaging.routing.Destination;
+import net.pkhapps.dart.messaging.routing.StaticDestination;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;

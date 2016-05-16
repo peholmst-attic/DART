@@ -2,6 +2,7 @@ package net.pkhapps.dart.messaging.facade;
 
 import net.pkhapps.dart.messaging.messages.*;
 import net.pkhapps.dart.messaging.converters.MessageConverterException;
+import net.pkhapps.dart.messaging.routing.Destination;
 import org.jetbrains.annotations.NotNull;
 
 public interface MessagingFacade {
