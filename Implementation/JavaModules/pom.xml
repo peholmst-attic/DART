@@ -8,10 +8,11 @@
     <artifactId>master-pom</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>Root POM</name>
 
     <modules>
-        <module>resources-messaging</module>
         <module>messaging</module>
+        <module>resources</module>
     </modules>
 
     <properties>

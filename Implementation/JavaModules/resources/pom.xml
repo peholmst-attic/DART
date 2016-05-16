@@ -9,14 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.pkhapps.dart.messaging</groupId>
+    <groupId>net.pkhapps.dart.resources</groupId>
     <artifactId>master-pom</artifactId>
     <packaging>pom</packaging>
-    <name>Messaging - Master POM</name>
+    <name>Resources - Master POM</name>
 
     <modules>
-        <module>messaging-api</module>
-        <module>messaging-amqp</module>
-        <module>messaging-gson</module>
+        <module>resources-messages</module>
+        <module>resources-server</module>
     </modules>
 </project>
