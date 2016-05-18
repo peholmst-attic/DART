@@ -1,4 +1,4 @@
-package net.pkhapps.dart.messaging.routing;
+package net.pkhapps.dart.messaging.amqp.routing;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface StaticDestination {
+public @interface StaticAmqpDestination {
 
     String exchange() default "";
 

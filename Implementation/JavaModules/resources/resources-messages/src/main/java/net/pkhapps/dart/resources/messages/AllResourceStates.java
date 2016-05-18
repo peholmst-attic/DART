@@ -1,28 +1,66 @@
 package net.pkhapps.dart.resources.messages;
 
+import net.pkhapps.dart.common.CollectionsUtil;
+import net.pkhapps.dart.common.LocalizedString;
 import net.pkhapps.dart.messaging.messages.Response;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
-public interface AllResourceStates extends Response {
+public class AllResourceStates extends Response {
+
+    private final Set<ResourceState> states;
+
+    public AllResourceStates(@NotNull Instant timestamp, @NotNull Set<ResourceState> states) {
+        super(timestamp, null);
+        this.states = CollectionsUtil.unmodifiableCopy(states);
+    }
 
     @NotNull
-    Collection<ResourceState> getStates();
+    public Collection<ResourceState> getStates() {
+        return states;
+    }
 
-    interface ResourceState {
+    public static class ResourceState {
+
+        private final String state;
+        private final LocalizedString description;
+        private final boolean locationTrackingEnabled;
+        private final String color;
+
+        public ResourceState(@NotNull String state, @NotNull LocalizedString description, boolean locationTrackingEnabled, @Nullable String color) {
+            this.state = Objects.requireNonNull(state, "state must not be null");
+            this.description = Objects.requireNonNull(description, "description must not be null");
+            this.locationTrackingEnabled = locationTrackingEnabled;
+            this.color = color;
+        }
+
+        public ResourceState(String state, LocalizedString description, boolean locationTrackingEnabled) {
+            this(state, description, locationTrackingEnabled, null);
+        }
+
         @NotNull
-        String getState();
+        public String getState() {
+            return state;
+        }
 
         @NotNull
-        Map<Locale, String> getDescription();
+        public LocalizedString getDescription() {
+            return description;
+        }
 
-        boolean isLocationTrackingEnabled();
+        public boolean isLocationTrackingEnabled() {
+            return locationTrackingEnabled;
+        }
 
         @NotNull
-        Optional<String> getColor();
+        public Optional<String> getColor() {
+            return Optional.ofNullable(color);
+        }
     }
 }

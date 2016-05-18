@@ -1,7 +1,14 @@
 package net.pkhapps.dart.messaging.messages;
 
-public interface Command extends Message {
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-    interface Builder<M extends Command, B extends Builder<M, B>> extends Message.Builder<M, B> {
+import java.time.Instant;
+import java.util.Objects;
+
+public abstract class Command extends Message {
+
+    public Command(@NotNull Instant timestamp, @Nullable String conversationId) {
+        super(Objects.requireNonNull(timestamp, "timestamp must not be null"), conversationId);
     }
 }

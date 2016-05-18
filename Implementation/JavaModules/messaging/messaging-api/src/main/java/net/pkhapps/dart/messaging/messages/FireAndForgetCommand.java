@@ -1,7 +1,13 @@
 package net.pkhapps.dart.messaging.messages;
 
-public interface FireAndForgetCommand extends Command {
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-    interface Builder<M extends FireAndForgetCommand, B extends Builder<M, B>> extends Command.Builder<M, B>{
+import java.time.Instant;
+
+public abstract class FireAndForgetCommand extends Command {
+
+    public FireAndForgetCommand(@NotNull Instant timestamp, @Nullable String conversationId) {
+        super(timestamp, conversationId);
     }
 }

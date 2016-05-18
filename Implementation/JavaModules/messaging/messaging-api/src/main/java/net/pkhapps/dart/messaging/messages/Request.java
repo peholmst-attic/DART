@@ -1,7 +1,12 @@
 package net.pkhapps.dart.messaging.messages;
 
-public interface Request<R extends Response> extends Message {
+import org.jetbrains.annotations.Nullable;
 
-    interface Builder<M extends Request<R>, R extends Response, B extends Builder<M, R, B>> extends Message.Builder<M, B> {
+import java.time.Instant;
+
+public abstract class Request<R extends Response> extends Message {
+
+    public Request(@Nullable Instant timestamp, @Nullable String conversationId) {
+        super(timestamp, conversationId);
     }
 }

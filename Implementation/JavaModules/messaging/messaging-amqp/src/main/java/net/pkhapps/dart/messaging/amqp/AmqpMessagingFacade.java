@@ -1,20 +1,19 @@
 package net.pkhapps.dart.messaging.amqp;
 
 import com.rabbitmq.client.Channel;
+import net.pkhapps.dart.messaging.amqp.routing.AmqpDestination;
+import net.pkhapps.dart.messaging.amqp.routing.StaticAmqpDestination;
+import net.pkhapps.dart.messaging.converters.MessageConverterException;
 import net.pkhapps.dart.messaging.facade.DestinationMissingException;
 import net.pkhapps.dart.messaging.facade.MessagingFacade;
 import net.pkhapps.dart.messaging.facade.ResponseCallback;
 import net.pkhapps.dart.messaging.facade.SendFailureException;
 import net.pkhapps.dart.messaging.messages.*;
-import net.pkhapps.dart.messaging.converters.MessageConverterException;
-import net.pkhapps.dart.messaging.routing.Destination;
-import net.pkhapps.dart.messaging.routing.StaticDestination;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.Objects;
 
-public class AmqpMessagingFacade implements MessagingFacade {
+public class AmqpMessagingFacade implements MessagingFacade<AmqpDestination> {
 
     @Override
     public void fireAndForget(@NotNull FireAndForgetCommand command)
@@ -24,20 +23,12 @@ public class AmqpMessagingFacade implements MessagingFacade {
     }
 
     @Override
-    public void fireAndForget(@NotNull FireAndForgetCommand command, @NotNull Destination destination)
-            throws SendFailureException, MessageConverterException {
-        Objects.requireNonNull(command, "command cannot be null");
-        Objects.requireNonNull(destination, "destination cannot be null");
-        fireAndForget(command, Collections.singleton(destination));
-    }
-
-    @Override
-    public void fireAndForget(@NotNull FireAndForgetCommand command, @NotNull Iterable<Destination> destinations)
+    public void fireAndForget(@NotNull FireAndForgetCommand command, @NotNull Iterable<AmqpDestination> destinations)
             throws SendFailureException, MessageConverterException {
         Objects.requireNonNull(command, "command cannot be null");
         Objects.requireNonNull(destinations, "destinations cannot be null");
         byte[] message = convertMessageToJSON(command).getBytes();
-        for (Destination destination : destinations) {
+        for (AmqpDestination destination : destinations) {
             sendToDestination(message, destination);
         }
     }
@@ -58,25 +49,15 @@ public class AmqpMessagingFacade implements MessagingFacade {
 
 
     @NotNull
-    protected Destination getStaticDestination(@NotNull Message message) throws DestinationMissingException {
-        final StaticDestination staticDestination = message.getClass().getAnnotation(StaticDestination.class);
-        if (staticDestination == null) {
+    protected AmqpDestination getStaticDestination(@NotNull Message message) throws DestinationMissingException {
+        final StaticAmqpDestination staticAmqpDestination = message.getClass().getAnnotation(StaticAmqpDestination.class);
+        if (staticAmqpDestination == null) {
             throw new DestinationMissingException("No @StaticDestination annotation found on command class");
         }
-        return new Destination() {
-            @Override
-            public String getExchange() {
-                return staticDestination.exchange();
-            }
-
-            @Override
-            public String getRoutingKey() {
-                return staticDestination.routingKey();
-            }
-        };
+        return new AmqpDestination(staticAmqpDestination.exchange(), staticAmqpDestination.routingKey());
     }
 
-    protected void sendToDestination(@NotNull byte[] message, @NotNull Destination destination) throws SendFailureException {
+    protected void sendToDestination(@NotNull byte[] message, @NotNull AmqpDestination destination) throws SendFailureException {
 
     }
 

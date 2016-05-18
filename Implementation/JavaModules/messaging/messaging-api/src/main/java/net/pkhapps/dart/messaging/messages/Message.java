@@ -1,27 +1,28 @@
 package net.pkhapps.dart.messaging.messages;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.Optional;
 
-public interface Message {
+public abstract class Message {
+
+    private final Instant timestamp;
+    private final String conversationId;
+
+    public Message(@Nullable Instant timestamp, @Nullable String conversationId) {
+        this.timestamp = timestamp;
+        this.conversationId = conversationId;
+    }
 
     @NotNull
-    Optional<Instant> getTimestamp();
+    public Optional<Instant> getTimestamp() {
+        return Optional.ofNullable(timestamp);
+    }
 
     @NotNull
-    Optional<String> getConversationId();
-
-    interface Builder<M extends Message, B extends Builder<M, B>> {
-
-        @NotNull
-        B withTimestamp(Instant timestamp);
-
-        @NotNull
-        B withConversationId(String conversationId);
-
-        @NotNull
-        M build();
+    public Optional<String> getConversationId() {
+        return Optional.ofNullable(conversationId);
     }
 }
