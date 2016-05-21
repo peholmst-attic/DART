@@ -1,4 +1,4 @@
-package net.pkhapps.dart.resources.db;
+package net.pkhapps.dart.database;
 
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.apache.tomcat.jdbc.pool.PoolProperties;

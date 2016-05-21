@@ -1,4 +1,4 @@
-package net.pkhapps.dart.resources.db;
+package net.pkhapps.dart.database;
 
 import com.netflix.config.DynamicBooleanProperty;
 import com.netflix.config.DynamicIntProperty;

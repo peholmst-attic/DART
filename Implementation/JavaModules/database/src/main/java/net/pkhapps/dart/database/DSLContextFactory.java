@@ -1,4 +1,4 @@
-package net.pkhapps.dart.resources.db;
+package net.pkhapps.dart.database;
 
 import org.jooq.Configuration;
 import org.jooq.DSLContext;
