@@ -3,13 +3,14 @@ package net.pkhapps.dart.messaging.converters;
 import net.pkhapps.dart.messaging.messages.Message;
 import org.jetbrains.annotations.NotNull;
 
-public interface MessageConverter<M extends Message> {
+public interface MessageConverter<M extends Message, T> {
+
+    @NotNull T marshal(@NotNull M message) throws MessageConverterException;
 
     @NotNull
-    String toJson(@NotNull M message) throws MessageConverterException;
+    M unmarshal(@NotNull T data) throws MessageConverterException;
 
-    boolean supportsJson(@NotNull Object parsedJson);
+    boolean supports(@NotNull T data);
 
-    @NotNull
-    M fromJson(@NotNull Object parsedJson) throws MessageConverterException;
+    boolean supports(Message message);
 }
