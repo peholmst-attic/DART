@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.pkhapps.dart.messaging</groupId>
-    <artifactId>resources-master-pom</artifactId>
+    <artifactId>messaging-master-pom</artifactId>
     <packaging>pom</packaging>
     <name>Messaging - Master POM</name>
 
