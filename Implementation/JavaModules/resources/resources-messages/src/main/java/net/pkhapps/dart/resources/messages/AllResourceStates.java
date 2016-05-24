@@ -1,6 +1,7 @@
 package net.pkhapps.dart.resources.messages;
 
 import net.pkhapps.dart.common.CollectionsUtil;
+import net.pkhapps.dart.common.Color;
 import net.pkhapps.dart.common.LocalizedString;
 import net.pkhapps.dart.messaging.messages.Response;
 import org.jetbrains.annotations.NotNull;
@@ -31,9 +32,9 @@ public class AllResourceStates extends Response {
         private final String state;
         private final LocalizedString description;
         private final boolean locationTrackingEnabled;
-        private final String color;
+        private final Color color;
 
-        public ResourceState(@NotNull String state, @NotNull LocalizedString description, boolean locationTrackingEnabled, @Nullable String color) {
+        public ResourceState(@NotNull String state, @NotNull LocalizedString description, boolean locationTrackingEnabled, @Nullable Color color) {
             this.state = Objects.requireNonNull(state, "state must not be null");
             this.description = Objects.requireNonNull(description, "description must not be null");
             this.locationTrackingEnabled = locationTrackingEnabled;
@@ -59,7 +60,7 @@ public class AllResourceStates extends Response {
         }
 
         @NotNull
-        public Optional<String> getColor() {
+        public Optional<Color> getColor() {
             return Optional.ofNullable(color);
         }
     }

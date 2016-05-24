@@ -4,6 +4,7 @@ import com.netflix.config.DynamicBooleanProperty;
 import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
+import org.jooq.SQLDialect;
 
 import java.util.Objects;
 
@@ -83,6 +84,10 @@ public class DataSourceProperties {
 
     public DynamicIntProperty minEvictableIdleTimeMillis() {
         return dynamicPropertyFactory.getIntProperty("jdbc.eviction.min-idle-time-millis", 60000);
+    }
+
+    public DynamicStringProperty sqlDialect() {
+        return dynamicPropertyFactory.getStringProperty("jdbc.jooq.sql-dialect", SQLDialect.POSTGRES_9_4.name());
     }
 
     public static synchronized DataSourceProperties getInstance() {

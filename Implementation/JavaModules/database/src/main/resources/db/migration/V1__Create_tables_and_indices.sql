@@ -3,92 +3,30 @@
 -- before running the first migration.
 --
 
-CREATE TABLE municipalities (
+CREATE TABLE capabilities (
     id bigserial not null,
-    name_sv varchar(200) not null,
-    name_fi varchar(200) not null,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE stations (
-    id bigserial not null,
-    name_sv varchar(200) not null,
-    name_fi varchar(200) not null,
-    municipality_id bigint not null,
-    location geometry(point,4326) default null,
-    street_address varchar(200) default '',
+    capability varchar(200) not null,
+    description_sv varchar(200) not null default '',
+    description_fi varchar(200) not null default '',
+    description_en varchar(200) not null default '',
     PRIMARY KEY (id),
-    FOREIGN KEY (municipality_id) REFERENCES municipalities (id)
+    UNIQUE (capability)
 );
-
-CREATE INDEX station_location_ix ON stations USING GIST (location);
-
-CREATE TABLE ticket_types (
-    id bigserial not null,
-    code varchar(10) not null,
-    name_sv varchar(200) not null,
-    name_fi varchar(200) not null,
-    PRIMARY KEY (id),
-    UNIQUE (code)
-);
-
-CREATE TABLE resource_types (
-    id bigserial not null,
-    code varchar(10) not null,
-    name_sv varchar(200) not null,
-    name_fi varchar(200) not null,
-    PRIMARY KEY (id),
-    UNIQUE (code)
-);
-
-CREATE TYPE urgency AS ENUM ('A','B','C','D');
-
-CREATE TABLE tickets (
-    id bigserial not null,
-    type_id bigint default null,
-    parent_id bigint default null,
-    municipality_id bigint default null,
-    urgency urgency default null,
-    location geometry(point,4326) default null,
-    loc_text varchar(200) default '',
-    details varchar(200) default '',
-    PRIMARY KEY (id),
-    FOREIGN KEY (type_id) REFERENCES ticket_types (id),
-    FOREIGN KEY (parent_id) REFERENCES tickets (id),
-    FOREIGN KEY (municipality_id) REFERENCES municipalities (id)
-);
-
-CREATE INDEX ticket_location_ix ON tickets USING GIST (location);
-
-CREATE TYPE ticket_state AS ENUM (
-    'CREATED',
-    'DISPATCHED',
-    'RESOURCES_EN_ROUTE',
-    'RESOURCES_ON_SCENE',
-    'ON_HOLD',
-    'CLOSED'
-);
-
-CREATE TABLE ticket_states (
-    id bigserial not null,
-    ts timestamp with time zone not null,
-    state ticket_state not null,
-    ticket_id bigint default null,
-    PRIMARY KEY (id),
-    FOREIGN KEY (ticket_id) REFERENCES tickets (id)
-);
-
-CREATE INDEX ticket_state_ts_ix ON ticket_states (ts DESC);
 
 CREATE TABLE resources (
     id bigserial not null,
-    type_id bigint not null,
-    call_sign varchar(20) not null,
-    station_id bigint not null,
+    name varchar(20) not null,
+    disabled boolean not null default false,
     PRIMARY KEY (id),
-    FOREIGN KEY (type_id) REFERENCES resource_types (id),
-    FOREIGN KEY (station_id) REFERENCES stations (id),
-    UNIQUE (call_sign)
+    UNIQUE (name)
+);
+
+CREATE TABLE resource_capabilities (
+    resource_id bigint not null,
+    capability_id bigint not null,
+    PRIMARY KEY (resource_id, capability_id),
+    FOREIGN KEY (resource_id) REFERENCES resources (id),
+    FOREIGN KEY (capability_id) REFERENCES capabilities (id)
 );
 
 CREATE TABLE resource_locations (
@@ -106,24 +44,42 @@ CREATE INDEX resource_location_location_ix ON resource_locations USING GIST (loc
 CREATE TYPE resource_state AS ENUM (
     'UNAVAILABLE',
     'AVAILABLE_AT_STATION',
-    'AVAILABLE_OVER_RADIO',
+    'AVAILABLE',
     'RESERVED_AT_STATION',
-    'RESERVED_OVER_RADIO',
+    'RESERVED',
     'DISPATCHED_AT_STATION',
-    'DISPATCHED_OVER_RADIO',
+    'DISPATCHED',
     'EN_ROUTE',
     'ON_SCENE'
 );
+
+CREATE TABLE resource_state_descriptors (
+    state resource_state not null,
+    description_sv varchar(200) not null default '',
+    description_fi varchar(200) not null default '',
+    description_en varchar(200) not null default '',
+    location_tracking_enabled boolean not null default true,
+    color varchar(6) not null default 'ffffff',
+    PRIMARY KEY (state)
+);
+
+INSERT INTO resource_state_descriptors VALUES ('UNAVAILABLE', 'Ej alarmerbar', 'Ei hälytettävissä', 'Out of service', false, 'cccccc');
+INSERT INTO resource_state_descriptors VALUES ('AVAILABLE_AT_STATION', 'Ledig på stationen', 'Vapaa asemalla', 'At station', false, '186a3b');
+INSERT INTO resource_state_descriptors VALUES ('AVAILABLE', 'Ledig', 'Vapaa', 'Available', true, '28b463');
+INSERT INTO resource_state_descriptors VALUES ('RESERVED_AT_STATION', 'Reserverad på stationen', 'Varattu asemalla', 'Reserved at station', false, 'c0392b');
+INSERT INTO resource_state_descriptors VALUES ('RESERVED', 'Reserverad', 'Varattu', 'Reserved', true, 'c0392b');
+INSERT INTO resource_state_descriptors VALUES ('DISPATCHED_AT_STATION', 'Alarmerad på stationen', 'Hälytetty asemalla', 'Dispatched at station', false, 'e67e22');
+INSERT INTO resource_state_descriptors VALUES ('DISPATCHED', 'Alarmerad', 'Hälytetty', 'Dispatched', true, 'e67e22');
+INSERT INTO resource_state_descriptors VALUES ('EN_ROUTE', 'På väg', 'Matkalla', 'En route', true, '3498db');
+INSERT INTO resource_state_descriptors VALUES ('ON_SCENE', 'På plats', 'Paikalla', 'On scene', true, 'f1c40f');
 
 CREATE TABLE resource_states (
     id bigserial not null,
     ts timestamp with time zone not null,
     state resource_state not null,
     resource_id bigint not null,
-    ticket_id bigint default null,
     PRIMARY KEY (id),
-    FOREIGN KEY (resource_id) REFERENCES resources (id),
-    FOREIGN KEY (ticket_id) REFERENCES tickets (id)
+    FOREIGN KEY (resource_id) REFERENCES resources (id)
 );
 
 CREATE INDEX resource_state_ts_ix ON resource_states (ts DESC);
