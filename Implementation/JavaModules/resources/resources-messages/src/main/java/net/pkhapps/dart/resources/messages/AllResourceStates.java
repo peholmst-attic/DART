@@ -47,7 +47,7 @@ public class AllResourceStates extends Response {
 
         @NotNull
         public String getState() {
-            return state;
+            return state; // TODO Should this return an enum instead of a String?
         }
 
         @NotNull
