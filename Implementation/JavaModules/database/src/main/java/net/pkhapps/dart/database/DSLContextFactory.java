@@ -10,6 +10,8 @@ import java.util.Objects;
 
 public class DSLContextFactory {
 
+    private static DSLContextFactory INSTANCE;
+
     private final DataSourceProvider dataSourceProvider;
     private final DataSourceProperties dataSourceProperties;
 
@@ -28,5 +30,12 @@ public class DSLContextFactory {
 
     private SQLDialect getSQLDialect() {
         return SQLDialect.valueOf(dataSourceProperties.sqlDialect().get());
+    }
+
+    public static synchronized DSLContextFactory getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new DSLContextFactory(DataSourceProvider.getInstance(), DataSourceProperties.getInstance());
+        }
+        return INSTANCE;
     }
 }

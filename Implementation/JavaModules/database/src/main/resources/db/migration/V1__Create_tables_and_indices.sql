@@ -63,16 +63,6 @@ CREATE TABLE resource_state_descriptors (
     PRIMARY KEY (state)
 );
 
-INSERT INTO resource_state_descriptors VALUES ('UNAVAILABLE', 'Ej alarmerbar', 'Ei hälytettävissä', 'Out of service', false, 'cccccc');
-INSERT INTO resource_state_descriptors VALUES ('AVAILABLE_AT_STATION', 'Ledig på stationen', 'Vapaa asemalla', 'At station', false, '186a3b');
-INSERT INTO resource_state_descriptors VALUES ('AVAILABLE', 'Ledig', 'Vapaa', 'Available', true, '28b463');
-INSERT INTO resource_state_descriptors VALUES ('RESERVED_AT_STATION', 'Reserverad på stationen', 'Varattu asemalla', 'Reserved at station', false, 'c0392b');
-INSERT INTO resource_state_descriptors VALUES ('RESERVED', 'Reserverad', 'Varattu', 'Reserved', true, 'c0392b');
-INSERT INTO resource_state_descriptors VALUES ('DISPATCHED_AT_STATION', 'Alarmerad på stationen', 'Hälytetty asemalla', 'Dispatched at station', false, 'e67e22');
-INSERT INTO resource_state_descriptors VALUES ('DISPATCHED', 'Alarmerad', 'Hälytetty', 'Dispatched', true, 'e67e22');
-INSERT INTO resource_state_descriptors VALUES ('EN_ROUTE', 'På väg', 'Matkalla', 'En route', true, '3498db');
-INSERT INTO resource_state_descriptors VALUES ('ON_SCENE', 'På plats', 'Paikalla', 'On scene', true, 'f1c40f');
-
 CREATE TABLE resource_states (
     id bigserial not null,
     ts timestamp with time zone not null,
