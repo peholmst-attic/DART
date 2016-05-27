@@ -6,7 +6,7 @@ import net.pkhapps.dart.database.tables.records.CapabilitiesRecord;
 import net.pkhapps.dart.messaging.handlers.RequestHandler;
 import net.pkhapps.dart.resources.messages.AllResourceCapabilities;
 import net.pkhapps.dart.resources.messages.GetAllResourceCapabilities;
-import org.jetbrains.annotations.NotNull;
+import net.pkhapps.dart.resources.queries.CapabilityQuery;
 import org.jooq.DSLContext;
 
 import java.time.Clock;
@@ -14,28 +14,22 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static net.pkhapps.dart.common.Locales.*;
-import static net.pkhapps.dart.database.tables.Capabilities.CAPABILITIES;
 
-public class GetAllResourceCapabilitiesHandler implements RequestHandler<GetAllResourceCapabilities, AllResourceCapabilities> {
+public class GetAllResourceCapabilitiesHandler extends AbstractHandler implements RequestHandler<GetAllResourceCapabilities, AllResourceCapabilities> {
 
-    private final DSLContextFactory dslContextFactory;
-    private final Clock clock;
+    private final CapabilityQuery capabilityQuery;
 
-    public GetAllResourceCapabilitiesHandler(@NotNull DSLContextFactory dslContextFactory, @NotNull Clock clock) {
-        this.dslContextFactory = Objects.requireNonNull(dslContextFactory, "dslContextFactory must not be null");
-        this.clock = Objects.requireNonNull(clock, "clock must not be null");
+    public GetAllResourceCapabilitiesHandler(DSLContextFactory dslContextFactory, CapabilityQuery capabilityQuery, Clock clock) {
+        super(dslContextFactory, clock);
+        this.capabilityQuery = Objects.requireNonNull(capabilityQuery);
     }
 
     @Override
-    @NotNull
-    public AllResourceCapabilities handleRequest(@NotNull GetAllResourceCapabilities request) {
-        Objects.requireNonNull(request, "request must not be null");
-        try (final DSLContext create = dslContextFactory.create()) {
-            // TODO Limit this query in case we end up receiving a LOT of results.
-            // Getting lots of results would indicate there has been a mistake somewhere since there
-            // should only be a couple of handfuls of capabilities.
-            return new AllResourceCapabilities(clock.instant(), create.selectFrom(CAPABILITIES)
-                    .fetch().stream().map(GetAllResourceCapabilitiesHandler::toPojo).collect(Collectors.toSet()));
+    public AllResourceCapabilities handleRequest(GetAllResourceCapabilities request) {
+        Objects.requireNonNull(request);
+        try (final DSLContext ctx = ctx()) {
+            return new AllResourceCapabilities(now(), capabilityQuery.findAllCapabilities(ctx)
+                    .stream().map(GetAllResourceCapabilitiesHandler::toPojo).collect(Collectors.toSet()));
         } // Error handling higher up
     }
 

@@ -7,7 +7,6 @@ import net.pkhapps.dart.database.tables.records.ResourceStateDescriptorsRecord;
 import net.pkhapps.dart.messaging.handlers.RequestHandler;
 import net.pkhapps.dart.resources.messages.AllResourceStates;
 import net.pkhapps.dart.resources.messages.GetAllResourceStates;
-import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 
 import java.time.Clock;
@@ -17,24 +16,19 @@ import java.util.stream.Collectors;
 import static net.pkhapps.dart.common.Locales.*;
 import static net.pkhapps.dart.database.tables.ResourceStateDescriptors.RESOURCE_STATE_DESCRIPTORS;
 
-public class GetAllResourceStatesHandler implements RequestHandler<GetAllResourceStates, AllResourceStates> {
+public class GetAllResourceStatesHandler extends AbstractHandler implements RequestHandler<GetAllResourceStates, AllResourceStates> {
 
-    private final DSLContextFactory dslContextFactory;
-    private final Clock clock;
-
-    public GetAllResourceStatesHandler(@NotNull DSLContextFactory dslContextFactory, @NotNull Clock clock) {
-        this.dslContextFactory = Objects.requireNonNull(dslContextFactory, "dslContextFactory must not be null");
-        this.clock = Objects.requireNonNull(clock, "clock must not be null");
+    public GetAllResourceStatesHandler(DSLContextFactory dslContextFactory, Clock clock) {
+        super(dslContextFactory, clock);
     }
 
     @Override
-    @NotNull
-    public AllResourceStates handleRequest(@NotNull GetAllResourceStates request) {
+    public AllResourceStates handleRequest(GetAllResourceStates request) {
         Objects.requireNonNull(request, "request must not be null");
-        try (final DSLContext create = dslContextFactory.create()) {
+        try (final DSLContext create = ctx()) {
             // No need to limit this query since the current database structure guarantees that only a handful of
             // records will be returned.
-            return new AllResourceStates(clock.instant(), create.selectFrom(RESOURCE_STATE_DESCRIPTORS)
+            return new AllResourceStates(now(), create.selectFrom(RESOURCE_STATE_DESCRIPTORS)
                     .fetch().stream().map(GetAllResourceStatesHandler::toPojo).collect(Collectors.toSet()));
         } // Error handling higher up
     }

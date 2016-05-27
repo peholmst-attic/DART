@@ -9,24 +9,23 @@ import net.pkhapps.dart.messaging.facade.MessagingFacade;
 import net.pkhapps.dart.messaging.facade.ResponseCallback;
 import net.pkhapps.dart.messaging.facade.SendFailureException;
 import net.pkhapps.dart.messaging.messages.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public class AmqpMessagingFacade implements MessagingFacade<AmqpDestination> {
 
     @Override
-    public void fireAndForget(@NotNull FireAndForgetCommand command)
+    public void fireAndForget(FireAndForgetCommand command)
             throws SendFailureException, MessageConverterException {
-        Objects.requireNonNull(command, "command cannot be null");
+        Objects.requireNonNull(command);
         fireAndForget(command, getStaticDestination(command));
     }
 
     @Override
-    public void fireAndForget(@NotNull FireAndForgetCommand command, @NotNull Iterable<AmqpDestination> destinations)
+    public void fireAndForget(FireAndForgetCommand command, Iterable<AmqpDestination> destinations)
             throws SendFailureException, MessageConverterException {
-        Objects.requireNonNull(command, "command cannot be null");
-        Objects.requireNonNull(destinations, "destinations cannot be null");
+        Objects.requireNonNull(command);
+        Objects.requireNonNull(destinations);
         byte[] message = convertMessageToJSON(command).getBytes();
         for (AmqpDestination destination : destinations) {
             sendToDestination(message, destination);
@@ -39,7 +38,7 @@ public class AmqpMessagingFacade implements MessagingFacade<AmqpDestination> {
     }
 
     @Override
-    public void broadcast(@NotNull Broadcast message) throws SendFailureException, MessageConverterException {
+    public void broadcast(Broadcast message) throws SendFailureException, MessageConverterException {
 
     }
 
@@ -48,8 +47,7 @@ public class AmqpMessagingFacade implements MessagingFacade<AmqpDestination> {
     }
 
 
-    @NotNull
-    protected AmqpDestination getStaticDestination(@NotNull Message message) throws DestinationMissingException {
+    protected AmqpDestination getStaticDestination(Message message) throws DestinationMissingException {
         final StaticAmqpDestination staticAmqpDestination = message.getClass().getAnnotation(StaticAmqpDestination.class);
         if (staticAmqpDestination == null) {
             throw new DestinationMissingException("No @StaticDestination annotation found on command class");
@@ -57,7 +55,7 @@ public class AmqpMessagingFacade implements MessagingFacade<AmqpDestination> {
         return new AmqpDestination(staticAmqpDestination.exchange(), staticAmqpDestination.routingKey());
     }
 
-    protected void sendToDestination(@NotNull byte[] message, @NotNull AmqpDestination destination) throws SendFailureException {
+    protected void sendToDestination(byte[] message, AmqpDestination destination) throws SendFailureException {
 
     }
 

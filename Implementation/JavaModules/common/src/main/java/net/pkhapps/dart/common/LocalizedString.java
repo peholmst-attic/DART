@@ -1,22 +1,21 @@
 package net.pkhapps.dart.common;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 public class LocalizedString {
 
     private final Map<Locale, String> values;
 
-    public LocalizedString(@NotNull Map<Locale, String> values) {
-        Objects.requireNonNull(values, "values must not be null");
+    public LocalizedString(Map<Locale, String> values) {
+        Objects.requireNonNull(values);
         this.values = new HashMap<>(values);
     }
 
-    @NotNull
-    public String get(@NotNull Locale locale) {
-        Objects.requireNonNull(locale, "locale must not be null");
+    public String get(Locale locale) {
+        Objects.requireNonNull(locale);
         return values.getOrDefault(locale, "");
     }
 
@@ -24,9 +23,8 @@ public class LocalizedString {
 
         private final Map<Locale, String> values = new HashMap<>();
 
-        @NotNull
-        public Builder with(@NotNull Locale locale, @Nullable String value) {
-            Objects.requireNonNull(locale, "locale must not be null");
+        public Builder with(Locale locale, String value) {
+            Objects.requireNonNull(locale);
             if (value == null) {
                 values.remove(locale);
             } else {
@@ -35,13 +33,11 @@ public class LocalizedString {
             return this;
         }
 
-        @NotNull
         public LocalizedString build() {
             return new LocalizedString(values);
         }
     }
 
-    @NotNull
     public static Builder builder() {
         return new Builder();
     }

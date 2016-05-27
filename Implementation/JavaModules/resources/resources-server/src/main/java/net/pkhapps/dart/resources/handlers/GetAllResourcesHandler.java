@@ -12,7 +12,7 @@ public class GetAllResourcesHandler implements RequestHandler<GetAllResources, A
     private final DSLContextFactory dslContextFactory;
 
     public GetAllResourcesHandler(DSLContextFactory dslContextFactory) {
-        this.dslContextFactory = Objects.requireNonNull(dslContextFactory, "dslContextFactory must not be null");
+        this.dslContextFactory = Objects.requireNonNull(dslContextFactory);
     }
 
     @Override

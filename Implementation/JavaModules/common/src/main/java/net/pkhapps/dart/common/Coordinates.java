@@ -1,7 +1,5 @@
 package net.pkhapps.dart.common;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -16,17 +14,15 @@ public class Coordinates implements Serializable {
     private final BigDecimal latitude;
     private final BigDecimal longitude;
 
-    public Coordinates(@NotNull BigDecimal latitude, @NotNull BigDecimal longitude) {
+    public Coordinates(BigDecimal latitude, BigDecimal longitude) {
         this.latitude = Objects.requireNonNull(latitude).round(MATH_CONTEXT);
         this.longitude = Objects.requireNonNull(longitude).round(MATH_CONTEXT);
     }
 
-    @NotNull
     public BigDecimal getLatitude() {
         return latitude;
     }
 
-    @NotNull
     public BigDecimal getLongitude() {
         return longitude;
     }

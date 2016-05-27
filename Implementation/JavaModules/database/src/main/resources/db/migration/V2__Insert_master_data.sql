@@ -17,4 +17,4 @@ INSERT INTO capabilities VALUES (6, 'RESCUE_DIVERS', 'Räddningsdykare', 'Pelast
 INSERT INTO capabilities VALUES (7, 'HAZMAT', 'Kemdykning', 'Kemikaalisukellus', 'Hazmat');
 INSERT INTO capabilities VALUES (8, 'IC', 'Insatsledare', 'Pelastustoimen johtaja', 'Incident commander');
 
--- set Update capabilities_id_seq to 9
+ALTER SEQUENCE capabilities_id_seq RESTART WITH 100;

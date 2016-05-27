@@ -3,6 +3,7 @@ package net.pkhapps.dart.resources.handlers;
 import net.pkhapps.dart.database.DSLContextFactory;
 import net.pkhapps.dart.resources.messages.AllResourceCapabilities;
 import net.pkhapps.dart.resources.messages.GetAllResourceCapabilities;
+import net.pkhapps.dart.resources.queries.CapabilityQuery;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class GetAllResourceCapabilitiesHandlerIntegrationTest {
 
     @Before
     public void setUp() {
-        handler = new GetAllResourceCapabilitiesHandler(DSLContextFactory.getInstance(), Clock.systemDefaultZone());
+        handler = new GetAllResourceCapabilitiesHandler(DSLContextFactory.getInstance(), new CapabilityQuery(dataSourceProperties), Clock.systemDefaultZone());
     }
 
     @Test

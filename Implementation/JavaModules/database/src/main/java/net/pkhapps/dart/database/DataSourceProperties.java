@@ -1,9 +1,6 @@
 package net.pkhapps.dart.database;
 
-import com.netflix.config.DynamicBooleanProperty;
-import com.netflix.config.DynamicIntProperty;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
+import com.netflix.config.*;
 import org.jooq.SQLDialect;
 
 import java.util.Objects;
@@ -88,6 +85,18 @@ public class DataSourceProperties {
 
     public DynamicStringProperty sqlDialect() {
         return dynamicPropertyFactory.getStringProperty("jdbc.jooq.sql-dialect", SQLDialect.POSTGRES_9_4.name());
+    }
+
+    public DynamicIntProperty defaultQueryLimit() {
+        return dynamicPropertyFactory.getIntProperty("jdbc.query.limit.default", 500);
+    }
+
+    public DynamicIntProperty queryLimit(String queryName) {
+        return dynamicPropertyFactory.getIntProperty("jdbc.query.limit." + queryName, defaultQueryLimit().get());
+    }
+
+    public DynamicBooleanProperty onlyWarnWhenQueryLimitReached() {
+        return dynamicPropertyFactory.getBooleanProperty("jdbc.query.limit.only-warn-when-reached", false);
     }
 
     public static synchronized DataSourceProperties getInstance() {
