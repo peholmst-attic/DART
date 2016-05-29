@@ -2,6 +2,8 @@ package net.pkhapps.dart.resources.handlers;
 
 import net.pkhapps.dart.database.DSLContextFactory;
 import org.jooq.DSLContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -11,6 +13,8 @@ abstract class AbstractHandler {
 
     private final DSLContextFactory dslContextFactory;
     private final Clock clock;
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected AbstractHandler(DSLContextFactory dslContextFactory, Clock clock) {
         this.dslContextFactory = Objects.requireNonNull(dslContextFactory);

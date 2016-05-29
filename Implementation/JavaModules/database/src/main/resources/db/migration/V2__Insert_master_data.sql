@@ -8,6 +8,8 @@ INSERT INTO resource_state_descriptors VALUES ('DISPATCHED', 'Alarmerad', 'Häly
 INSERT INTO resource_state_descriptors VALUES ('EN_ROUTE', 'På väg', 'Matkalla', 'En route', true, '3498db');
 INSERT INTO resource_state_descriptors VALUES ('ON_SCENE', 'På plats', 'Paikalla', 'On scene', true, 'f1c40f');
 
+-- Some test capabilities
+
 INSERT INTO capabilities VALUES (1, 'PUMPER', 'Släckningsbil', 'Sammutusauto', 'Pumper');
 INSERT INTO capabilities VALUES (2, 'TANKER', 'Tankbil', 'Säiliöauto', 'Tanker');
 INSERT INTO capabilities VALUES (3, 'EMS', 'Första respons', 'Ensivaste', 'EMS');
@@ -18,3 +20,37 @@ INSERT INTO capabilities VALUES (7, 'HAZMAT', 'Kemdykning', 'Kemikaalisukellus',
 INSERT INTO capabilities VALUES (8, 'IC', 'Insatsledare', 'Pelastustoimen johtaja', 'Incident commander');
 
 ALTER SEQUENCE capabilities_id_seq RESTART WITH 100;
+
+-- Some test resources
+
+INSERT INTO resources VALUES (1, 'RVS30', false);
+INSERT INTO resource_capabilities VALUES (1, 8);
+
+INSERT INTO resources VALUES (2, 'RVS101', false);
+INSERT INTO resource_capabilities VALUES (2, 1);
+INSERT INTO resource_capabilities VALUES (2, 3);
+INSERT INTO resource_capabilities VALUES (2, 4);
+INSERT INTO resource_capabilities VALUES (2, 5);
+INSERT INTO resource_capabilities VALUES (2, 7);
+
+INSERT INTO resources VALUES (3, 'RVS103', false);
+INSERT INTO resource_capabilities VALUES (3, 2);
+
+INSERT INTO resources VALUES (4, 'RVS202', false);
+INSERT INTO resource_capabilities VALUES (4, 1);
+INSERT INTO resource_capabilities VALUES (4, 2);
+INSERT INTO resource_capabilities VALUES (4, 3);
+INSERT INTO resource_capabilities VALUES (4, 4);
+INSERT INTO resource_capabilities VALUES (4, 5);
+
+INSERT INTO resources VALUES (5, 'RVS2058', false);
+INSERT INTO resource_capabilities VALUES (5, 7);
+
+INSERT INTO resources VALUES (6, 'RVS3055', false);
+INSERT INTO resource_capabilities VALUES (6, 3);
+INSERT INTO resource_capabilities VALUES (6, 5);
+INSERT INTO resource_capabilities VALUES (6, 6);
+
+INSERT INTO resources VALUES (7, 'RVS201', true);
+
+ALTER SEQUENCE resources_id_seq RESTART WITH 100;

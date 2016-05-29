@@ -15,10 +15,20 @@ import java.util.stream.Collectors;
 
 import static net.pkhapps.dart.common.Locales.*;
 
+/**
+ * Handler for the {@link GetAllResourceCapabilities} message. Returns a {@link AllResourceCapabilities} response.
+ */
 public class GetAllResourceCapabilitiesHandler extends AbstractHandler implements RequestHandler<GetAllResourceCapabilities, AllResourceCapabilities> {
 
     private final CapabilityQuery capabilityQuery;
 
+    /**
+     * Constructor
+     *
+     * @param dslContextFactory the DSL context factory to use when creating JOOQ queries (not {@code null}).
+     * @param capabilityQuery   the {@link CapabilityQuery} to use (not {@code null}).
+     * @param clock             the clock to use for timestamps (not {@code null}).
+     */
     public GetAllResourceCapabilitiesHandler(DSLContextFactory dslContextFactory, CapabilityQuery capabilityQuery, Clock clock) {
         super(dslContextFactory, clock);
         this.capabilityQuery = Objects.requireNonNull(capabilityQuery);
@@ -27,6 +37,7 @@ public class GetAllResourceCapabilitiesHandler extends AbstractHandler implement
     @Override
     public AllResourceCapabilities handleRequest(GetAllResourceCapabilities request) {
         Objects.requireNonNull(request);
+        logger.trace("Handling [{}]", request);
         try (final DSLContext ctx = ctx()) {
             return new AllResourceCapabilities(now(), capabilityQuery.findAllCapabilities(ctx)
                     .stream().map(GetAllResourceCapabilitiesHandler::toPojo).collect(Collectors.toSet()));

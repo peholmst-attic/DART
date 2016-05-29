@@ -7,6 +7,7 @@ import net.pkhapps.dart.database.tables.records.ResourceStateDescriptorsRecord;
 import net.pkhapps.dart.messaging.handlers.RequestHandler;
 import net.pkhapps.dart.resources.messages.AllResourceStates;
 import net.pkhapps.dart.resources.messages.GetAllResourceStates;
+import net.pkhapps.dart.resources.queries.ResourceStateDescriptorQuery;
 import org.jooq.DSLContext;
 
 import java.time.Clock;
@@ -14,22 +15,34 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static net.pkhapps.dart.common.Locales.*;
-import static net.pkhapps.dart.database.tables.ResourceStateDescriptors.RESOURCE_STATE_DESCRIPTORS;
 
+/**
+ * Handler for the {@link GetAllResourceStates} message. Returns a {@link AllResourceStates} response.
+ */
 public class GetAllResourceStatesHandler extends AbstractHandler implements RequestHandler<GetAllResourceStates, AllResourceStates> {
 
-    public GetAllResourceStatesHandler(DSLContextFactory dslContextFactory, Clock clock) {
+    private final ResourceStateDescriptorQuery resourceStateDescriptorQuery;
+
+    /**
+     * Constructor
+     *
+     * @param dslContextFactory            the DSL context factory to use when creating JOOQ queries (not {@code null}).
+     * @param resourceStateDescriptorQuery the {@link ResourceStateDescriptorQuery} to use (not {@code null}).
+     * @param clock                        the clock to use for timestamps (not {@code null}).
+     */
+    public GetAllResourceStatesHandler(DSLContextFactory dslContextFactory,
+                                       ResourceStateDescriptorQuery resourceStateDescriptorQuery, Clock clock) {
         super(dslContextFactory, clock);
+        this.resourceStateDescriptorQuery = Objects.requireNonNull(resourceStateDescriptorQuery);
     }
 
     @Override
     public AllResourceStates handleRequest(GetAllResourceStates request) {
-        Objects.requireNonNull(request, "request must not be null");
-        try (final DSLContext create = ctx()) {
-            // No need to limit this query since the current database structure guarantees that only a handful of
-            // records will be returned.
-            return new AllResourceStates(now(), create.selectFrom(RESOURCE_STATE_DESCRIPTORS)
-                    .fetch().stream().map(GetAllResourceStatesHandler::toPojo).collect(Collectors.toSet()));
+        Objects.requireNonNull(request);
+        logger.trace("Handling [{}]", request);
+        try (final DSLContext ctx = ctx()) {
+            return new AllResourceStates(now(), resourceStateDescriptorQuery.findAllResourceStateDescriptors(ctx)
+                    .stream().map(GetAllResourceStatesHandler::toPojo).collect(Collectors.toSet()));
         } // Error handling higher up
     }
 

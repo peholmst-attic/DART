@@ -1,6 +1,7 @@
 package net.pkhapps.dart.resources.handlers;
 
 import net.pkhapps.dart.database.DSLContextFactory;
+import net.pkhapps.dart.database.DataSourceProperties;
 import net.pkhapps.dart.resources.messages.AllResourceCapabilities;
 import net.pkhapps.dart.resources.messages.GetAllResourceCapabilities;
 import net.pkhapps.dart.resources.queries.CapabilityQuery;
@@ -13,13 +14,17 @@ import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Integration test for {@link GetAllResourceCapabilitiesHandler}.
+ */
 public class GetAllResourceCapabilitiesHandlerIntegrationTest {
 
     private GetAllResourceCapabilitiesHandler handler;
 
     @Before
     public void setUp() {
-        handler = new GetAllResourceCapabilitiesHandler(DSLContextFactory.getInstance(), new CapabilityQuery(dataSourceProperties), Clock.systemDefaultZone());
+        handler = new GetAllResourceCapabilitiesHandler(DSLContextFactory.getInstance(),
+                new CapabilityQuery(DataSourceProperties.getInstance()), Clock.systemDefaultZone());
     }
 
     @Test
