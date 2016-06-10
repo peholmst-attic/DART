@@ -10,6 +10,7 @@ import org.jooq.SelectWhereStep;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static net.pkhapps.dart.database.tables.Capabilities.CAPABILITIES;
 import static net.pkhapps.dart.database.tables.ResourceCapabilities.RESOURCE_CAPABILITIES;
@@ -73,5 +74,20 @@ public class ResourceQuery extends AbstractQuery {
                         .on(RESOURCE_CAPABILITIES.CAPABILITY_ID.eq(CAPABILITIES.ID))
                         .where(RESOURCE_CAPABILITIES.RESOURCE_ID.eq(resourceId)),
                 QUERY_NAME_FIND_CAPABILITIES_OF_RESOURCE);
+    }
+
+    /**
+     * TODO Document me!
+     *
+     * @param ctx
+     * @param name
+     * @return
+     */
+    public Optional<ResourcesRecord> findByName(DSLContext ctx, String name) {
+        Objects.requireNonNull(ctx);
+        Objects.requireNonNull(name);
+        logger.trace("Finding resource with name [{}] using context [{}]", name, ctx);
+        return ctx.selectFrom(RESOURCES).where(RESOURCES.NAME.upper().eq(name.toUpperCase())).fetch()
+                .stream().findFirst();
     }
 }

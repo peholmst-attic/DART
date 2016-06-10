@@ -98,12 +98,21 @@
                                     <type>net.pkhapps.dart.common.Coordinates</type>
                                     <converter>net.pkhapps.dart.database.converters.CoordinatesConverter</converter>
                                 </customType>
+                                <customType>
+                                    <name>Instant</name>
+                                    <type>java.time.Instant</type>
+                                    <converter>net.pkhapps.dart.database.converters.InstantConverter</converter>
+                                </customType>
                             </customTypes>
                             <forcedTypes>
                                 <forcedType>
                                     <name>Coordinates</name>
                                     <expression>location</expression>
                                     <!--<types>geometry\(Point,4326\)</types>-->
+                                </forcedType>
+                                <forcedType>
+                                    <name>Instant</name>
+                                    <types>timestamp.*</types>
                                 </forcedType>
                             </forcedTypes>
                         </database>
