@@ -3,18 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>master-pom</artifactId>
-        <groupId>net.pkhapps.dart</groupId>
+        <artifactId>map-master-pom</artifactId>
+        <groupId>net.pkhapps.dart.map</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>database</artifactId>
-    <name>Database</name>
-
-    <properties>
-        <dart.common.version>1.0-SNAPSHOT</dart.common.version>
-    </properties>
+    <artifactId>map-database</artifactId>
+    <name>Map - Database Classes and Flyway Migrations</name>
 
     <dependencies>
         <dependency>
@@ -23,34 +19,12 @@
             <version>${dart.common.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
-
-        <!-- Database access -->
-        <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jdbc</artifactId>
-        </dependency>
-
-        <!-- Configuration -->
-        <dependency>
-            <groupId>com.netflix.archaius</groupId>
-            <artifactId>archaius-core</artifactId>
-        </dependency>
-
-        <!-- Logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
 
@@ -61,9 +35,9 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
                     <driver>org.postgresql.Driver</driver>
-                    <url>${project.jdbc.url}</url>
-                    <user>${project.jdbc.user}</user>
-                    <password>${project.jdbc.password}</password>
+                    <url>${project.jdbc.map.url}</url>
+                    <user>${project.jdbc.map.user}</user>
+                    <password>${project.jdbc.map.password}</password>
                     <baselineVersion>0</baselineVersion>
                     <baselineDescription>Base Migration</baselineDescription>
                 </configuration>
@@ -82,14 +56,14 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>${project.jdbc.url}</url>
-                        <user>${project.jdbc.user}</user>
-                        <password>${project.jdbc.password}</password>
+                        <url>${project.jdbc.map.url}</url>
+                        <user>${project.jdbc.map.user}</user>
+                        <password>${project.jdbc.map.password}</password>
                     </jdbc>
                     <generator>
                         <database>
                             <name>org.jooq.util.postgres.PostgresDatabase</name>
-                            <includes>.*</includes>
+                            <includes>nls_.*</includes>
                             <excludes>st_.*|_st.*</excludes>
                             <inputSchema>public</inputSchema>
                             <customTypes>
@@ -117,7 +91,7 @@
                             </forcedTypes>
                         </database>
                         <target>
-                            <packageName>net.pkhapps.dart.database</packageName>
+                            <packageName>net.pkhapps.dart.map.database</packageName>
                             <directory>target/generated-sources/jooq</directory>
                         </target>
                     </generator>

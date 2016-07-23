@@ -3,25 +3,25 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>master-pom</artifactId>
-        <groupId>net.pkhapps.dart</groupId>
+        <artifactId>map-master-pom</artifactId>
+        <groupId>net.pkhapps.dart.map</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>common</artifactId>
-    <name>Common Classes</name>
+    <artifactId>map-importer</artifactId>
+    <name>Map - Data Importer of free material from NLS Finland</name>
 
     <dependencies>
         <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <optional>true</optional>
+            <groupId>net.pkhapps.dart.map</groupId>
+            <artifactId>map-database</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq</artifactId>
-            <optional>true</optional>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-xml</artifactId>
+            <version>${geotools.version}</version>
         </dependency>
     </dependencies>
 </project>

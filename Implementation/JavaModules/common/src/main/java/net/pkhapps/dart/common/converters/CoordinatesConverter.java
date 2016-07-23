@@ -1,4 +1,4 @@
-package net.pkhapps.dart.database.converters;
+package net.pkhapps.dart.common.converters;
 
 import net.pkhapps.dart.common.Coordinates;
 import org.apache.commons.codec.DecoderException;
