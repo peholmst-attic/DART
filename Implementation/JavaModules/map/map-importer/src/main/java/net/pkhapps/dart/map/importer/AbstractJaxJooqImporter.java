@@ -11,7 +11,7 @@ import java.net.URI;
 /**
  * TODO Document me!
  */
-abstract class AbstractJaxJooqImporter extends AbstractJooqImporter {
+public abstract class AbstractJaxJooqImporter extends AbstractJooqImporter {
 
     private final URI source;
 
@@ -20,7 +20,7 @@ abstract class AbstractJaxJooqImporter extends AbstractJooqImporter {
     }
 
     @Override
-    void importData(DSLContext dslContext) throws Exception {
+    protected void importData(DSLContext dslContext) throws Exception {
         SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
         saxParserFactory.setNamespaceAware(true);
         SAXParser parser = saxParserFactory.newSAXParser();
@@ -29,5 +29,5 @@ abstract class AbstractJaxJooqImporter extends AbstractJooqImporter {
         xmlReader.parse(source.toString());
     }
 
-    abstract ContentHandler createContentHandler(DSLContext dslContext);
+    protected abstract ContentHandler createContentHandler(DSLContext dslContext);
 }

@@ -1,4 +1,4 @@
-package net.pkhapps.dart.map.importer;
+package net.pkhapps.dart.map.importer.nimisto;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -30,7 +30,7 @@ class NlsXsdEnumHandler<R extends TableRecord> extends DefaultHandler {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if ("enumeration".equals(localName)) {
             currentRecord = dslContext.newRecord(table);
-            currentRecord.setValue(table.field("id", Long.class), Long.valueOf(attributes.getValue("value")));
+            setId(currentRecord, table, attributes);
         } else if ("documentation".equals(localName) && currentRecord != null) {
             currentField = null;
             switch (attributes.getValue("xml:lang")) {
@@ -45,6 +45,10 @@ class NlsXsdEnumHandler<R extends TableRecord> extends DefaultHandler {
                     break;
             }
         }
+    }
+
+    protected void setId(R record, Table<R> table, Attributes attributes) {
+        record.setValue(table.field("id", Long.class), Long.valueOf(attributes.getValue("value")));
     }
 
     @Override

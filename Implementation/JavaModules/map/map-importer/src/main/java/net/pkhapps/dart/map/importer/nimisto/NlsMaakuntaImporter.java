@@ -1,6 +1,7 @@
-package net.pkhapps.dart.map.importer;
+package net.pkhapps.dart.map.importer.nimisto;
 
 import net.pkhapps.dart.map.database.tables.NlsMaakunta;
+import net.pkhapps.dart.map.importer.AbstractJaxJooqImporter;
 import org.jooq.DSLContext;
 import org.xml.sax.ContentHandler;
 
@@ -10,7 +11,7 @@ import org.xml.sax.ContentHandler;
 public class NlsMaakuntaImporter extends AbstractJaxJooqImporter {
 
     @Override
-    ContentHandler createContentHandler(DSLContext dslContext) {
+    protected ContentHandler createContentHandler(DSLContext dslContext) {
         return new NlsXsdEnumHandler<>(dslContext, NlsMaakunta.NLS_MAAKUNTA);
     }
 

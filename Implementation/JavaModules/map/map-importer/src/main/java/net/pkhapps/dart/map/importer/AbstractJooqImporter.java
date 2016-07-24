@@ -9,7 +9,7 @@ import java.sql.DriverManager;
 /**
  * TODO Document me!
  */
-abstract class AbstractJooqImporter {
+public abstract class AbstractJooqImporter {
 
     private final String url;
     private final String user;
@@ -21,7 +21,7 @@ abstract class AbstractJooqImporter {
         password = getRequiredProperty("jdbc.password");
     }
 
-    final void importData() throws Exception {
+    protected final void importData() throws Exception {
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             try (DSLContext context = DSL.using(connection)) {
                 importData(context);
@@ -29,9 +29,9 @@ abstract class AbstractJooqImporter {
         }
     }
 
-    abstract void importData(DSLContext dslContext) throws Exception;
+    protected abstract void importData(DSLContext dslContext) throws Exception;
 
-    static String getRequiredProperty(String propertyName) {
+    protected static String getRequiredProperty(String propertyName) {
         String property = System.getProperty(propertyName);
         if (property == null) {
             throw new IllegalArgumentException("Please specify the " + propertyName + " system property");
