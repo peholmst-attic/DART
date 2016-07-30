@@ -76,7 +76,7 @@ public class NlsPaikannimiImporter extends AbstractJooqImporter {
                     record.setTm35fin7Code((String) feature.getAttribute("tm35Fin7Koodi"));
                     record.setYlj7Code((String) feature.getAttribute("ylj7Koodi"));
                     record.setPp6Code((String) feature.getAttribute("pp6Koodi"));
-                    record.setNlsKuntaId(attributeValueToLong(feature.getAttribute("kuntaKoodi")));
+                    record.setNlsMunicipalityId(attributeValueToLong(feature.getAttribute("kuntaKoodi")));
                     record.setNlsSeutukuntaId(attributeValueToLong(feature.getAttribute("seutukuntaKoodi")));
                     record.setNlsMaakuntaId(attributeValueToLong(feature.getAttribute("maakuntaKoodi")));
                     record.setNlsSuuralueId(attributeValueToLong(feature.getAttribute("suuralueKoodi")));
@@ -113,34 +113,6 @@ public class NlsPaikannimiImporter extends AbstractJooqImporter {
                 runBatch(records, dslContext);
             }
             System.out.println("Inserted a total of " + totalNameCount + " names and " + totalPlaceCount + " places");
-        }
-    }
-
-    private void runBatch(List<? extends UpdatableRecord<?>> records, DSLContext dslContext) {
-        System.out.println("Batch inserting " + records.size() + " records");
-        try {
-            dslContext.batchInsert(records).execute();
-        } catch (DataAccessException ex) {
-            if (ex.getCause() instanceof BatchUpdateException) {
-                BatchUpdateException bue = (BatchUpdateException) ex.getCause();
-                bue.getNextException().printStackTrace();
-            }
-            throw ex;
-        }
-        records.clear();
-    }
-
-    private static Long attributeValueToLong(Object attributeValue) {
-        if (attributeValue == null) {
-            return null;
-        } else if (attributeValue instanceof BigInteger) {
-            return ((BigInteger) attributeValue).longValue();
-        } else if (attributeValue instanceof String) {
-            return Long.valueOf(((String) attributeValue));
-        } else if (attributeValue instanceof Long) {
-            return (Long) attributeValue;
-        } else {
-            return Long.valueOf(attributeValue.toString());
         }
     }
 

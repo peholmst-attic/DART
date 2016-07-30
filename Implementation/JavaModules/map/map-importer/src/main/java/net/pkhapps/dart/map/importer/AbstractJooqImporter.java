@@ -1,10 +1,15 @@
 package net.pkhapps.dart.map.importer;
 
 import org.jooq.DSLContext;
+import org.jooq.UpdatableRecord;
+import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
+import java.math.BigInteger;
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.List;
 
 /**
  * TODO Document me!
@@ -38,4 +43,47 @@ public abstract class AbstractJooqImporter {
         }
         return property;
     }
+
+    protected static void runBatch(List<? extends UpdatableRecord<?>> records, DSLContext dslContext) {
+        System.out.println("Batch inserting " + records.size() + " records");
+        try {
+            dslContext.batchInsert(records).execute();
+        } catch (DataAccessException ex) {
+            if (ex.getCause() instanceof BatchUpdateException) {
+                BatchUpdateException bue = (BatchUpdateException) ex.getCause();
+                bue.getNextException().printStackTrace();
+            }
+            throw ex;
+        }
+        records.clear();
+    }
+
+    protected static Long attributeValueToLong(Object attributeValue) {
+        if (attributeValue == null) {
+            return null;
+        } else if (attributeValue instanceof BigInteger) {
+            return ((BigInteger) attributeValue).longValue();
+        } else if (attributeValue instanceof String) {
+            return Long.valueOf(((String) attributeValue));
+        } else if (attributeValue instanceof Long) {
+            return (Long) attributeValue;
+        } else {
+            return Long.valueOf(attributeValue.toString());
+        }
+    }
+
+    protected static Integer attributeValueToInteger(Object attributeValue) {
+        if (attributeValue == null) {
+            return null;
+        } else if (attributeValue instanceof BigInteger) {
+            return ((BigInteger) attributeValue).intValue();
+        } else if (attributeValue instanceof String) {
+            return Integer.valueOf(((String) attributeValue));
+        } else if (attributeValue instanceof Integer) {
+            return (Integer) attributeValue;
+        } else {
+            return Integer.valueOf(attributeValue.toString());
+        }
+    }
+
 }

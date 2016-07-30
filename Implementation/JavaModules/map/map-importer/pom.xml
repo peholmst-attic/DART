@@ -27,5 +27,10 @@
             <artifactId>gt-xml</artifactId>
             <version>${geotools.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-app-schema</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
     </dependencies>
 </project>

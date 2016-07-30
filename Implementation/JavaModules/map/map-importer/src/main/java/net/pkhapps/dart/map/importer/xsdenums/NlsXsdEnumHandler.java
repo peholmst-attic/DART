@@ -1,4 +1,4 @@
-package net.pkhapps.dart.map.importer.nimisto;
+package net.pkhapps.dart.map.importer.xsdenums;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * TODO Document me!
  */
-class NlsXsdEnumHandler<R extends TableRecord> extends DefaultHandler {
+public class NlsXsdEnumHandler<R extends TableRecord> extends DefaultHandler {
 
     private final DSLContext dslContext;
     private final Table<R> table;
@@ -35,13 +35,12 @@ class NlsXsdEnumHandler<R extends TableRecord> extends DefaultHandler {
             currentField = null;
             switch (attributes.getValue("xml:lang")) {
                 case "fin":
+                case "fi-fi":
                     currentField = table.field("name_fi", String.class);
                     break;
                 case "swe":
+                case "sv-fi":
                     currentField = table.field("name_sv", String.class);
-                    break;
-                case "eng":
-                    currentField = table.field("name_en", String.class);
                     break;
             }
         }

@@ -19,6 +19,10 @@ public abstract class AbstractJaxJooqImporter extends AbstractJooqImporter {
         source = URI.create(getRequiredProperty("xsd.uri"));
     }
 
+    protected AbstractJaxJooqImporter(URI source) {
+        this.source = source;
+    }
+
     @Override
     protected void importData(DSLContext dslContext) throws Exception {
         SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();

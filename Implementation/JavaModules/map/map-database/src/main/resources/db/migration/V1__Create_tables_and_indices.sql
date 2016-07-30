@@ -3,18 +3,118 @@
 -- before running the first migration.
 --
 
-CREATE TABLE nls_kunta (
+CREATE TABLE nls_municipality (
     id bigint not null,
     name_fi varchar(200) not null,
     name_sv varchar(200) not null,
-    name_en varchar(200) not null,
     PRIMARY KEY (id)
 );
 
-CREATE INDEX nls_kunta_names ON nls_kunta (name_fi, name_sv);
-CREATE INDEX nls_kunta_name_fi ON nls_kunta (name_fi);
-CREATE INDEX nls_kunta_name_sv ON nls_kunta (name_sv);
-CREATE INDEX nls_kunta_name_en ON nls_kunta (name_en);
+CREATE INDEX nls_municipality_names ON nls_municipality (name_fi, name_sv);
+CREATE INDEX nls_municipality_name_fi ON nls_municipality (name_fi);
+CREATE INDEX nls_municipality_name_sv ON nls_municipality (name_sv);
+
+CREATE TYPE nls_road_readiness AS ENUM (
+    'in_use', -- 0
+    'under_construction', -- 1
+    'in_planning' -- 3
+);
+
+CREATE TABLE nls_road_class (
+    id bigint not null,
+    name_fi varchar(200) not null,
+    name_sv varchar(200) not null,
+    PRIMARY KEY (id)
+);
+
+CREATE TYPE nls_road_vertical_level AS ENUM (
+    'tunnel', -- -11
+    'below_surface', -- -1
+    'on_surface', -- 0
+    'above_surface_level_1', -- 1
+    'above_surface_level_2', -- 2
+    'above_surface_level_3', -- 3
+    'above_surface_level_4', -- 4
+    'above_surface_level_5', -- 5
+    'undefined' -- 10
+);
+
+CREATE TYPE nls_road_surface AS ENUM (
+    'unknown', -- 0
+    'none', -- 1
+    'durable' -- 2
+);
+
+CREATE TYPE nls_road_direction AS ENUM (
+    'two_way', -- 0
+    'one_way', -- 1
+    'one_way_reversed' --2
+);
+
+CREATE TYPE nls_road_owner_class AS ENUM (
+    'state', -- 1
+    'municipality', -- 2
+    'private' -- 3
+);
+
+CREATE TABLE nls_road (
+    gid bigint not null,
+    location_accuracy int not null,
+    altitude_accuracy int not null,
+    start_date date,
+    end_date date,
+    road_class_id bigint not null,
+    vertical_location nls_road_vertical_level not null,
+    readiness nls_road_readiness not null,
+    surface nls_road_surface not null,
+    direction nls_road_direction not null,
+    number int,
+    part_number int,
+    owner_class nls_road_owner_class not null,
+    min_address_number_left int,
+    max_address_number_left int,
+    min_address_number_right int,
+    max_address_number_right int,
+    name_sv varchar (200) not null default '',
+    name_fi varchar (200) not null default '',
+    location geometry(multipointz,4326) not null,
+    municipality_id bigint not null,
+    PRIMARY KEY (gid),
+    FOREIGN KEY (road_class_id) REFERENCES nls_road_class (id),
+    FOREIGN KEY (municipality_id) REFERENCES nls_municipality (id)
+);
+
+CREATE INDEX nls_road_names ON nls_road (name_sv, name_fi);
+CREATE INDEX nls_road_name_sv ON nls_road (name_sv);
+CREATE INDEX nls_road_name_fi ON nls_road (name_fi);
+CREATE INDEX nls_road_location ON nls_road USING gist(location);
+
+CREATE TYPE nls_address_point_class AS ENUM (
+    'address', -- 96001
+    'entry_point' -- 96002
+);
+
+CREATE TABLE nls_address_point (
+    gid bigint not null,
+    location_accuracy int not null,
+    location geometry(point,4326) not null,
+    start_date date,
+    end_date date,
+    number varchar (20) not null default '',
+    name_sv varchar (200) not null default '',
+    name_fi varchar (200) not null default '',
+    municipality_id bigint not null,
+    point_class nls_address_point_class not null,
+    PRIMARY KEY (gid),
+    FOREIGN KEY (municipality_id) REFERENCES nls_municipality (id)
+);
+
+CREATE INDEX nls_address_point_names ON nls_address_point (name_sv, name_fi);
+CREATE INDEX nls_address_point_name_sv ON nls_address_point (name_sv);
+CREATE INDEX nls_address_point_name_fi ON nls_address_point (name_fi);
+CREATE INDEX nls_address_point_location ON nls_address_point USING gist(location);
+
+--- NEEDS TO BE REFACTORED
 
 CREATE TABLE nls_suuralue (
     id bigint not null,
@@ -98,7 +198,7 @@ CREATE TABLE nls_paikka (
     tm35fin7_code varchar(200),
     ylj7_code varchar(200),
     pp6_code varchar(200),
-    nls_kunta_id bigint not null,
+    nls_municipality_id bigint not null,
     nls_seutukunta_id bigint not null,
     nls_maakunta_id bigint not null,
     nls_suuralue_id bigint not null,
@@ -109,7 +209,7 @@ CREATE TABLE nls_paikka (
     FOREIGN KEY (nls_paikkatyyppi_id) REFERENCES nls_paikkatyyppi (id),
     FOREIGN KEY (nls_paikkatyyppiryhma_id) REFERENCES nls_paikkatyyppiryhma (id),
     FOREIGN KEY (nls_paikkatyyppialaryhma_id) REFERENCES nls_paikkatyyppialaryhma (id),
-    FOREIGN KEY (nls_kunta_id) REFERENCES nls_kunta (id),
+    FOREIGN KEY (nls_municipality_id) REFERENCES nls_municipality (id),
     FOREIGN KEY (nls_seutukunta_id) REFERENCES nls_seutukunta (id),
     FOREIGN KEY (nls_maakunta_id) REFERENCES nls_maakunta (id),
     FOREIGN KEY (nls_suuralue_id) REFERENCES nls_suuralue (id)
@@ -137,3 +237,4 @@ CREATE TABLE nls_paikannimi (
 
 CREATE INDEX nls_paikannimi_name ON nls_paikannimi (name);
 CREATE INDEX nls_paikannimi_name_kieli_id ON nls_paikannimi (name, nls_kieli_id);
+

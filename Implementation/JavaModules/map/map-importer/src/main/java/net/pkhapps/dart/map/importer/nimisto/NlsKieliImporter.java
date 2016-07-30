@@ -3,6 +3,7 @@ package net.pkhapps.dart.map.importer.nimisto;
 import net.pkhapps.dart.map.database.tables.NlsKieli;
 import net.pkhapps.dart.map.database.tables.records.NlsKieliRecord;
 import net.pkhapps.dart.map.importer.AbstractJaxJooqImporter;
+import net.pkhapps.dart.map.importer.xsdenums.NlsXsdEnumHandler;
 import org.jooq.DSLContext;
 import org.jooq.Table;
 import org.xml.sax.Attributes;
