@@ -51,14 +51,8 @@ CREATE TYPE nls_road_direction AS ENUM (
     'one_way_reversed' --2
 );
 
-CREATE TYPE nls_road_owner_class AS ENUM (
-    'state', -- 1
-    'municipality', -- 2
-    'private' -- 3
-);
-
 CREATE TABLE nls_road (
-    gid bigint not null,
+    id serial not null,
     location_accuracy int not null,
     altitude_accuracy int not null,
     start_date date,
@@ -70,16 +64,15 @@ CREATE TABLE nls_road (
     direction nls_road_direction not null,
     number int,
     part_number int,
-    owner_class nls_road_owner_class not null,
     min_address_number_left int,
     max_address_number_left int,
     min_address_number_right int,
     max_address_number_right int,
     name_sv varchar (200) not null default '',
     name_fi varchar (200) not null default '',
-    location geometry(multipointz,4326) not null,
+    location geometry(linestring,4326) not null,
     municipality_id bigint not null,
-    PRIMARY KEY (gid),
+    PRIMARY KEY (id),
     FOREIGN KEY (road_class_id) REFERENCES nls_road_class (id),
     FOREIGN KEY (municipality_id) REFERENCES nls_municipality (id)
 );
@@ -95,7 +88,7 @@ CREATE TYPE nls_address_point_class AS ENUM (
 );
 
 CREATE TABLE nls_address_point (
-    gid bigint not null,
+    id serial not null,
     location_accuracy int not null,
     location geometry(point,4326) not null,
     start_date date,
@@ -105,7 +98,7 @@ CREATE TABLE nls_address_point (
     name_fi varchar (200) not null default '',
     municipality_id bigint not null,
     point_class nls_address_point_class not null,
-    PRIMARY KEY (gid),
+    PRIMARY KEY (id),
     FOREIGN KEY (municipality_id) REFERENCES nls_municipality (id)
 );
 

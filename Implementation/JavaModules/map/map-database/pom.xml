@@ -73,6 +73,11 @@
                                     <converter>net.pkhapps.dart.common.converters.CoordinatesConverter</converter>
                                 </customType>
                                 <customType>
+                                    <name>CoordinatesList</name>
+                                    <type>net.pkhapps.dart.common.CoordinatesList</type>
+                                    <converter>net.pkhapps.dart.common.converters.CoordinatesListConverter</converter>
+                                </customType>
+                                <customType>
                                     <name>Instant</name>
                                     <type>java.time.Instant</type>
                                     <converter>net.pkhapps.dart.common.converters.InstantConverter</converter>
@@ -81,8 +86,11 @@
                             <forcedTypes>
                                 <forcedType>
                                     <name>Coordinates</name>
-                                    <expression>location</expression>
-                                    <!--<types>geometry\(Point,4326\)</types>-->
+                                    <expression>public.nls_address_point.location</expression>
+                                </forcedType>
+                                <forcedType>
+                                    <name>CoordinatesList</name>
+                                    <expression>public.nls_road.location</expression>
                                 </forcedType>
                                 <forcedType>
                                     <name>Instant</name>
@@ -96,6 +104,13 @@
                         </target>
                     </generator>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                        <version>${logback.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
