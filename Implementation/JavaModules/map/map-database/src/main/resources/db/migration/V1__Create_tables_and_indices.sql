@@ -10,7 +10,6 @@ CREATE TABLE nls_municipality (
     PRIMARY KEY (id)
 );
 
-CREATE INDEX nls_municipality_names ON nls_municipality (name_fi, name_sv);
 CREATE INDEX nls_municipality_name_fi ON nls_municipality (name_fi);
 CREATE INDEX nls_municipality_name_sv ON nls_municipality (name_sv);
 
@@ -53,6 +52,7 @@ CREATE TYPE nls_road_direction AS ENUM (
 
 CREATE TABLE nls_road (
     id serial not null,
+    gid bigint not null,
     location_accuracy int not null,
     altitude_accuracy int not null,
     start_date date,
@@ -77,7 +77,7 @@ CREATE TABLE nls_road (
     FOREIGN KEY (municipality_id) REFERENCES nls_municipality (id)
 );
 
-CREATE INDEX nls_road_names ON nls_road (name_sv, name_fi);
+CREATE INDEX nls_road_gid ON nls_road (gid);
 CREATE INDEX nls_road_name_sv ON nls_road (name_sv);
 CREATE INDEX nls_road_name_fi ON nls_road (name_fi);
 CREATE INDEX nls_road_location ON nls_road USING gist(location);
@@ -89,6 +89,7 @@ CREATE TYPE nls_address_point_class AS ENUM (
 
 CREATE TABLE nls_address_point (
     id serial not null,
+    gid bigint not null,
     location_accuracy int not null,
     location geometry(point,4326) not null,
     start_date date,
@@ -102,7 +103,7 @@ CREATE TABLE nls_address_point (
     FOREIGN KEY (municipality_id) REFERENCES nls_municipality (id)
 );
 
-CREATE INDEX nls_address_point_names ON nls_address_point (name_sv, name_fi);
+CREATE INDEX nls_address_point_gid ON nls_address_point (gid);
 CREATE INDEX nls_address_point_name_sv ON nls_address_point (name_sv);
 CREATE INDEX nls_address_point_name_fi ON nls_address_point (name_fi);
 CREATE INDEX nls_address_point_location ON nls_address_point USING gist(location);

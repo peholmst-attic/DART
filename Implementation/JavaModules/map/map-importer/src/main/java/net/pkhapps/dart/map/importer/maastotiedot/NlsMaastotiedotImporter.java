@@ -6,6 +6,7 @@ import net.pkhapps.dart.map.database.tables.NlsAddressPoint;
 import net.pkhapps.dart.map.database.tables.records.NlsAddressPointRecord;
 import net.pkhapps.dart.map.importer.AbstractJooqImporter;
 import org.geotools.gml3.GMLConfiguration;
+import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xml.AppSchemaConfiguration;
 import org.geotools.xml.PullParser;
 import org.geotools.xml.resolver.SchemaCache;
@@ -38,6 +39,8 @@ public class NlsMaastotiedotImporter extends AbstractJooqImporter {
         SchemaResolver resolver = new SchemaResolver(schemaCache);
         AppSchemaConfiguration configuration = new AppSchemaConfiguration(namespaceURI, "http://xml.nls.fi/XML/Schema/Maastotietojarjestelma/MTK/201405/Maastotiedot.xsd", resolver);
         configuration.addDependency(new GMLConfiguration());
+        configuration.addDependency(new WFSConfiguration());
+
 
         try (InputStream is = new FileInputStream(dataFile)) {
             PullParser parser = new PullParser(configuration, is,
@@ -46,8 +49,10 @@ public class NlsMaastotiedotImporter extends AbstractJooqImporter {
                             "Osoitepiste", ""));
             List<UpdatableRecord<?>> records = new ArrayList<>();
             int i = 0;
-            SimpleFeature feature = (SimpleFeature) parser.parse();
+            System.out.println(parser.parse());
+            /*SimpleFeature feature = (SimpleFeature) parser.parse();
             while (feature != null) {
+                System.out.println(feature.getFeatureType().getAttributeDescriptors());
                 NlsAddressPointRecord record = dslContext.newRecord(NlsAddressPoint.NLS_ADDRESS_POINT);
                 //record.setId(feature.getID());
                 record.setLocationAccuracy(attributeValueToInteger(feature.getAttribute("sijaintitarkkuus")));
@@ -66,12 +71,13 @@ public class NlsMaastotiedotImporter extends AbstractJooqImporter {
                 ++i;
 
                 if (i % 100 == 0) {
-                    runBatch(records, dslContext);
+                 //   runBatch(records, dslContext);
                 }
+                break;
             }
             if (records.size() > 0) {
-                runBatch(records, dslContext);
-            }
+                //runBatch(records, dslContext);
+            }*/
         }
     }
 

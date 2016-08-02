@@ -1,19 +1,20 @@
 package net.pkhapps.dart.map.importer.maastotiedot;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
 import net.pkhapps.dart.common.Coordinates;
 import net.pkhapps.dart.common.CoordinatesList;
 import net.pkhapps.dart.map.database.tables.NlsRoad;
 import net.pkhapps.dart.map.database.tables.records.NlsRoadRecord;
-import net.pkhapps.dart.map.importer.xsdenums.*;
+import net.pkhapps.dart.map.importer.xsdenums.NlsRoadDirectionMapper;
+import net.pkhapps.dart.map.importer.xsdenums.NlsRoadReadinessMapper;
+import net.pkhapps.dart.map.importer.xsdenums.NlsRoadSurfaceMapper;
+import net.pkhapps.dart.map.importer.xsdenums.NlsRoadVerticalLevelMapper;
 import org.jooq.DSLContext;
-import org.opengis.feature.simple.SimpleFeature;
 
 import javax.xml.namespace.QName;
 import java.sql.Date;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO Document me!
@@ -34,35 +35,40 @@ public class NlsRoadImporter extends AbstractNlsMaastotiedotImporter<NlsRoadReco
     }
 
     @Override
-    protected NlsRoadRecord createRecord(SimpleFeature feature, DSLContext dslContext) throws Exception {
+    protected NlsRoadRecord createRecord(Map<String, Object> feature, DSLContext dslContext) throws Exception {
         NlsRoadRecord record = dslContext.newRecord(NlsRoad.NLS_ROAD);
-        record.setLocationAccuracy(attributeValueToInteger(feature.getAttribute("sijaintitarkkuus")));
-        record.setAltitudeAccuracy(attributeValueToInteger(feature.getAttribute("korkeustarkkuus")));
-        record.setStartDate((Date) feature.getAttribute("alkupvm"));
-        record.setEndDate((Date) feature.getAttribute("loppupvm"));
+        record.setGid((Long) feature.get("gid"));
+        record.setLocationAccuracy(attributeValueToInteger(feature.get("sijaintitarkkuus")));
+        record.setAltitudeAccuracy(attributeValueToInteger(feature.get("korkeustarkkuus")));
+        record.setStartDate((Date) feature.get("alkupvm"));
+        record.setEndDate((Date) feature.get("loppupvm"));
+        record.setRoadClassId(attributeValueToLong(feature.get("kohdeluokka")));
+        record.setVerticalLocation(verticalLevelMapper.toEnum(attributeValueToInteger(feature.get("tasosijainti"))));
+        record.setReadiness(readinessMapper.toEnum(attributeValueToInteger(feature.get("valmiusaste"))));
+        record.setSurface(surfaceMapper.toEnum(attributeValueToInteger(feature.get("paallyste"))));
+        record.setDirection(directionMapper.toEnum(attributeValueToInteger(feature.get("yksisuuntaisuus"))));
+        record.setNumber(attributeValueToInteger(feature.get("tienumero")));
+        record.setPartNumber(attributeValueToInteger(feature.get("tieosanumero")));
+        record.setMinAddressNumberLeft(attributeValueToInteger(feature.get("minOsoitenumeroVasen")));
+        record.setMaxAddressNumberLeft(attributeValueToInteger(feature.get("maxOsoitenumeroVasen")));
+        record.setMinAddressNumberRight(attributeValueToInteger(feature.get("minOsoitenumeroOikea")));
+        record.setMaxAddressNumberRight(attributeValueToInteger(feature.get("maxOsoitenumeroOikea")));
+        record.setNameFi(addressDataToString(feature.get("nimi_suomi")));
+        record.setNameSv(addressDataToString(feature.get("nimi_ruotsi")));
+        record.setMunicipalityId(attributeValueToLong(feature.get("kuntatunnus")));
 
-        LineString location = (LineString) feature.getAttribute("sijainti");
-        List<Coordinates> coordinatesList = new ArrayList<>(location.getNumPoints());
-        for (Coordinate c : location.getCoordinates()) {
+
+        @SuppressWarnings("unchecked")
+        List<Double> location = (List<Double>) feature.get("sijainti");
+        Long dimension = (Long) feature.get("dimension");
+
+        List<Coordinates> coordinatesList = new LinkedList<>();
+        for (int i = 0; i < location.size(); i += dimension) {
             // The coordinates are in ETRS-TM35FIN (EPSG:3067), we want to store them as WGS84
-            coordinatesList.add(toWGS84(c.x, c.y));
+            coordinatesList.add(toWGS84(location.get(i), location.get(i + 1)));
         }
         record.setLocation(new CoordinatesList(coordinatesList));
 
-        record.setRoadClassId(attributeValueToLong(feature.getAttribute("kohdeluokka")));
-        record.setVerticalLocation(verticalLevelMapper.toEnum(attributeValueToInteger(feature.getAttribute("tasosijainti"))));
-        record.setReadiness(readinessMapper.toEnum(attributeValueToInteger(feature.getAttribute("valmiusaste"))));
-        record.setSurface(surfaceMapper.toEnum(attributeValueToInteger(feature.getAttribute("paallyste"))));
-        record.setDirection(directionMapper.toEnum(attributeValueToInteger(feature.getAttribute("yksisuuntaisuus"))));
-        record.setNumber(attributeValueToInteger(feature.getAttribute("tienumero")));
-        record.setPartNumber(attributeValueToInteger(feature.getAttribute("tieosanumero")));
-        record.setMinAddressNumberLeft(attributeValueToInteger(feature.getAttribute("minOsoitenumeroVasen")));
-        record.setMaxAddressNumberLeft(attributeValueToInteger(feature.getAttribute("maxOsoitenumeroVasen")));
-        record.setMinAddressNumberRight(attributeValueToInteger(feature.getAttribute("minOsoitenumeroOikea")));
-        record.setMaxAddressNumberRight(attributeValueToInteger(feature.getAttribute("maxOsoitenumeroOikea")));
-        record.setNameFi(addressDataToString(feature.getAttribute("nimi_suomi")));
-        record.setNameSv(addressDataToString(feature.getAttribute("nimi_ruotsi")));
-        record.setMunicipalityId(attributeValueToLong(feature.getAttribute("kuntatunnus")));
         return record;
     }
 
