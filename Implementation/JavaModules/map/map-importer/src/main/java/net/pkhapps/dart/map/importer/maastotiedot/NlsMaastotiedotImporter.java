@@ -55,16 +55,16 @@ public class NlsMaastotiedotImporter extends AbstractJooqImporter {
                 System.out.println(feature.getFeatureType().getAttributeDescriptors());
                 NlsAddressPointRecord record = dslContext.newRecord(NlsAddressPoint.NLS_ADDRESS_POINT);
                 //record.setId(feature.getID());
-                record.setLocationAccuracy(attributeValueToInteger(feature.getAttribute("sijaintitarkkuus")));
+                record.setLocationAccuracy(toInteger(feature.getAttribute("sijaintitarkkuus")));
                 record.setStartDate((Date) feature.getAttribute("alkupvm"));
                 record.setEndDate((Date) feature.getAttribute("loppupvm"));
                 Point location = (Point) feature.getAttribute("sijainti");
                 record.setLocation(new Coordinates(new BigDecimal(location.getY()), new BigDecimal(location.getX())));
-                //record.setSymbolClass(attributeValueToInteger(feature.getAttribute("kohdeluokka")));
+                //record.setSymbolClass(toInteger(feature.getAttribute("kohdeluokka")));
                 record.setNumber(addressDataToString(feature.getAttribute("numero")));
                 record.setNameFi(addressDataToString(feature.getAttribute("nimi_suomi")));
                 record.setNameSv(addressDataToString(feature.getAttribute("nimi_ruotsi")));
-                record.setMunicipalityId(attributeValueToLong(feature.getAttribute("kuntatunnus")));
+                record.setMunicipalityId(toLong(feature.getAttribute("kuntatunnus")));
                 records.add(record);
 
                 feature = (SimpleFeature) parser.parse();

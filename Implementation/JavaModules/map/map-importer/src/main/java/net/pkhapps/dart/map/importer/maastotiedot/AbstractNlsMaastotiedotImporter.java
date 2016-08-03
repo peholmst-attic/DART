@@ -25,18 +25,36 @@ import java.util.Map;
 
 /**
  * TODO Document me!
+ * @see <a href="http://www.maanmittauslaitos.fi/en/">NLS</a>
  */
 public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<R>> extends AbstractJooqImporter {
 
+    /**
+     * Namespace URI for the GML used by the NLS terrain database ("maastotietojärjestelmä").
+     */
     protected static final String NAMESPACE_URI = "http://xml.nls.fi/XML/Namespace/Maastotietojarjestelma/SiirtotiedostonMalli/2011-02";
+    /**
+     * The ETRS-TM35FIN coordinate reference system. All the material from the NLS use it.
+     */
     protected final CoordinateReferenceSystem ETRS_TM35FIN;
+    /**
+     * The WGS84 coordinate reference system. This is used by DART everywhere.
+     */
     protected final CoordinateReferenceSystem WGS84;
+    /**
+     * Transform for transforming from the ETRS-TM35FIN coordinate reference system to WGS84.
+     */
     protected final MathTransform transform;
-
 
     private final AppSchemaConfiguration configuration;
 
-    public AbstractNlsMaastotiedotImporter() throws Exception {
+    /**
+     * Creates the importer, resolving the GML schema and storing the downloaded XSD files in a temporary directory.
+     * The actual importing must be done by invoking {@link #importData()}.
+     *
+     * @throws Exception if something goes wrong.
+     */
+    protected AbstractNlsMaastotiedotImporter() throws Exception {
         File tempFile = File.createTempFile("DART-NLS-IMPORTER", ".txt");
         SchemaCache schemaCache = new SchemaCache(tempFile.getParentFile(), true);
         SchemaResolver resolver = new SchemaResolver(schemaCache);
@@ -53,6 +71,7 @@ public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<
 
     @Override
     protected void importData(DSLContext dslContext) throws Exception {
+        // TODO Replace with system property or similar
         File dataDirectory = new File("/Users/petterprivate/Google Drive/Maps/maastotietokanta_tiesto");
         if (!dataDirectory.isDirectory()) {
             throw new IllegalArgumentException("Not a directory: " + dataDirectory.getCanonicalPath());
@@ -85,6 +104,11 @@ public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<
         }
     }
 
+    /**
+     * @param inputStream
+     * @param dslContext
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
     protected void importData(InputStream inputStream, DSLContext dslContext) throws Exception {
         PullParser parser = new PullParser(configuration, inputStream, getFeatureQName());
@@ -105,10 +129,23 @@ public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<
         System.out.printf("Imported %d record(s)%n", count);
     }
 
+    /**
+     * @return
+     */
     protected abstract QName getFeatureQName();
 
+    /**
+     * @param feature
+     * @param dslContext
+     * @return
+     * @throws Exception
+     */
     protected abstract R createRecord(Map<String, Object> feature, DSLContext dslContext) throws Exception;
 
+    /**
+     * @param addressData
+     * @return
+     */
     protected static String addressDataToString(Object addressData) {
         if (addressData instanceof Map) {
             return (String) ((Map) addressData).get(null);
@@ -119,7 +156,13 @@ public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<
         }
     }
 
-    protected Coordinates toWGS84(double x, double y) throws Exception {
+    /**
+     * @param x
+     * @param y
+     * @return
+     * @throws Exception
+     */
+    protected Coordinates fromTM35FINtoWGS84(double x, double y) throws Exception {
         DirectPosition2D source = new DirectPosition2D(x, y);
         DirectPosition2D destination = new DirectPosition2D();
         transform.transform(source, destination);

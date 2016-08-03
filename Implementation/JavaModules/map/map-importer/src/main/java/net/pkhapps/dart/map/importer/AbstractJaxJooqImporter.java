@@ -16,7 +16,7 @@ public abstract class AbstractJaxJooqImporter extends AbstractJooqImporter {
     private final URI source;
 
     public AbstractJaxJooqImporter() {
-        source = URI.create(getRequiredProperty("xsd.uri"));
+        source = URI.create(getRequiredProperty("source"));
     }
 
     protected AbstractJaxJooqImporter(URI source) {

@@ -14,7 +14,6 @@ import org.geotools.xml.PullParser;
 import org.geotools.xs.XSConfiguration;
 import org.jooq.DSLContext;
 import org.jooq.UpdatableRecord;
-import org.jooq.exception.DataAccessException;
 import org.opengis.feature.simple.SimpleFeature;
 
 import javax.xml.namespace.QName;
@@ -23,7 +22,6 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
-import java.sql.BatchUpdateException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -60,26 +58,26 @@ public class NlsPaikannimiImporter extends AbstractJooqImporter {
             int i = 0;
             SimpleFeature feature = (SimpleFeature) parser.parse();
             while (feature != null) {
-                Long nameId = attributeValueToLong(feature.getAttribute("paikannimiID"));
-                Long placeId = attributeValueToLong(feature.getAttribute("paikannimiID"));
+                Long nameId = toLong(feature.getAttribute("paikannimiID"));
+                Long placeId = toLong(feature.getAttribute("paikannimiID"));
 
                 if (usedPlaceIds.add(placeId)) {
                     NlsPaikkaRecord record = dslContext.newRecord(NlsPaikka.NLS_PAIKKA);
                     // TODO boundedBy
                     record.setId(placeId);
-                    record.setNlsPaikkatyyppiId(attributeValueToLong(feature.getAttribute("paikkatyyppiKoodi")));
-                    record.setNlsPaikkatyyppiryhmaId(attributeValueToLong(feature.getAttribute("paikkatyyppiryhmaKoodi")));
-                    record.setNlsPaikkatyyppialaryhmaId(attributeValueToLong(feature.getAttribute("paikkatyyppialaryhmaKoodi")));
+                    record.setNlsPaikkatyyppiId(toLong(feature.getAttribute("paikkatyyppiKoodi")));
+                    record.setNlsPaikkatyyppiryhmaId(toLong(feature.getAttribute("paikkatyyppiryhmaKoodi")));
+                    record.setNlsPaikkatyyppialaryhmaId(toLong(feature.getAttribute("paikkatyyppialaryhmaKoodi")));
                     Point location = (Point) feature.getAttribute("paikkaSijainti");
                     record.setLocation(new Coordinates(new BigDecimal(location.getY()), new BigDecimal(location.getX())));
                     record.setAltitude(((BigInteger) feature.getAttribute("paikkaKorkeus")).intValue());
                     record.setTm35fin7Code((String) feature.getAttribute("tm35Fin7Koodi"));
                     record.setYlj7Code((String) feature.getAttribute("ylj7Koodi"));
                     record.setPp6Code((String) feature.getAttribute("pp6Koodi"));
-                    record.setNlsMunicipalityId(attributeValueToLong(feature.getAttribute("kuntaKoodi")));
-                    record.setNlsSeutukuntaId(attributeValueToLong(feature.getAttribute("seutukuntaKoodi")));
-                    record.setNlsMaakuntaId(attributeValueToLong(feature.getAttribute("maakuntaKoodi")));
-                    record.setNlsSuuralueId(attributeValueToLong(feature.getAttribute("suuralueKoodi")));
+                    record.setNlsMunicipalityId(toLong(feature.getAttribute("kuntaKoodi")));
+                    record.setNlsSeutukuntaId(toLong(feature.getAttribute("seutukuntaKoodi")));
+                    record.setNlsMaakuntaId(toLong(feature.getAttribute("maakuntaKoodi")));
+                    record.setNlsSuuralueId(toLong(feature.getAttribute("suuralueKoodi")));
                     // TODO mittakaavarelevanssiKoodi
                     record.setCreated(((Timestamp) feature.getAttribute("paikkaLuontiAika")).toInstant());
                     record.setModified(((Timestamp) feature.getAttribute("paikkaMuutosAika")).toInstant());
@@ -94,8 +92,8 @@ public class NlsPaikannimiImporter extends AbstractJooqImporter {
                     record.setModified(((Timestamp) feature.getAttribute("paikannimiMuutosAika")).toInstant());
                     record.setName((String) feature.getAttribute("kirjoitusasu"));
                     record.setNlsKieliId((String) feature.getAttribute("kieliKoodi"));
-                    record.setNlsKieliVirallisuusId(attributeValueToLong(feature.getAttribute("kieliVirallisuusKoodi")));
-                    record.setNlsKieliEnemmistoId(attributeValueToLong(feature.getAttribute("kieliEnemmistoKoodi")));
+                    record.setNlsKieliVirallisuusId(toLong(feature.getAttribute("kieliVirallisuusKoodi")));
+                    record.setNlsKieliEnemmistoId(toLong(feature.getAttribute("kieliEnemmistoKoodi")));
                     record.setNlsPaikkaId(placeId);
                     // TODO Status, lähde, rinnakkaisnimi
                     records.add(record);

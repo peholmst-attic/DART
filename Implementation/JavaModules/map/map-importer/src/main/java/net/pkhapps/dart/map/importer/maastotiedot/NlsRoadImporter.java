@@ -38,24 +38,24 @@ public class NlsRoadImporter extends AbstractNlsMaastotiedotImporter<NlsRoadReco
     protected NlsRoadRecord createRecord(Map<String, Object> feature, DSLContext dslContext) throws Exception {
         NlsRoadRecord record = dslContext.newRecord(NlsRoad.NLS_ROAD);
         record.setGid((Long) feature.get("gid"));
-        record.setLocationAccuracy(attributeValueToInteger(feature.get("sijaintitarkkuus")));
-        record.setAltitudeAccuracy(attributeValueToInteger(feature.get("korkeustarkkuus")));
+        record.setLocationAccuracy(toInteger(feature.get("sijaintitarkkuus")));
+        record.setAltitudeAccuracy(toInteger(feature.get("korkeustarkkuus")));
         record.setStartDate((Date) feature.get("alkupvm"));
         record.setEndDate((Date) feature.get("loppupvm"));
-        record.setRoadClassId(attributeValueToLong(feature.get("kohdeluokka")));
-        record.setVerticalLocation(verticalLevelMapper.toEnum(attributeValueToInteger(feature.get("tasosijainti"))));
-        record.setReadiness(readinessMapper.toEnum(attributeValueToInteger(feature.get("valmiusaste"))));
-        record.setSurface(surfaceMapper.toEnum(attributeValueToInteger(feature.get("paallyste"))));
-        record.setDirection(directionMapper.toEnum(attributeValueToInteger(feature.get("yksisuuntaisuus"))));
-        record.setNumber(attributeValueToInteger(feature.get("tienumero")));
-        record.setPartNumber(attributeValueToInteger(feature.get("tieosanumero")));
-        record.setMinAddressNumberLeft(attributeValueToInteger(feature.get("minOsoitenumeroVasen")));
-        record.setMaxAddressNumberLeft(attributeValueToInteger(feature.get("maxOsoitenumeroVasen")));
-        record.setMinAddressNumberRight(attributeValueToInteger(feature.get("minOsoitenumeroOikea")));
-        record.setMaxAddressNumberRight(attributeValueToInteger(feature.get("maxOsoitenumeroOikea")));
+        record.setRoadClassId(toLong(feature.get("kohdeluokka")));
+        record.setVerticalLocation(verticalLevelMapper.toEnum(toInteger(feature.get("tasosijainti"))));
+        record.setReadiness(readinessMapper.toEnum(toInteger(feature.get("valmiusaste"))));
+        record.setSurface(surfaceMapper.toEnum(toInteger(feature.get("paallyste"))));
+        record.setDirection(directionMapper.toEnum(toInteger(feature.get("yksisuuntaisuus"))));
+        record.setNumber(toInteger(feature.get("tienumero")));
+        record.setPartNumber(toInteger(feature.get("tieosanumero")));
+        record.setMinAddressNumberLeft(toInteger(feature.get("minOsoitenumeroVasen")));
+        record.setMaxAddressNumberLeft(toInteger(feature.get("maxOsoitenumeroVasen")));
+        record.setMinAddressNumberRight(toInteger(feature.get("minOsoitenumeroOikea")));
+        record.setMaxAddressNumberRight(toInteger(feature.get("maxOsoitenumeroOikea")));
         record.setNameFi(addressDataToString(feature.get("nimi_suomi")));
         record.setNameSv(addressDataToString(feature.get("nimi_ruotsi")));
-        record.setMunicipalityId(attributeValueToLong(feature.get("kuntatunnus")));
+        record.setMunicipalityId(toLong(feature.get("kuntatunnus")));
 
 
         @SuppressWarnings("unchecked")
@@ -65,7 +65,7 @@ public class NlsRoadImporter extends AbstractNlsMaastotiedotImporter<NlsRoadReco
         List<Coordinates> coordinatesList = new LinkedList<>();
         for (int i = 0; i < location.size(); i += dimension) {
             // The coordinates are in ETRS-TM35FIN (EPSG:3067), we want to store them as WGS84
-            coordinatesList.add(toWGS84(location.get(i), location.get(i + 1)));
+            coordinatesList.add(fromTM35FINtoWGS84(location.get(i), location.get(i + 1)));
         }
         record.setLocation(new CoordinatesList(coordinatesList));
 
