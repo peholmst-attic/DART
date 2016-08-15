@@ -2,16 +2,14 @@ package net.pkhapps.dart.map.importer.maastotiedot;
 
 import net.pkhapps.dart.common.Coordinates;
 import net.pkhapps.dart.map.importer.AbstractJooqImporter;
+import net.pkhapps.dart.map.importer.CSR;
 import org.geotools.geometry.DirectPosition2D;
-import org.geotools.referencing.CRS;
 import org.geotools.xml.AppSchemaConfiguration;
 import org.geotools.xml.PullParser;
 import org.geotools.xml.resolver.SchemaCache;
 import org.geotools.xml.resolver.SchemaResolver;
 import org.jooq.DSLContext;
 import org.jooq.UpdatableRecord;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 import javax.xml.namespace.QName;
 import java.io.File;
@@ -25,6 +23,7 @@ import java.util.Map;
 
 /**
  * TODO Document me!
+ *
  * @see <a href="http://www.maanmittauslaitos.fi/en/">NLS</a>
  */
 public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<R>> extends AbstractJooqImporter {
@@ -33,18 +32,6 @@ public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<
      * Namespace URI for the GML used by the NLS terrain database ("maastotietojärjestelmä").
      */
     protected static final String NAMESPACE_URI = "http://xml.nls.fi/XML/Namespace/Maastotietojarjestelma/SiirtotiedostonMalli/2011-02";
-    /**
-     * The ETRS-TM35FIN coordinate reference system. All the material from the NLS use it.
-     */
-    protected final CoordinateReferenceSystem ETRS_TM35FIN;
-    /**
-     * The WGS84 coordinate reference system. This is used by DART everywhere.
-     */
-    protected final CoordinateReferenceSystem WGS84;
-    /**
-     * Transform for transforming from the ETRS-TM35FIN coordinate reference system to WGS84.
-     */
-    protected final MathTransform transform;
 
     private final AppSchemaConfiguration configuration;
 
@@ -64,9 +51,6 @@ public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<
         // Intentionally left out the GMLConfiguration, forcing the parser to return
         // maps instead. This is because some important information was left out from
         // the SimpleFeature, but included in the map representation.
-        ETRS_TM35FIN = CRS.parseWKT("PROJCS[\"ETRS89 / ETRS-TM35FIN\",GEOGCS[\"ETRS89\",DATUM[\"European_Terrestrial_Reference_System_1989\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6258\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4258\"]],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",27],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AUTHORITY[\"EPSG\",\"3067\"],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]");
-        WGS84 = CRS.parseWKT("GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]");
-        transform = CRS.findMathTransform(ETRS_TM35FIN, WGS84, true);
     }
 
     @Override
@@ -165,7 +149,7 @@ public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<
     protected Coordinates fromTM35FINtoWGS84(double x, double y) throws Exception {
         DirectPosition2D source = new DirectPosition2D(x, y);
         DirectPosition2D destination = new DirectPosition2D();
-        transform.transform(source, destination);
+        CSR.transform.transform(source, destination);
         return new Coordinates(new BigDecimal(destination.getY()), new BigDecimal(destination.getX()));
     }
 }
