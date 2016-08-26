@@ -1,5 +1,5 @@
 --
--- Remember to run CREATE EXTENSION postgis; in the database and creating a baseline
+-- Remember to run CREATE EXTENSION postgis;CREATE EXTENSION postgis_topology; in the database and creating a baseline
 -- before running the first migration.
 --
 
@@ -51,7 +51,7 @@ CREATE TYPE nls_road_direction AS ENUM (
 );
 
 CREATE TABLE nls_road (
-    id serial not null,
+    id bigserial not null,
     gid bigint not null,
     location_accuracy int not null,
     altitude_accuracy int not null,
@@ -88,7 +88,7 @@ CREATE TYPE nls_address_point_class AS ENUM (
 );
 
 CREATE TABLE nls_address_point (
-    id serial not null,
+    id bigserial not null,
     gid bigint not null,
     location_accuracy int not null,
     location geometry(point,4326) not null,
@@ -107,6 +107,21 @@ CREATE INDEX nls_address_point_gid ON nls_address_point (gid);
 CREATE INDEX nls_address_point_name_sv ON nls_address_point (name_sv);
 CREATE INDEX nls_address_point_name_fi ON nls_address_point (name_fi);
 CREATE INDEX nls_address_point_location ON nls_address_point USING gist(location);
+
+CREATE TABLE nls_map_1_5000 (
+  id bigserial not null,
+  rast raster,
+  PRIMARY KEY (id),
+  CONSTRAINT enforce_height_rast CHECK (st_height(rast) = 100),
+  CONSTRAINT enforce_nodata_values_rast CHECK (_raster_constraint_nodata_values(rast) = '{NULL,NULL,NULL}'::numeric[]),
+  CONSTRAINT enforce_num_bands_rast CHECK (st_numbands(rast) = 3),
+  CONSTRAINT enforce_out_db_rast CHECK (_raster_constraint_out_db(rast) = '{f,f,f}'::boolean[]),
+  CONSTRAINT enforce_pixel_types_rast CHECK (_raster_constraint_pixel_types(rast) = '{16BUI,16BUI,16BUI}'::text[]),
+  CONSTRAINT enforce_srid_rast CHECK (st_srid(rast) = 4326),
+  CONSTRAINT enforce_width_rast CHECK (st_width(rast) = 100)
+);
+
+CREATE INDEX nls_map_1_5000_st_convexhull ON nls_map_1_5000 USING gist(st_convexhull(rast));
 
 --- NEEDS TO BE REFACTORED
 

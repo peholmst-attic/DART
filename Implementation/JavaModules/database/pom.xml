@@ -108,7 +108,6 @@
                                 <forcedType>
                                     <name>Coordinates</name>
                                     <expression>location</expression>
-                                    <!--<types>geometry\(Point,4326\)</types>-->
                                 </forcedType>
                                 <forcedType>
                                     <name>Instant</name>

@@ -82,6 +82,11 @@
                                     <type>java.time.Instant</type>
                                     <converter>net.pkhapps.dart.common.converters.InstantConverter</converter>
                                 </customType>
+                                <customType>
+                                    <name>Raster</name>
+                                    <type>net.pkhapps.dart.common.Raster</type>
+                                    <binding>net.pkhapps.dart.common.converters.RasterBinding</binding>
+                                </customType>
                             </customTypes>
                             <forcedTypes>
                                 <forcedType>
@@ -95,6 +100,10 @@
                                 <forcedType>
                                     <name>Instant</name>
                                     <types>timestamp.*</types>
+                                </forcedType>
+                                <forcedType>
+                                    <name>Raster</name>
+                                    <expression>rast</expression>
                                 </forcedType>
                             </forcedTypes>
                         </database>
