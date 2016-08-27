@@ -1,5 +1,6 @@
 package net.pkhapps.dart.common;
 
+import java.awt.*;
 import java.awt.image.IndexColorModel;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -156,19 +157,19 @@ public class Raster implements Serializable {
             return this;
         }
 
-        public Builder withRaster(java.awt.image.Raster raster, int band, IndexColorModel colorModel) {
+        public Builder withRaster(java.awt.image.Raster raster, Rectangle r, int band, IndexColorModel colorModel) {
             if (width != -1 || height != -1) {
                 throw new IllegalArgumentException("Size has already been set, use withBand instead");
             }
-            width = (short) raster.getWidth();
-            height = (short) raster.getHeight();
+            width = (short) r.width;
+            height = (short) r.height;
 
             for (PixelComponent component : PixelComponent.values()) {
                 byte[] data = new byte[width * height * Short.BYTES];
                 ByteBuffer buf = ByteBuffer.wrap(data);
                 for (int x = 0; x < width; ++x) {
                     for (int y = 0; y < height; ++y) {
-                        int sample = raster.getSample(x, y, band);
+                        int sample = raster.getSample(x + r.x, y + r.y, band);
                         short pixelValue = 0x00;
                         switch (component) {
                             case RED:

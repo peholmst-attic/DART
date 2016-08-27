@@ -24,6 +24,11 @@ public class NlsMunicipalityImporter extends AbstractJaxJooqImporter {
     }
 
     public static void main(String[] args) throws Exception {
+        // TODO Remove
+        System.setProperty("jdbc.url", "jdbc:postgresql:dart_map");
+        System.setProperty("jdbc.user", "dart");
+        System.setProperty("jdbc.password", "dart");
+
         new NlsMunicipalityImporter().importData();
     }
 }

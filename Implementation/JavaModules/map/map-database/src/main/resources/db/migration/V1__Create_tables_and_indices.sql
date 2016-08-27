@@ -111,6 +111,9 @@ CREATE INDEX nls_address_point_location ON nls_address_point USING gist(location
 CREATE TABLE nls_map_1_5000 (
   id bigserial not null,
   rast raster,
+  filename varchar (200) not null,
+  tile_x int not null,
+  tile_y int not null,
   PRIMARY KEY (id),
   CONSTRAINT enforce_height_rast CHECK (st_height(rast) = 100),
   CONSTRAINT enforce_nodata_values_rast CHECK (_raster_constraint_nodata_values(rast) = '{NULL,NULL,NULL}'::numeric[]),
@@ -122,8 +125,106 @@ CREATE TABLE nls_map_1_5000 (
 );
 
 CREATE INDEX nls_map_1_5000_st_convexhull ON nls_map_1_5000 USING gist(st_convexhull(rast));
+CREATE INDEX nls_map_1_5000_filename_tile_x_y ON nls_map_1_5000 (filename, tile_x, tile_y);
 
---- NEEDS TO BE REFACTORED
+CREATE TABLE nls_map_1_10000 (
+  id bigserial not null,
+  rast raster,
+  filename varchar (200) not null,
+  tile_x int not null,
+  tile_y int not null,
+  PRIMARY KEY (id),
+  CONSTRAINT enforce_height_rast CHECK (st_height(rast) = 100),
+  CONSTRAINT enforce_nodata_values_rast CHECK (_raster_constraint_nodata_values(rast) = '{NULL,NULL,NULL}'::numeric[]),
+  CONSTRAINT enforce_num_bands_rast CHECK (st_numbands(rast) = 3),
+  CONSTRAINT enforce_out_db_rast CHECK (_raster_constraint_out_db(rast) = '{f,f,f}'::boolean[]),
+  CONSTRAINT enforce_pixel_types_rast CHECK (_raster_constraint_pixel_types(rast) = '{16BUI,16BUI,16BUI}'::text[]),
+  CONSTRAINT enforce_srid_rast CHECK (st_srid(rast) = 4326),
+  CONSTRAINT enforce_width_rast CHECK (st_width(rast) = 100)
+);
+
+CREATE INDEX nls_map_1_10000_st_convexhull ON nls_map_1_10000 USING gist(st_convexhull(rast));
+CREATE INDEX nls_map_1_10000_filename_tile_x_y ON nls_map_1_10000 (filename, tile_x, tile_y);
+
+CREATE TABLE nls_map_1_20000 (
+  id bigserial not null,
+  rast raster,
+  filename varchar (200) not null,
+  tile_x int not null,
+  tile_y int not null,
+  PRIMARY KEY (id),
+  CONSTRAINT enforce_height_rast CHECK (st_height(rast) = 100),
+  CONSTRAINT enforce_nodata_values_rast CHECK (_raster_constraint_nodata_values(rast) = '{NULL,NULL,NULL}'::numeric[]),
+  CONSTRAINT enforce_num_bands_rast CHECK (st_numbands(rast) = 3),
+  CONSTRAINT enforce_out_db_rast CHECK (_raster_constraint_out_db(rast) = '{f,f,f}'::boolean[]),
+  CONSTRAINT enforce_pixel_types_rast CHECK (_raster_constraint_pixel_types(rast) = '{16BUI,16BUI,16BUI}'::text[]),
+  CONSTRAINT enforce_srid_rast CHECK (st_srid(rast) = 4326),
+  CONSTRAINT enforce_width_rast CHECK (st_width(rast) = 100)
+);
+
+CREATE INDEX nls_map_1_20000_st_convexhull ON nls_map_1_20000 USING gist(st_convexhull(rast));
+CREATE INDEX nls_map_1_20000_filename_tile_x_y ON nls_map_1_20000 (filename, tile_x, tile_y);
+
+CREATE TABLE nls_map_1_40000 (
+  id bigserial not null,
+  rast raster,
+  filename varchar (200) not null,
+  tile_x int not null,
+  tile_y int not null,
+  PRIMARY KEY (id),
+  CONSTRAINT enforce_height_rast CHECK (st_height(rast) = 100),
+  CONSTRAINT enforce_nodata_values_rast CHECK (_raster_constraint_nodata_values(rast) = '{NULL,NULL,NULL}'::numeric[]),
+  CONSTRAINT enforce_num_bands_rast CHECK (st_numbands(rast) = 3),
+  CONSTRAINT enforce_out_db_rast CHECK (_raster_constraint_out_db(rast) = '{f,f,f}'::boolean[]),
+  CONSTRAINT enforce_pixel_types_rast CHECK (_raster_constraint_pixel_types(rast) = '{16BUI,16BUI,16BUI}'::text[]),
+  CONSTRAINT enforce_srid_rast CHECK (st_srid(rast) = 4326),
+  CONSTRAINT enforce_width_rast CHECK (st_width(rast) = 100)
+);
+
+CREATE INDEX nls_map_1_40000_st_convexhull ON nls_map_1_40000 USING gist(st_convexhull(rast));
+CREATE INDEX nls_map_1_40000_filename_tile_x_y ON nls_map_1_40000 (filename, tile_x, tile_y);
+
+CREATE TABLE nls_map_1_80000 (
+  id bigserial not null,
+  rast raster,
+  filename varchar (200) not null,
+  tile_x int not null,
+  tile_y int not null,
+  PRIMARY KEY (id),
+  CONSTRAINT enforce_height_rast CHECK (st_height(rast) = 100),
+  CONSTRAINT enforce_nodata_values_rast CHECK (_raster_constraint_nodata_values(rast) = '{NULL,NULL,NULL}'::numeric[]),
+  CONSTRAINT enforce_num_bands_rast CHECK (st_numbands(rast) = 3),
+  CONSTRAINT enforce_out_db_rast CHECK (_raster_constraint_out_db(rast) = '{f,f,f}'::boolean[]),
+  CONSTRAINT enforce_pixel_types_rast CHECK (_raster_constraint_pixel_types(rast) = '{16BUI,16BUI,16BUI}'::text[]),
+  CONSTRAINT enforce_srid_rast CHECK (st_srid(rast) = 4326),
+  CONSTRAINT enforce_width_rast CHECK (st_width(rast) = 100)
+);
+
+CREATE INDEX nls_map_1_80000_st_convexhull ON nls_map_1_80000 USING gist(st_convexhull(rast));
+CREATE INDEX nls_map_1_80000_filename_tile_x_y ON nls_map_1_80000 (filename, tile_x, tile_y);
+
+CREATE TABLE nls_map_1_160000 (
+  id bigserial not null,
+  rast raster,
+  filename varchar (200) not null,
+  tile_x int not null,
+  tile_y int not null,
+  PRIMARY KEY (id),
+  CONSTRAINT enforce_height_rast CHECK (st_height(rast) = 100),
+  CONSTRAINT enforce_nodata_values_rast CHECK (_raster_constraint_nodata_values(rast) = '{NULL,NULL,NULL}'::numeric[]),
+  CONSTRAINT enforce_num_bands_rast CHECK (st_numbands(rast) = 3),
+  CONSTRAINT enforce_out_db_rast CHECK (_raster_constraint_out_db(rast) = '{f,f,f}'::boolean[]),
+  CONSTRAINT enforce_pixel_types_rast CHECK (_raster_constraint_pixel_types(rast) = '{16BUI,16BUI,16BUI}'::text[]),
+  CONSTRAINT enforce_srid_rast CHECK (st_srid(rast) = 4326),
+  CONSTRAINT enforce_width_rast CHECK (st_width(rast) = 100)
+);
+
+CREATE INDEX nls_map_1_160000_st_convexhull ON nls_map_1_160000 USING gist(st_convexhull(rast));
+CREATE INDEX nls_map_1_160000_filename_tile_x_y ON nls_map_1_160000 (filename, tile_x, tile_y);
+
+-- TODO Map for 1:320000, cannot have 100X100 tiles
+
+--- TODO NEEDS TO BE REFACTORED
 
 CREATE TABLE nls_suuralue (
     id bigint not null,
