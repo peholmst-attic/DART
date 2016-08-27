@@ -1,0 +1,24 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="municipality-selector">
+    <template>
+        <style>
+        </style>
+        <input type="text" id="query"/>
+        <select id="result" size="3"></select>
+    </template>
+    <script>
+        Polymer({
+            is: 'municipality-selector',
+
+            _mapService: null,
+
+            ready: function() {
+                this._mapService = document.querySelector("map-service");
+                if (!this._mapService) {
+                    throw "The document does not have a <map-service> element";
+                }
+            }
+        });
+    </script>
+</dom-module>

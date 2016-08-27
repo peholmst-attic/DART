@@ -1,0 +1,11 @@
+{
+  "name": "dart-dispatcher",
+  "private": true,
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "vaadin-grid": "^1.1.0",
+    "vaadin-combo-box": "^1.1.1"
+  },
+  "devDependencies": [],
+  "ignore": []
+}

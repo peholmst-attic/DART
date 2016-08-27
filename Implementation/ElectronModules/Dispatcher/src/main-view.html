@@ -1,0 +1,72 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="ticket-form.html">
+
+<dom-module id="main-view">
+    <template>
+        <style>
+            :host {
+                background-color: white;
+                display: block;
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+            }
+
+            #header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                background: #eee;
+            }
+
+            #header .appName {
+                font-size: 25px;
+                text-shadow: 0px 1px 1px #ccc;
+                font-weight: 600;
+                color: #333;
+                padding: 5px 10px;
+            }
+
+            #header .userName {
+                margin-left: auto;
+                color: #333;
+            }
+
+            #header .actionBar {
+                padding: 0px 10px;
+            }
+
+            #header button {
+                margin-right: 5px;
+            }
+        </style>
+        <div id="header">
+            <span class="appName">DART Dispatcher</span>
+            <span class="userName">Dorothy Dispatcher</span>
+            <span class="actionBar">
+                <button id="newTicket" class="friendly">New Ticket</button>
+                <button id="settings">Settings</button>
+                <button id="exit">Exit</button>
+            </span>
+        </div>
+        <ticket-form id="ticket-form"></ticket-form>
+        <div id="ticket-resource-list">
+            TICKET RESOURCES
+        </div>
+        <div id="dispatch-destination-list">
+            DISPATCH DESTINATIONS
+        </div>
+        <div id="ticket-list">
+            TICKET LIST
+        </div>
+        <div id="map-browser">
+            MAP BROWSER
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'main-view'
+        });
+    </script>
+</dom-module>

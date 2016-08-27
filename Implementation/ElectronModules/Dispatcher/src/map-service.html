@@ -1,0 +1,60 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<script>
+    (function() {
+        var Client = require('pg').Client;
+        var MapService = {
+
+            _client: null,
+
+            init: function(user, password, database, host = 'localhost', port = 5432) {
+                console.log('Connecting to map database ' + database + '@' + host + ':' + port + ' as user ' + user);
+                this._client = new Client({
+                    user: user,
+                    password: password,
+                    database: database,
+                    host: host,
+                    port: port
+                });
+                this._client.connect();
+            },
+
+            destroy: function() {
+                if (this._client) {
+                    this._client.end();
+                    this._client = null;
+                }
+            },
+
+            findMunicipalities: function(namePrefix) {
+                console.log("Finding municipalities starting with " + namePrefix);
+            }
+        };
+
+        Polymer({
+            is: 'map-service',
+
+            properties: {
+                user: String,
+                password: String,
+                database: String,
+                host: {
+                    type: String,
+                    value: 'localhost'
+                },
+                port: {
+                    type: Number,
+                    value: 5432
+                }
+            },
+
+            ready: function() {
+                MapService.init(this.user, this.password, this.database, this.host, this.port);
+            },
+
+            findMunicipality: function(namePrefix, callback) {
+
+            }
+        });
+    })();
+</script>
+</dom-module>
