@@ -6,27 +6,72 @@
 
             _client: null,
 
+            get client() {
+                if (!this._client) {
+                    throw 'MapService has not been properly initialized';
+                } else {
+                    return this._client;
+                }
+            },
+
+            set client(client) {
+                this._client = client;
+            },
+
             init: function(user, password, database, host = 'localhost', port = 5432) {
                 console.log('Connecting to map database ' + database + '@' + host + ':' + port + ' as user ' + user);
-                this._client = new Client({
+                this.client = new Client({
                     user: user,
                     password: password,
                     database: database,
                     host: host,
                     port: port
                 });
-                this._client.connect();
+                this.client.connect();
             },
 
             destroy: function() {
-                if (this._client) {
-                    this._client.end();
-                    this._client = null;
+                this.client.end();
+                this.client = null;
+            },
+
+            findMunicipalities: function(namePrefix, callback) {
+                if (namePrefix.length < 2) {
+                    // No query if the name prefix is too short
+                    callback([]);
+                } else {
+                    this.client.query('SELECT id,name_fi,name_sv ' +
+                            'FROM nls_municipality ' +
+                            'WHERE UPPER(name_fi) LIKE $1 OR UPPER(name_sv) LIKE $1 ' +
+                            'ORDER BY name_fi, name_sv',
+                        [namePrefix.toUpperCase() + '%'],
+                        function(error, result) {
+                            if (error) {
+                                console.log('An error occurred while finding municiaplities: ' + error);
+                                callback([]);
+                            } else {
+                                callback(result.rows);
+                            }
+                        }
+                    );
                 }
             },
 
-            findMunicipalities: function(namePrefix) {
-                console.log("Finding municipalities starting with " + namePrefix);
+            findMunicipality: function(id, callback) {
+                console.log('Finding municipality with ID ' + id);
+                this.client.query('SELECT id,name_fi,name_sv ' +
+                        'FROM nls_municipality ' +
+                        'WHERE id = $1',
+                    [id],
+                    function(error, result) {
+                        if (error) {
+                            console.log('An error occurred while finding municipality: ' + error);
+                            callback(null);
+                        } else {
+                            callback(result.rows.length == 1 ? result.rows[0] : null);
+                        }
+                    }
+                );
             }
         };
 
@@ -51,9 +96,15 @@
                 MapService.init(this.user, this.password, this.database, this.host, this.port);
             },
 
-            findMunicipality: function(namePrefix, callback) {
+            findMunicipalities: function(namePrefix, callback) {
+                MapService.findMunicipalities(namePrefix, callback);
+            },
 
+            findMunicipality: function(id, callback) {
+                MapService.findMunicipality(id, callback);
             }
+
+            // TODO Destroy
         });
     })();
 </script>
