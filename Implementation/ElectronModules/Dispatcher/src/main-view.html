@@ -50,7 +50,7 @@
                 <button id="exit">Exit</button>
             </span>
         </div>
-        <ticket-form id="ticket-form"></ticket-form>
+        <!--<ticket-form id="ticket-form"></ticket-form>-->
         <div id="ticket-resource-list">
             TICKET RESOURCES
         </div>
@@ -63,10 +63,24 @@
         <div id="map-browser">
             MAP BROWSER
         </div>
+        <div style="padding:20px">
+            <p>
+                Municipality:<br/>
+                <municipality-selector id="municipality" style="width:300px" value="{{municipality}}"></municipality-selector>
+                municipality: {{municipality}}
+            </p>
+        </div>
     </template>
     <script>
         Polymer({
-            is: 'main-view'
+            is: 'main-view',
+
+            properties: {
+                municipality: {
+                    type: Number,
+                    value: 445
+                }
+            }
         });
     </script>
 </dom-module>
