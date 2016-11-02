@@ -1,4 +1,4 @@
-package net.pkhapps.dart.common.converters;
+package net.pkhapps.dart.common.jooq;
 
 import net.pkhapps.dart.common.Raster;
 import org.apache.commons.codec.DecoderException;

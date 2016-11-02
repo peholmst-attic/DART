@@ -1,4 +1,4 @@
-package net.pkhapps.dart.common.converters;
+package net.pkhapps.dart.common.jooq;
 
 import org.jooq.Converter;
 
