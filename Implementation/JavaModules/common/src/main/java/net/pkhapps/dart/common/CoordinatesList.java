@@ -1,42 +1,53 @@
 package net.pkhapps.dart.common;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.util.*;
 
 /**
- * TODO Implement me!
+ * An immutable data type representing a list of geographical coordinates.
+ *
+ * @see Coordinates
  */
 public class CoordinatesList implements Serializable, Iterable<Coordinates> {
 
     private final List<Coordinates> coordinatesList;
 
     /**
-     * @param coordinatesList
+     * Creates a new {@code CoordinatesList}.
+     *
+     * @param coordinatesList a list of coordinate pairs.
      */
-    public CoordinatesList(List<Coordinates> coordinatesList) {
+    public CoordinatesList(@NotNull List<Coordinates> coordinatesList) {
         this.coordinatesList = Collections.unmodifiableList(
                 new ArrayList<>(Objects.requireNonNull(coordinatesList)));
     }
 
     /**
-     * @param coordinatesArray
+     * Creates a new {@code CoordinatesList}.
+     *
+     * @param coordinatesArray an array of coordinate pairs.
      */
-    public CoordinatesList(Coordinates... coordinatesArray) {
+    public CoordinatesList(@NotNull Coordinates... coordinatesArray) {
         this(Arrays.asList(coordinatesArray));
     }
 
     /**
-     * @return
+     * Returns the number of coordinate pairs in the list.
      */
     public int size() {
         return coordinatesList.size();
     }
 
     /**
-     * @param index
-     * @return
-     * @throws IndexOutOfBoundsException
+     * Returns the coordinate pair with the given index.
+     *
+     * @param index the 0-based index of the coordinate pair within the list.
+     * @return the coordinate pair.
+     * @throws IndexOutOfBoundsException if the index was out of bounds.
      */
+    @NotNull
     public Coordinates get(int index) throws IndexOutOfBoundsException {
         return coordinatesList.get(index);
     }
