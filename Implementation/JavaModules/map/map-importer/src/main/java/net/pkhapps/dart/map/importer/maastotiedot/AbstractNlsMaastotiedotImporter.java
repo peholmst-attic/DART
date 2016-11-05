@@ -56,7 +56,7 @@ public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<
     @Override
     protected void importData(DSLContext dslContext) throws Exception {
         // TODO Replace with system property or similar
-        File dataDirectory = new File("/Users/petterprivate/Google Drive/Maps/maastotietokanta_tiesto");
+        File dataDirectory = new File("/Users/peholmst/Google Drive/Maps/maastotietokanta_tiesto");
         if (!dataDirectory.isDirectory()) {
             throw new IllegalArgumentException("Not a directory: " + dataDirectory.getCanonicalPath());
         }

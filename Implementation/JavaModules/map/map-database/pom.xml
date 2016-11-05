@@ -70,22 +70,22 @@
                                 <customType>
                                     <name>Coordinates</name>
                                     <type>net.pkhapps.dart.common.Coordinates</type>
-                                    <converter>net.pkhapps.dart.common.converters.CoordinatesConverter</converter>
+                                    <converter>net.pkhapps.dart.common.jooq.CoordinatesConverter</converter>
                                 </customType>
                                 <customType>
                                     <name>CoordinatesList</name>
                                     <type>net.pkhapps.dart.common.CoordinatesList</type>
-                                    <converter>net.pkhapps.dart.common.converters.CoordinatesListConverter</converter>
+                                    <converter>net.pkhapps.dart.common.jooq.CoordinatesListConverter</converter>
                                 </customType>
                                 <customType>
                                     <name>Instant</name>
                                     <type>java.time.Instant</type>
-                                    <converter>net.pkhapps.dart.common.converters.InstantConverter</converter>
+                                    <converter>net.pkhapps.dart.common.jooq.InstantConverter</converter>
                                 </customType>
                                 <customType>
                                     <name>Raster</name>
                                     <type>net.pkhapps.dart.common.Raster</type>
-                                    <binding>net.pkhapps.dart.common.converters.RasterBinding</binding>
+                                    <binding>net.pkhapps.dart.common.jooq.RasterBinding</binding>
                                 </customType>
                             </customTypes>
                             <forcedTypes>

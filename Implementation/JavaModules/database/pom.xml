@@ -96,12 +96,12 @@
                                 <customType>
                                     <name>Coordinates</name>
                                     <type>net.pkhapps.dart.common.Coordinates</type>
-                                    <converter>net.pkhapps.dart.common.converters.CoordinatesConverter</converter>
+                                    <converter>net.pkhapps.dart.common.jooq.CoordinatesConverter</converter>
                                 </customType>
                                 <customType>
                                     <name>Instant</name>
                                     <type>java.time.Instant</type>
-                                    <converter>net.pkhapps.dart.common.converters.InstantConverter</converter>
+                                    <converter>net.pkhapps.dart.common.jooq.InstantConverter</converter>
                                 </customType>
                             </customTypes>
                             <forcedTypes>
