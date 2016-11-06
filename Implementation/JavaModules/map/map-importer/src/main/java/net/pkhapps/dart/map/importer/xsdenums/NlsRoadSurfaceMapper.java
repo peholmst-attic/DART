@@ -5,7 +5,7 @@ import net.pkhapps.dart.map.database.enums.NlsRoadSurface;
 /**
  * TODO Document me!
  */
-public class NlsRoadSurfaceMapper extends EnumMapper<NlsRoadSurface> {
+public class NlsRoadSurfaceMapper extends EnumMapper<NlsRoadSurface, Integer> {
 
     public NlsRoadSurfaceMapper() {
         registerEnumConstant(NlsRoadSurface.unknown, 0);

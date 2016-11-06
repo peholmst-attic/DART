@@ -5,7 +5,7 @@ import net.pkhapps.dart.map.database.enums.NlsRoadVerticalLevel;
 /**
  * TODO Document me!
  */
-public class NlsRoadVerticalLevelMapper extends EnumMapper<NlsRoadVerticalLevel> {
+public class NlsRoadVerticalLevelMapper extends EnumMapper<NlsRoadVerticalLevel, Integer> {
 
     public NlsRoadVerticalLevelMapper() {
         registerEnumConstant(NlsRoadVerticalLevel.tunnel, -11);

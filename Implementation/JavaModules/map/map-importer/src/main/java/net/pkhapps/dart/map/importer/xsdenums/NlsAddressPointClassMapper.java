@@ -5,7 +5,7 @@ import net.pkhapps.dart.map.database.enums.NlsAddressPointClass;
 /**
  * TODO Document me!
  */
-public class NlsAddressPointClassMapper extends EnumMapper<NlsAddressPointClass> {
+public class NlsAddressPointClassMapper extends EnumMapper<NlsAddressPointClass, Integer> {
 
     public NlsAddressPointClassMapper() {
         registerEnumConstant(NlsAddressPointClass.address, 96001);

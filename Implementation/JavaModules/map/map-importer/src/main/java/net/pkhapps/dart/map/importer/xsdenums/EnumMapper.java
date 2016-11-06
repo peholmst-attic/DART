@@ -6,21 +6,21 @@ import java.util.Map;
 /**
  * TODO Document me!
  */
-public abstract class EnumMapper<E extends Enum<E>> {
+public abstract class EnumMapper<E extends Enum<E>, T> {
 
-    private final Map<E, Integer> enumToInteger = new HashMap<>();
-    private final Map<Integer, E> integerToEnum = new HashMap<>();
+    private final Map<E, T> enumToObject = new HashMap<>();
+    private final Map<T, E> objectToEnum = new HashMap<>();
 
-    protected void registerEnumConstant(E enumConstant, Integer integerValue) {
-        enumToInteger.put(enumConstant, integerValue);
-        integerToEnum.put(integerValue, enumConstant);
+    protected void registerEnumConstant(E enumConstant, T value) {
+        enumToObject.put(enumConstant, value);
+        objectToEnum.put(value, enumConstant);
     }
 
-    public E toEnum(Integer value) {
-        return integerToEnum.get(value);
+    public E toEnum(T value) {
+        return objectToEnum.get(value);
     }
 
-    public Integer fromEnum(E value) {
-        return enumToInteger.get(value);
+    public T fromEnum(E value) {
+        return enumToObject.get(value);
     }
 }

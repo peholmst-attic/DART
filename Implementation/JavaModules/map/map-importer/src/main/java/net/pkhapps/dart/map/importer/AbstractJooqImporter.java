@@ -10,6 +10,7 @@ import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Base class for map data importers that use JOOQ to insert data into the database. The importer requires three
@@ -69,14 +70,16 @@ public abstract class AbstractJooqImporter {
         return property;
     }
 
+    private final AtomicLong batchCount = new AtomicLong();
+
     /**
      * Inserts the {@code records} as a batch job using the specified {@code dslContext}.
      *
      * @param records    a list of records to batch insert.
      * @param dslContext the DSL context to use.
      */
-    protected static void runBatch(List<? extends UpdatableRecord<?>> records, DSLContext dslContext) {
-        System.out.println("Batch inserting " + records.size() + " records");
+    protected void runBatch(List<? extends UpdatableRecord<?>> records, DSLContext dslContext) {
+        System.out.println(batchCount.incrementAndGet() + ": Batch inserting " + records.size() + " records");
         try {
             dslContext.batchInsert(records).execute();
         } catch (DataAccessException ex) {

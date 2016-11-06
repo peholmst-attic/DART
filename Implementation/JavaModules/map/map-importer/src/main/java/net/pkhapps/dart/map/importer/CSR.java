@@ -1,8 +1,12 @@
 package net.pkhapps.dart.map.importer;
 
+import net.pkhapps.dart.common.Coordinates;
+import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+
+import java.math.BigDecimal;
 
 /**
  * TODO Document me!
@@ -60,6 +64,20 @@ public final class CSR {
         } catch (Exception ex) {
             throw new InternalError("Could not create CoordinateReferenceSystems", ex);
         }
+    }
+
+    /**
+     * TODO Document me!
+     * @param x
+     * @param y
+     * @return
+     * @throws Exception
+     */
+    public static Coordinates fromTM35FINtoWGS84(double x, double y) throws Exception {
+        DirectPosition2D source = new DirectPosition2D(x, y);
+        DirectPosition2D destination = new DirectPosition2D();
+        CSR.transform.transform(source, destination);
+        return new Coordinates(new BigDecimal(destination.getY()), new BigDecimal(destination.getX()));
     }
 
     private CSR() {

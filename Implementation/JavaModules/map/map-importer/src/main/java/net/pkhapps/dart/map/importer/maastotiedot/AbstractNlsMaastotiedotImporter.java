@@ -1,9 +1,6 @@
 package net.pkhapps.dart.map.importer.maastotiedot;
 
-import net.pkhapps.dart.common.Coordinates;
 import net.pkhapps.dart.map.importer.AbstractJooqImporter;
-import net.pkhapps.dart.map.importer.CSR;
-import org.geotools.geometry.DirectPosition2D;
 import org.geotools.xml.AppSchemaConfiguration;
 import org.geotools.xml.PullParser;
 import org.geotools.xml.resolver.SchemaCache;
@@ -14,7 +11,6 @@ import org.jooq.UpdatableRecord;
 import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -138,18 +134,5 @@ public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<
         } else {
             return "";
         }
-    }
-
-    /**
-     * @param x
-     * @param y
-     * @return
-     * @throws Exception
-     */
-    protected Coordinates fromTM35FINtoWGS84(double x, double y) throws Exception {
-        DirectPosition2D source = new DirectPosition2D(x, y);
-        DirectPosition2D destination = new DirectPosition2D();
-        CSR.transform.transform(source, destination);
-        return new Coordinates(new BigDecimal(destination.getY()), new BigDecimal(destination.getX()));
     }
 }

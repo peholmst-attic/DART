@@ -5,7 +5,7 @@ import net.pkhapps.dart.map.database.enums.NlsRoadReadiness;
 /**
  * TODO Document me!
  */
-public class NlsRoadReadinessMapper extends EnumMapper<NlsRoadReadiness> {
+public class NlsRoadReadinessMapper extends EnumMapper<NlsRoadReadiness, Integer> {
 
     public NlsRoadReadinessMapper() {
         registerEnumConstant(NlsRoadReadiness.in_use, 0);

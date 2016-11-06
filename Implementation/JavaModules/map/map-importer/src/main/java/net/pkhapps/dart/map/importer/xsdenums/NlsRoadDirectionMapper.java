@@ -5,7 +5,7 @@ import net.pkhapps.dart.map.database.enums.NlsRoadDirection;
 /**
  * TODO Document me!
  */
-public class NlsRoadDirectionMapper extends EnumMapper<NlsRoadDirection> {
+public class NlsRoadDirectionMapper extends EnumMapper<NlsRoadDirection, Integer> {
 
     public NlsRoadDirectionMapper() {
         registerEnumConstant(NlsRoadDirection.two_way, 0);
