@@ -1,6 +1,6 @@
 package net.pkhapps.dart.common.location;
 
-import net.pkhapps.dart.common.LocalizedString;
+import net.pkhapps.dart.common.i18n.LocalizedString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

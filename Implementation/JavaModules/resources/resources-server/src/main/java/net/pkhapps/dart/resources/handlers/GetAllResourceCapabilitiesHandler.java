@@ -1,6 +1,6 @@
 package net.pkhapps.dart.resources.handlers;
 
-import net.pkhapps.dart.common.LocalizedString;
+import net.pkhapps.dart.common.i18n.LocalizedString;
 import net.pkhapps.dart.database.DSLContextFactory;
 import net.pkhapps.dart.database.tables.records.CapabilitiesRecord;
 import net.pkhapps.dart.messaging.handlers.RequestHandler;
@@ -13,7 +13,7 @@ import java.time.Clock;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static net.pkhapps.dart.common.Locales.*;
+import static net.pkhapps.dart.common.i18n.Locales.*;
 
 /**
  * Handler for the {@link GetAllResourceCapabilities} message. Returns a {@link AllResourceCapabilities} response.

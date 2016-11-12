@@ -2,7 +2,7 @@ package net.pkhapps.dart.resources.messages;
 
 import net.pkhapps.dart.common.CollectionsUtil;
 import net.pkhapps.dart.common.Color;
-import net.pkhapps.dart.common.LocalizedString;
+import net.pkhapps.dart.common.i18n.LocalizedString;
 import net.pkhapps.dart.messaging.messages.Response;
 
 import java.time.Instant;

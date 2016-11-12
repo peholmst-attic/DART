@@ -1,4 +1,4 @@
-package net.pkhapps.dart.common;
+package net.pkhapps.dart.common.i18n;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
