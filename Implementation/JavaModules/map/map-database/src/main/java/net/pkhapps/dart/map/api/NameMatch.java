@@ -1,10 +1,24 @@
 package net.pkhapps.dart.map.api;
 
 /**
- * TODO Document me!
+ * An enumeration of different modes to use when performing textual name searches.
  */
 public enum NameMatch {
 
-    EXACT, STARTS_WITH, ENDS_WITH, CONTAINS
-
+    /**
+     * The name should match the search term exactly (ignoring case).
+     */
+    EXACT,
+    /**
+     * The name should start with the search term (ignoring case).
+     */
+    STARTS_WITH,
+    /**
+     * The name should end with the search term (ignoring case).
+     */
+    ENDS_WITH,
+    /**
+     * The name should contain the search term (ignoring case).
+     */
+    CONTAINS
 }

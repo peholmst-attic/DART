@@ -5,6 +5,7 @@ import org.geotools.xml.AppSchemaConfiguration;
 import org.geotools.xml.PullParser;
 import org.geotools.xml.resolver.SchemaCache;
 import org.geotools.xml.resolver.SchemaResolver;
+import org.jooq.Batch;
 import org.jooq.DSLContext;
 import org.jooq.UpdatableRecord;
 
@@ -22,7 +23,7 @@ import java.util.Map;
  *
  * @see <a href="http://www.maanmittauslaitos.fi/en/">NLS</a>
  */
-public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<R>> extends AbstractJooqImporter {
+public abstract class AbstractNlsMaastotiedotImporter extends AbstractJooqImporter {
 
     /**
      * Namespace URI for the GML used by the NLS terrain database ("maastotietojärjestelmä").
@@ -92,21 +93,29 @@ public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<
     @SuppressWarnings("unchecked")
     protected void importData(InputStream inputStream, DSLContext dslContext) throws Exception {
         PullParser parser = new PullParser(configuration, inputStream, getFeatureQName());
-        List<R> records = new ArrayList<>();
+        List<UpdatableRecord<?>> records = new ArrayList<>();
         int count = 0;
         Map<String, Object> feature = (Map<String, Object>) parser.parse();
         while (feature != null) {
-            records.add(createRecord(feature, dslContext));
+            records.addAll(createRecord(feature, dslContext));
             feature = (Map<String, Object>) parser.parse();
             ++count;
-            if (count % 100 == 0) {
-                runBatch(records, dslContext);
+            if (count % 200 == 0) {
+                runBatch(records, dslContext, getBatchMode());
             }
         }
         if (records.size() > 0) {
-            runBatch(records, dslContext);
+            runBatch(records, dslContext, getBatchMode());
         }
         System.out.printf("Imported %d record(s)%n", count);
+    }
+
+    /**
+     *
+     * @return
+     */
+    protected BatchMode getBatchMode() {
+        return NoGrouping;
     }
 
     /**
@@ -120,7 +129,7 @@ public abstract class AbstractNlsMaastotiedotImporter<R extends UpdatableRecord<
      * @return
      * @throws Exception
      */
-    protected abstract R createRecord(Map<String, Object> feature, DSLContext dslContext) throws Exception;
+    protected abstract List<UpdatableRecord<?>> createRecord(Map<String, Object> feature, DSLContext dslContext) throws Exception;
 
     /**
      * @param addressData

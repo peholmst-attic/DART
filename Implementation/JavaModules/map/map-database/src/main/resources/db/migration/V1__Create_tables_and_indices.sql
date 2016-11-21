@@ -3,6 +3,14 @@
 -- before running the first migration.
 --
 
+CREATE TYPE nls_language AS ENUM (
+    'fin',
+    'swe',
+    'sme',
+    'smn',
+    'sms'
+);
+
 CREATE TABLE nls_municipality (
     id bigint not null,
     name_fi varchar(200) not null,
@@ -52,7 +60,15 @@ CREATE TYPE nls_road_direction AS ENUM (
 
 CREATE TABLE nls_road (
     id bigserial not null,
+    municipality_id bigint not null,
+    PRIMARY KEY (id),
+    FOREIGN KEY (municipality_id) REFERENCES nls_municipality (id)
+);
+
+CREATE TABLE nls_road_segment (
+    id bigserial not null,
     gid bigint not null,
+    road_id bigint,
     location_accuracy int not null,
     altitude_accuracy int not null,
     start_date date,
@@ -68,19 +84,29 @@ CREATE TABLE nls_road (
     max_address_number_left int,
     min_address_number_right int,
     max_address_number_right int,
-    name_sv varchar (200) not null default '',
-    name_fi varchar (200) not null default '',
     location geometry(linestring,4326) not null,
     municipality_id bigint not null,
     PRIMARY KEY (id),
+    FOREIGN KEY (road_id) REFERENCES nls_road (id),
     FOREIGN KEY (road_class_id) REFERENCES nls_road_class (id),
     FOREIGN KEY (municipality_id) REFERENCES nls_municipality (id)
 );
 
-CREATE INDEX nls_road_gid ON nls_road (gid);
-CREATE INDEX nls_road_name_sv ON nls_road (name_sv);
-CREATE INDEX nls_road_name_fi ON nls_road (name_fi);
-CREATE INDEX nls_road_location ON nls_road USING gist(location);
+CREATE INDEX nls_road_segment_gid ON nls_road_segment (gid);
+CREATE INDEX nls_road_segment_location ON nls_road_segment USING gist(location);
+
+CREATE TABLE nls_road_name (
+    id bigserial not null,
+    road_id bigint not null,
+    name varchar(200) not null,
+    language nls_language not null,
+    PRIMARY KEY (id),
+    FOREIGN KEY (road_id) REFERENCES nls_road (id),
+    UNIQUE (road_id, name, language)
+);
+
+CREATE INDEX nls_road_name_name ON nls_road_name (name);
+CREATE INDEX nls_road_name_name_language ON nls_road_name (name, language);
 
 CREATE TYPE nls_address_point_class AS ENUM (
     'address', -- 96001
@@ -95,8 +121,6 @@ CREATE TABLE nls_address_point (
     start_date date,
     end_date date,
     number varchar (20) not null default '',
-    name_sv varchar (200) not null default '',
-    name_fi varchar (200) not null default '',
     municipality_id bigint not null,
     point_class nls_address_point_class not null,
     PRIMARY KEY (id),
@@ -104,9 +128,19 @@ CREATE TABLE nls_address_point (
 );
 
 CREATE INDEX nls_address_point_gid ON nls_address_point (gid);
-CREATE INDEX nls_address_point_name_sv ON nls_address_point (name_sv);
-CREATE INDEX nls_address_point_name_fi ON nls_address_point (name_fi);
 CREATE INDEX nls_address_point_location ON nls_address_point USING gist(location);
+
+CREATE TABLE nls_address_point_name (
+    id bigserial not null,
+    address_point_id bigint not null,
+    name varchar(200) not null,
+    language nls_language not null,
+    PRIMARY KEY (id),
+    FOREIGN KEY (address_point_id) REFERENCES nls_address_point (id)
+);
+
+CREATE INDEX nls_address_point_name_name ON nls_address_point_name (name);
+CREATE INDEX nls_address_point_name_name_language ON nls_address_point_name (name, language);
 
 CREATE TABLE nls_map_1_5000 (
   id bigserial not null,
@@ -260,19 +294,11 @@ CREATE TABLE nls_place (
 
 CREATE INDEX nls_place_location ON nls_place USING gist(location);
 
-CREATE TYPE nls_place_name_language AS ENUM (
-    'fin',
-    'swe',
-    'sme',
-    'smn',
-    'sms'
-);
-
 CREATE TABLE nls_place_name (
     id bigint not null,
     place_id bigint not null,
     name varchar(200) not null,
-    language nls_place_name_language not null,
+    language nls_language not null,
     created timestamp not null,
     modified timestamp not null,
     PRIMARY KEY (id),
@@ -280,3 +306,4 @@ CREATE TABLE nls_place_name (
 );
 
 CREATE INDEX nls_place_name_name ON nls_place_name (name);
+CREATE INDEX nls_place_name_name_language ON nls_place_name (name, language);

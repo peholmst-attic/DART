@@ -1,7 +1,7 @@
 package net.pkhapps.dart.map.api;
 
 /**
- * Created by peholmst on 12/11/2016.
+ * TODO Define and document me (implement {@link MunicipalityService} and {@link RoadService} first to see what works and what doesn't)!
  */
 public interface AddressPointService {
 }

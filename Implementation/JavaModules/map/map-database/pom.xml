@@ -27,10 +27,19 @@
             <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.javatuples</groupId>
+            <artifactId>javatuples</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -101,7 +110,7 @@
                                 </forcedType>
                                 <forcedType>
                                     <name>CoordinatesList</name>
-                                    <expression>public.nls_road.location</expression>
+                                    <expression>public.nls_road_segment.location</expression>
                                 </forcedType>
                                 <forcedType>
                                     <name>Instant</name>

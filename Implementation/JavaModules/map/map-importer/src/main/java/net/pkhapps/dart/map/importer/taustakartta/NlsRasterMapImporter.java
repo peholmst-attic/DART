@@ -153,13 +153,13 @@ public class NlsRasterMapImporter extends AbstractJooqImporter {
                 records.add(record);
 
                 if (records.size() >= 100) {
-                    runBatch(records, dslContext);
+                    runBatch(records, dslContext, NoGrouping);
                 }
             }
         }
 
         if (records.size() > 0) {
-            runBatch(records, dslContext);
+            runBatch(records, dslContext, NoGrouping);
         }
 
         coverage.dispose(false);

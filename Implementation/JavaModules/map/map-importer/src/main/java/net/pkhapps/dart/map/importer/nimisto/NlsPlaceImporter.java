@@ -8,7 +8,7 @@ import net.pkhapps.dart.map.database.tables.records.NlsPlaceRecord;
 import net.pkhapps.dart.map.importer.AbstractJooqImporter;
 import net.pkhapps.dart.map.importer.CSR;
 import net.pkhapps.dart.map.importer.xsdenums.NlsPlaceGroupMapper;
-import net.pkhapps.dart.map.importer.xsdenums.NlsPlaceNameLanguageMapper;
+import net.pkhapps.dart.map.importer.xsdenums.NlsLanguageMapper;
 import net.pkhapps.dart.map.importer.xsdenums.NlsPlaceSubgroupMapper;
 import org.geotools.gml3.ApplicationSchemaXSD;
 import org.geotools.gml3.GMLConfiguration;
@@ -38,7 +38,7 @@ public class NlsPlaceImporter extends AbstractJooqImporter {
 
     private final NlsPlaceGroupMapper groupMapper = new NlsPlaceGroupMapper();
     private final NlsPlaceSubgroupMapper subgroupMapper = new NlsPlaceSubgroupMapper();
-    private final NlsPlaceNameLanguageMapper nameLanguageMapper = new NlsPlaceNameLanguageMapper();
+    private final NlsLanguageMapper nameLanguageMapper = new NlsLanguageMapper();
 
     @Override
     protected void importData(DSLContext dslContext) throws Exception {
@@ -111,18 +111,18 @@ public class NlsPlaceImporter extends AbstractJooqImporter {
                 }
 
                 if (i % 100 == 0) {
-                    runBatch(placeRecords, dslContext);
-                    runBatch(nameRecords, dslContext);
+                    runBatch(placeRecords, dslContext, NoGrouping);
+                    runBatch(nameRecords, dslContext, NoGrouping);
                 }
 
                 feature = (SimpleFeature) parser.parse();
                 ++i;
             }
             if (placeRecords.size() > 0) {
-                runBatch(placeRecords, dslContext);
+                runBatch(placeRecords, dslContext, NoGrouping);
             }
             if (nameRecords.size() > 0) {
-                runBatch(nameRecords, dslContext);
+                runBatch(nameRecords, dslContext, NoGrouping);
             }
             System.out.println("Inserted a total of " + totalNameCount + " names and " + totalPlaceCount
                     + " places, ignored " + totalIgnoredCount + " place entries");

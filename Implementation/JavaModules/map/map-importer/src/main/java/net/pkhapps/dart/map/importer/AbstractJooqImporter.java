@@ -1,6 +1,7 @@
 package net.pkhapps.dart.map.importer;
 
 import org.jooq.DSLContext;
+import org.jooq.Table;
 import org.jooq.UpdatableRecord;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
@@ -9,7 +10,7 @@ import java.math.BigInteger;
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -72,16 +73,67 @@ public abstract class AbstractJooqImporter {
 
     private final AtomicLong batchCount = new AtomicLong();
 
+    public interface BatchMode {
+        void execute(List<? extends UpdatableRecord<?>> records, DSLContext dslContext);
+    }
+
+    public static BatchMode GroupAndReorder = (records, dslContext) -> {
+        Map<Table, List<UpdatableRecord<?>>> tableToBatch = new HashMap<>();
+        // This list is used to determine in which order the different table batches are to be executed
+        List<Table<?>> tableOrder = new LinkedList<>();
+
+        for (UpdatableRecord<?> record : records) {
+            List<UpdatableRecord<?>> batch = tableToBatch.get(record.getTable());
+            if (batch == null) {
+                batch = new LinkedList<>();
+                tableToBatch.put(record.getTable(), batch);
+                tableOrder.add(record.getTable());
+            }
+            batch.add(record);
+        }
+        tableOrder.forEach(table -> {
+            System.out.println("- Inserting into " + table.getName());
+            dslContext.batchInsert(tableToBatch.get(table)).execute();
+        });
+    };
+
+    public static BatchMode GroupAndKeepOrder = (records, dslContext) -> {
+        Table<?> lastTable = null;
+        List<UpdatableRecord<?>> batch = new LinkedList<>();
+        for (UpdatableRecord<?> record : records) {
+            if (lastTable == null) {
+                lastTable = record.getTable();
+            } else if (!lastTable.equals(record.getTable())) {
+                System.out.println("- Inserting into " + lastTable.getName());
+                dslContext.batchInsert(batch).execute();
+                batch.clear();
+                lastTable = record.getTable();
+            }
+            batch.add(record);
+        }
+        if (batch.size() > 0 && lastTable != null) {
+            System.out.println("- Inserting into " + lastTable.getName());
+            dslContext.batchInsert(batch).execute();
+        }
+    };
+
+    public static BatchMode NoGrouping = (records, dslContext) -> {
+        dslContext.batchInsert(records).execute();
+    };
+
     /**
      * Inserts the {@code records} as a batch job using the specified {@code dslContext}.
      *
      * @param records    a list of records to batch insert.
      * @param dslContext the DSL context to use.
      */
-    protected void runBatch(List<? extends UpdatableRecord<?>> records, DSLContext dslContext) {
+    protected void runBatch(List<? extends UpdatableRecord<?>> records, DSLContext dslContext, BatchMode mode) {
         System.out.println(batchCount.incrementAndGet() + ": Batch inserting " + records.size() + " records");
         try {
-            dslContext.batchInsert(records).execute();
+            // We have to split up the batch inserting by table type, otherwise we get foreign key violations.
+            // I don't exactly know why, maybe JOOQ is assuming you can only do batch inserting into one table
+            // at a time.
+            mode.execute(records, dslContext);
         } catch (DataAccessException ex) {
             if (ex.getCause() instanceof BatchUpdateException) {
                 BatchUpdateException bue = (BatchUpdateException) ex.getCause();
