@@ -1,5 +1,7 @@
 package net.pkhapps.dart.common.location;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import net.pkhapps.dart.common.i18n.LocalizedString;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +12,10 @@ import java.util.Objects;
  */
 public class Municipality {
 
+    @JsonProperty(required = true)
     private final long id;
+
+    @JsonProperty(required = true)
     private final LocalizedString name;
 
     /**
@@ -19,7 +24,8 @@ public class Municipality {
      * @param id   the ID of the municipality.
      * @param name the localized name of the municipality.
      */
-    public Municipality(long id, @NotNull LocalizedString name) {
+    @JsonCreator
+    public Municipality(@JsonProperty("id") long id, @JsonProperty("name") @NotNull LocalizedString name) {
         this.id = id;
         this.name = Objects.requireNonNull(name);
     }
