@@ -1,5 +1,7 @@
 package net.pkhapps.dart.common.i18n;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,8 +14,19 @@ import java.util.*;
  */
 public class LocalizedString {
 
-    private final Map<Locale, String> values;
-    private final String defaultValue;
+    @JsonProperty(required = true)
+    private Map<Locale, String> values;
+    @JsonProperty(value = "default", required = true)
+    private String defaultValue;
+
+    // TODO Maybe default locale instead of default value?
+
+    /**
+     * Used by Jackson only.
+     */
+    private LocalizedString() {
+        // NOP
+    }
 
     /**
      * Creates a new {@code LocalizedString}.
@@ -31,7 +44,7 @@ public class LocalizedString {
      * @param defaultValue the default value to use (optional).
      */
     public LocalizedString(@NotNull Map<Locale, String> values, @Nullable String defaultValue) {
-        Objects.requireNonNull(values);
+        Objects.requireNonNull(values, "values must not be null");
         this.values = new HashMap<>(values);
         this.defaultValue = defaultValue == null ? "" : defaultValue;
     }
@@ -52,8 +65,27 @@ public class LocalizedString {
      * been specified, an empty string is returned.
      */
     @NotNull
+    @JsonIgnore
     public String getDefault() {
         return defaultValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LocalizedString that = (LocalizedString) o;
+
+        if (!values.equals(that.values)) return false;
+        return defaultValue.equals(that.defaultValue);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = values.hashCode();
+        result = 31 * result + defaultValue.hashCode();
+        return result;
     }
 
     /**

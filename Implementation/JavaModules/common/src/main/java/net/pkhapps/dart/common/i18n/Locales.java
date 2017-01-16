@@ -7,6 +7,7 @@ public final class Locales {
     public static final Locale SWEDISH = new Locale("sv");
     public static final Locale FINNISH = new Locale("fi");
     public static final Locale ENGLISH = new Locale("en");
+    public static final Locale[] ALL_LOCALES = {FINNISH, SWEDISH, ENGLISH};
 
     private Locales() {
     }
