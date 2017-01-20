@@ -1,7 +1,8 @@
 package net.pkhapps.dart.common.location;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import net.pkhapps.dart.common.i18n.LocalizedString;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,13 +11,21 @@ import java.util.Objects;
 /**
  * An immutable data type representing a municipality.
  */
+@JsonIdentityInfo(property = "id", generator = ObjectIdGenerators.PropertyGenerator.class)
 public class Municipality {
 
     @JsonProperty(required = true)
-    private final long id;
+    private long id;
 
     @JsonProperty(required = true)
-    private final LocalizedString name;
+    private LocalizedString name;
+
+    /**
+     * Used by Jackson only.
+     */
+    private Municipality() {
+        // NOP
+    }
 
     /**
      * Creates a new {@code Municipality}.
@@ -24,8 +33,7 @@ public class Municipality {
      * @param id   the ID of the municipality.
      * @param name the localized name of the municipality.
      */
-    @JsonCreator
-    public Municipality(@JsonProperty("id") long id, @JsonProperty("name") @NotNull LocalizedString name) {
+    public Municipality(long id, @NotNull LocalizedString name) {
         this.id = id;
         this.name = Objects.requireNonNull(name);
     }

@@ -16,7 +16,7 @@ public class LocalizedStringTest {
         LocalizedString original = LocalizedString.builder()
                 .with(Locales.SWEDISH, "Hej")
                 .with(Locales.FINNISH, "Terve")
-                .withDefault("Hello").build();
+                .build();
 
         String json = objectMapper.writeValueAsString(original);
         System.out.println(json);

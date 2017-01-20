@@ -1,5 +1,6 @@
 package net.pkhapps.dart.common.location;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -9,7 +10,15 @@ import java.util.*;
  */
 public class Intersection extends LocationFeature {
 
-    private final Set<Road> roads;
+    @JsonProperty(required = true)
+    private Set<Road> roads;
+
+    /**
+     * Used by Jackson only.
+     */
+    private Intersection() {
+        // NOP
+    }
 
     /**
      * Creates a new {@code Intersection}.
@@ -38,5 +47,20 @@ public class Intersection extends LocationFeature {
      */
     public Set<Road> getRoads() {
         return roads;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Intersection that = (Intersection) o;
+
+        return roads.equals(that.roads);
+    }
+
+    @Override
+    public int hashCode() {
+        return roads.hashCode();
     }
 }

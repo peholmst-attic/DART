@@ -1,5 +1,8 @@
 package net.pkhapps.dart.common.location;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import net.pkhapps.dart.common.i18n.LocalizedString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,14 +13,33 @@ import java.util.Optional;
 /**
  * An immutable data type representing a road. No geographical attributes (like altitude, coordinates, etc) are included.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Road {
 
-    private final Integer number;
-    private final Integer maxAddressNumber;
-    private final Integer minAddressNumber;
-    private final LocalizedString name;
-    private final boolean isReliableSource;
-    private final Municipality municipality;
+    @JsonProperty
+    private Integer number;
+
+    @JsonProperty
+    private Integer maxAddressNumber;
+
+    @JsonProperty
+    private Integer minAddressNumber;
+
+    @JsonProperty(required = true)
+    private LocalizedString name;
+
+    @JsonProperty(value = "reliable", required = true)
+    private boolean isReliableSource;
+
+    @JsonProperty(required = true)
+    private Municipality municipality;
+
+    /**
+     * Used by Jackson only.
+     */
+    private Road() {
+        // NOP
+    }
 
     /**
      * Creates a new {@code Road}.
@@ -54,6 +76,7 @@ public class Road {
      * Returns the official number of the road, if available.
      */
     @NotNull
+    @JsonIgnore
     public Optional<Integer> getNumber() {
         return Optional.ofNullable(number);
     }
@@ -65,6 +88,7 @@ public class Road {
      * @see #getMinAddressNumber()
      */
     @NotNull
+    @JsonIgnore
     public Optional<Integer> getMaxAddressNumber() {
         return Optional.ofNullable(maxAddressNumber);
     }
@@ -76,6 +100,7 @@ public class Road {
      * @see #getMaxAddressNumber()
      */
     @NotNull
+    @JsonIgnore
     public Optional<Integer> getMinAddressNumber() {
         return Optional.of(minAddressNumber);
     }
@@ -91,6 +116,7 @@ public class Road {
     /**
      * Returns whether the road data is coming from a reliable source (like a GIS or address list) or has been manually entered.
      */
+    @JsonIgnore
     public boolean isReliableSource() {
         return isReliableSource;
     }
@@ -101,5 +127,33 @@ public class Road {
     @NotNull
     public Municipality getMunicipality() {
         return municipality;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Road road = (Road) o;
+
+        if (isReliableSource != road.isReliableSource) return false;
+        if (number != null ? !number.equals(road.number) : road.number != null) return false;
+        if (maxAddressNumber != null ? !maxAddressNumber.equals(road.maxAddressNumber) : road.maxAddressNumber != null)
+            return false;
+        if (minAddressNumber != null ? !minAddressNumber.equals(road.minAddressNumber) : road.minAddressNumber != null)
+            return false;
+        if (!name.equals(road.name)) return false;
+        return municipality.equals(road.municipality);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = number != null ? number.hashCode() : 0;
+        result = 31 * result + (maxAddressNumber != null ? maxAddressNumber.hashCode() : 0);
+        result = 31 * result + (minAddressNumber != null ? minAddressNumber.hashCode() : 0);
+        result = 31 * result + name.hashCode();
+        result = 31 * result + (isReliableSource ? 1 : 0);
+        result = 31 * result + municipality.hashCode();
+        return result;
     }
 }

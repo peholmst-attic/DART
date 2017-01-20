@@ -1,6 +1,5 @@
 package net.pkhapps.dart.common.i18n;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -8,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * An immutable text string that can have a default value and different localized values.
+ * An immutable text string that can have different localized values.
  *
  * @see #builder()
  */
@@ -16,10 +15,6 @@ public class LocalizedString {
 
     @JsonProperty(required = true)
     private Map<Locale, String> values;
-    @JsonProperty(value = "default", required = true)
-    private String defaultValue;
-
-    // TODO Maybe default locale instead of default value?
 
     /**
      * Used by Jackson only.
@@ -34,40 +29,19 @@ public class LocalizedString {
      * @param values a map of values for different locales. The map will be copied.
      */
     public LocalizedString(@NotNull Map<Locale, String> values) {
-        this(values, null);
-    }
-
-    /**
-     * Creates a new {@code LocalizedString}.
-     *
-     * @param values       a map of values for different locales. The map will be copied.
-     * @param defaultValue the default value to use (optional).
-     */
-    public LocalizedString(@NotNull Map<Locale, String> values, @Nullable String defaultValue) {
         Objects.requireNonNull(values, "values must not be null");
         this.values = new HashMap<>(values);
-        this.defaultValue = defaultValue == null ? "" : defaultValue;
     }
 
     /**
-     * Returns the value for the specified {@code locale}, or the default value if no localized value is found.
+     * Returns the value for the specified {@code locale}, or an empty string if no localized value is found.
      *
      * @param locale the locale to use when looking up the string value.
      */
     @NotNull
     public String get(@NotNull Locale locale) {
         Objects.requireNonNull(locale);
-        return Optional.ofNullable(values.get(locale)).orElse(defaultValue);
-    }
-
-    /**
-     * Returns the default string value, e.g. when no locale information is available. If no default value has
-     * been specified, an empty string is returned.
-     */
-    @NotNull
-    @JsonIgnore
-    public String getDefault() {
-        return defaultValue;
+        return Optional.ofNullable(values.get(locale)).orElse("");
     }
 
     @Override
@@ -77,15 +51,12 @@ public class LocalizedString {
 
         LocalizedString that = (LocalizedString) o;
 
-        if (!values.equals(that.values)) return false;
-        return defaultValue.equals(that.defaultValue);
+        return values.equals(that.values);
     }
 
     @Override
     public int hashCode() {
-        int result = values.hashCode();
-        result = 31 * result + defaultValue.hashCode();
-        return result;
+        return values.hashCode();
     }
 
     /**
@@ -94,18 +65,6 @@ public class LocalizedString {
     public static class Builder {
 
         private final Map<Locale, String> values = new HashMap<>();
-        private String defaultValue;
-
-        /**
-         * Sets the default string value of the builder instance.
-         *
-         * @param value the default string value.
-         */
-        @NotNull
-        public Builder withDefault(@Nullable String value) {
-            this.defaultValue = value;
-            return this;
-        }
 
         /**
          * Adds a localized string value to the builder instance.
@@ -129,12 +88,12 @@ public class LocalizedString {
          */
         @NotNull
         public LocalizedString build() {
-            return new LocalizedString(values, defaultValue);
+            return new LocalizedString(values);
         }
     }
 
     /**
-     * Creates a new builder for building a {@link LocalizedString} (this is easier to use than the constructors).
+     * Creates a new builder for building a {@code LocalizedString} (this is easier to use than the constructors).
      */
     @NotNull
     public static Builder builder() {

@@ -71,56 +71,83 @@ public class Coordinates implements Serializable {
         return result;
     }
 
-    // TODO Document and null check
-
+    /**
+     * A builder class for constructing new {@code Coordinates} instances.
+     */
     public static class Builder {
 
         private BigDecimal latitude;
         private BigDecimal longitude;
 
-        public Builder() {
-        }
-
-        public Builder(@NotNull Coordinates original) {
-            this.latitude = original.latitude;
-            this.longitude = original.longitude;
-        }
-
+        /**
+         * Adds the specified latitude (Y) coordinate to the builder instance.
+         *
+         * @param latitude the latitude coordinate in decimal degrees (DD).
+         */
         @NotNull
         public Builder withLatitude(@NotNull BigDecimal latitude) {
-            this.latitude = latitude;
+            this.latitude = Objects.requireNonNull(latitude, "latitude must not be null");
             return this;
         }
 
+        /**
+         * Adds the specified latitude (Y) coordinate to the builder instance.
+         *
+         * @param latitude the latitude coordinate in decimal degrees (DD).
+         */
+        @NotNull
         public Builder withLatitude(double latitude) {
             this.latitude = new BigDecimal(latitude);
             return this;
         }
 
+        /**
+         * Adds the specified latitude (Y) coordinate to the builder instance.
+         *
+         * @param latitude the latitude coordinate in decimal degrees (DD).
+         */
         @NotNull
         public Builder withLatitude(@NotNull String latitude) {
-            this.latitude = new BigDecimal(latitude);
+            this.latitude = new BigDecimal(Objects.requireNonNull(latitude, "latitude must not be null"));
             return this;
         }
 
+        /**
+         * Adds the specified longitude (X) coordinate to the builder instance.
+         *
+         * @param longitude the longitude coordinate in decimal degrees (DD).
+         */
         @NotNull
         public Builder withLongitude(@NotNull BigDecimal longitude) {
-            this.longitude = longitude;
+            this.longitude = Objects.requireNonNull(longitude, "longitude must not be null");
             return this;
         }
 
+        /**
+         * Adds the specified longitude (X) coordinate to the builder instance.
+         *
+         * @param longitude the longitude coordinate in decimal degrees (DD).
+         */
         @NotNull
         public Builder withLongitude(double longitude) {
             this.longitude = new BigDecimal(longitude);
             return this;
         }
 
+        /**
+         * Adds the specified longitude (X) coordinate to the builder instance.
+         *
+         * @param longitude the longitude coordinate in decimal degrees (DD).
+         */
         @NotNull
         public Builder withLongitude(@NotNull String longitude) {
-            this.longitude = new BigDecimal(longitude);
+            this.longitude = new BigDecimal(Objects.requireNonNull(longitude, "longitude must not be null"));
             return this;
         }
 
+        /**
+         * Builds and returns a new {@code Coordinates} instance.
+         */
         @NotNull
         public Coordinates build() {
             return new Coordinates(latitude, longitude);
@@ -128,7 +155,7 @@ public class Coordinates implements Serializable {
     }
 
     /**
-     * @return
+     * Creates a new builder for building a {@code Coordinates} instance (this is easier to use than the constructors).
      */
     @NotNull
     public static Builder builder() {
