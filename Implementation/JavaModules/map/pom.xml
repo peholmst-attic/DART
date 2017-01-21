@@ -20,5 +20,6 @@
     <modules>
         <module>map-database</module>
         <module>map-importer</module>
+        <module>map-database-ui</module>
     </modules>
 </project>

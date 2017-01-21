@@ -7,6 +7,7 @@ import net.pkhapps.dart.common.location.Municipality;
 import net.pkhapps.dart.common.location.Road;
 import net.pkhapps.dart.map.api.NameMatch;
 import net.pkhapps.dart.map.api.RoadService;
+import org.javatuples.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Condition;
@@ -99,6 +100,11 @@ public class JooqRoadService implements RoadService {
     }
 
     @Override
+    public @NotNull Optional<Pair<Road, Optional<Integer>>> findByCoordinates(@NotNull Coordinates coordinates) {
+        return null;
+    }
+
+    @Override
     public @NotNull Optional<Coordinates> findCoordinates(@NotNull Road road, @Nullable Integer addressNumber) {
         return null;
     }
@@ -109,7 +115,7 @@ public class JooqRoadService implements RoadService {
     }
 
     @Override
-    public @NotNull Optional<Coordinates> findIntersection(@NotNull Road road1, @NotNull Road road2) {
+    public List<Coordinates> findIntersection(@NotNull Road road1, @NotNull Road road2) {
         return null;
     }
 
