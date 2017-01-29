@@ -35,8 +35,8 @@
         <project.jdbc.map.user>dart</project.jdbc.map.user>
         <project.jdbc.map.password>dart</project.jdbc.map.password>
 
-        <rabbitmq.version>3.6.1</rabbitmq.version>
-        <gson.version>2.6.2</gson.version>
+        <rabbitmq.version>4.0.2</rabbitmq.version>
+        <gson.version>2.6.2</gson.version> <!-- todo clean up dependencies -->
         <postgresql-jdbc.version>9.4.1208.jre7</postgresql-jdbc.version>
         <jooq.version>3.7.3</jooq.version>
         <commons-codec.version>1.10</commons-codec.version>
@@ -175,6 +175,15 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
 
     <repositories>
         <repository>

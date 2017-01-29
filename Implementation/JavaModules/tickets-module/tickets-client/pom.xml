@@ -26,11 +26,5 @@
             <groupId>net.pkhapps.dart.platform</groupId>
             <artifactId>platform</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
     </dependencies>
 </project>

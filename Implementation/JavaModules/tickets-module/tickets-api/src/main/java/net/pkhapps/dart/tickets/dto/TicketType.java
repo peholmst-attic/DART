@@ -45,7 +45,8 @@ public class TicketType {
      * @param active           whether the ticket type is active or not.
      * @param priorityRequired whether tickets of this type require a ticket priority or not.
      */
-    public TicketType(long id, @NotNull String code, @NotNull LocalizedString name, boolean active, boolean priorityRequired) {
+    public TicketType(long id, @NotNull String code, @NotNull LocalizedString name, boolean active,
+                      boolean priorityRequired) {
         this.id = id;
         this.code = Objects.requireNonNull(code, "code must not be null");
         this.name = Objects.requireNonNull(name, "name must not be null");
@@ -92,15 +93,27 @@ public class TicketType {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         TicketType that = (TicketType) o;
 
-        if (id != that.id) return false;
-        if (active != that.active) return false;
-        if (priorityRequired != that.priorityRequired) return false;
-        if (!code.equals(that.code)) return false;
+        if (id != that.id) {
+            return false;
+        }
+        if (active != that.active) {
+            return false;
+        }
+        if (priorityRequired != that.priorityRequired) {
+            return false;
+        }
+        if (!code.equals(that.code)) {
+            return false;
+        }
         return name.equals(that.name);
     }
 

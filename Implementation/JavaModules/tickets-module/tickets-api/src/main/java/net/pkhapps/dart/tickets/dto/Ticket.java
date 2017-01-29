@@ -8,9 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * TODO document me
@@ -18,8 +17,6 @@ import java.util.stream.Stream;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIdentityInfo(property = "id", generator = ObjectIdGenerators.PropertyGenerator.class)
 public class Ticket {
-
-    // TODO Not sure if the subtickets should be included inside their parent or kept as separate tickets.
 
     @JsonProperty(required = true)
     private long id;
@@ -38,13 +35,6 @@ public class Ticket {
 
     @JsonProperty
     private TicketPriority priority;
-
-    @JsonBackReference
-    private Ticket parentTicket;
-
-    @JsonProperty
-    @JsonManagedReference
-    private Set<Ticket> subtickets;
 
     @JsonProperty
     private Location location;
@@ -73,12 +63,11 @@ public class Ticket {
      * @param opened the instant when the ticket was opened.
      */
     public Ticket(long id, @NotNull TicketState state, @NotNull Instant opened) {
-        this(id, state, opened, null, null, null, null, Stream.empty(), null, null, null, null);
+        this(id, state, opened, null, null, null, null, null, null, null);
     }
 
     /**
-     * Creates a new {@code Ticket} with the given properties. The subtickets will get their parent ticket property
-     * changed to point to the newly created ticket.
+     * Creates a new {@code Ticket} with the given properties.
      *
      * @param id            the ID of the ticket.
      * @param state         the state of the ticket.
@@ -86,17 +75,14 @@ public class Ticket {
      * @param closed        the instant when the ticket was closed.
      * @param type          the type of the ticket.
      * @param priority      the priority of the ticket.
-     * @param parentTicket  the parent of the ticket.
-     * @param subtickets    the subtickets (children) of the ticket.
      * @param location      the location of the ticket.
      * @param details       the details of the ticket.
      * @param reporterName  the name of the person who reported the ticket.
      * @param reporterPhone the phone number of the person who reported the ticket.
      */
     public Ticket(long id, @NotNull TicketState state, @NotNull Instant opened, @Nullable Instant closed,
-                  @Nullable TicketType type, @Nullable TicketPriority priority, @Nullable Ticket parentTicket,
-                  @NotNull Stream<Ticket> subtickets, @Nullable Location location, @Nullable String details,
-                  @Nullable String reporterName, @Nullable String reporterPhone) {
+                  @Nullable TicketType type, @Nullable TicketPriority priority, @Nullable Location location,
+                  @Nullable String details, @Nullable String reporterName, @Nullable String reporterPhone) {
         this.id = id;
         this.state = Objects.requireNonNull(state, "state must not be null");
         this.opened = Objects.requireNonNull(opened, "opened must not be null");
@@ -114,10 +100,6 @@ public class Ticket {
             throw new IllegalArgumentException("Ticket type requires a priority");
         }
         this.priority = priority;
-        this.parentTicket = parentTicket;
-        this.subtickets = Objects.requireNonNull(subtickets, "subtickets must not be null but can be empty")
-                .collect(Collectors.toSet());
-        this.subtickets.forEach(ticket -> ticket.parentTicket = Ticket.this);
         this.location = location;
         this.details = details;
         this.reporterName = reporterName;
@@ -177,28 +159,6 @@ public class Ticket {
     }
 
     /**
-     * Returns the parent of the ticket, if it has one.
-     *
-     * @see #getSubtickets()
-     */
-    @NotNull
-    @JsonIgnore
-    public Optional<Ticket> getParentTicket() {
-        return Optional.ofNullable(parentTicket);
-    }
-
-    /**
-     * Returns an unmodifiable set of subtickets.
-     *
-     * @see #getParentTicket()
-     */
-    @NotNull
-    @JsonIgnore
-    public Set<Ticket> getSubtickets() {
-        return Collections.unmodifiableSet(subtickets);
-    }
-
-    /**
      * Returns the location of the ticket, if one has been specified.
      */
     @NotNull
@@ -240,7 +200,6 @@ public class Ticket {
     // TODO Document builders once we know that the API is working
 
     /**
-     *
      * @return
      */
     @NotNull
@@ -248,10 +207,7 @@ public class Ticket {
         return new Builder(this);
     }
 
-    /**
-     * @param <B>
-     */
-    public static abstract class AbstractBuilder<B extends AbstractBuilder<B>> {
+    public static class Builder {
 
         long id;
         TicketState state;
@@ -267,13 +223,13 @@ public class Ticket {
         /**
          *
          */
-        AbstractBuilder() {
+        public Builder() {
         }
 
         /**
          * @param original
          */
-        AbstractBuilder(@NotNull Ticket original) {
+        public Builder(@NotNull Ticket original) {
             Objects.requireNonNull(original, "original must not be null");
             id = original.id;
             state = original.state;
@@ -291,189 +247,103 @@ public class Ticket {
          * @param id
          * @return
          */
-        public B withId(long id) {
+        public Builder withId(long id) {
             this.id = id;
-            return thisInstance();
+            return this;
         }
 
         /**
          * @param state
          * @return
          */
-        public B withState(@NotNull TicketState state) {
+        public Builder withState(@NotNull TicketState state) {
             this.state = Objects.requireNonNull(state, "state must not be null");
-            return thisInstance();
+            return this;
         }
 
         /**
          * @param opened
          * @return
          */
-        public B withOpened(@NotNull Instant opened) {
+        public Builder withOpened(@NotNull Instant opened) {
             this.opened = Objects.requireNonNull(opened, "opened must not be null");
-            return thisInstance();
+            return this;
         }
 
         /**
          * @param closed
          * @return
          */
-        public B withClosed(@Nullable Instant closed) {
+        public Builder withClosed(@Nullable Instant closed) {
             this.closed = closed;
-            return thisInstance();
+            return this;
         }
 
         /**
          * @param type
          * @return
          */
-        public B withType(@Nullable TicketType type) {
+        public Builder withType(@Nullable TicketType type) {
             this.type = type;
-            return thisInstance();
+            return this;
         }
 
         /**
          * @param priority
          * @return
          */
-        public B withPriority(@Nullable TicketPriority priority) {
+        public Builder withPriority(@Nullable TicketPriority priority) {
             this.priority = priority;
-            return thisInstance();
+            return this;
         }
 
         /**
          * @param location
          * @return
          */
-        public B withLocation(@Nullable Location location) {
+        public Builder withLocation(@Nullable Location location) {
             this.location = location;
-            return thisInstance();
+            return this;
         }
 
         /**
          * @param details
          * @return
          */
-        public B withDetails(@Nullable String details) {
+        public Builder withDetails(@Nullable String details) {
             this.details = details;
-            return thisInstance();
+            return this;
         }
 
         /**
          * @param reporterName
          * @return
          */
-        public B withReporterName(@Nullable String reporterName) {
+        public Builder withReporterName(@Nullable String reporterName) {
             this.reporterName = reporterName;
-            return thisInstance();
+            return this;
         }
 
         /**
          * @param reporterPhone
          * @return
          */
-        public B withReporterPhone(@Nullable String reporterPhone) {
+        public Builder withReporterPhone(@Nullable String reporterPhone) {
             this.reporterPhone = reporterPhone;
-            return thisInstance();
-        }
-
-        @SuppressWarnings("unchecked")
-        final B thisInstance() {
-            return (B) this;
-        }
-
-    }
-
-    /**
-     *
-     */
-    public static class Builder extends AbstractBuilder<Builder> {
-
-        private final Set<Subbuilder> subbuilders;
-
-        /**
-         *
-         */
-        public Builder() {
-            subbuilders = new HashSet<>();
-        }
-
-        /**
-         * @param original
-         */
-        Builder(Ticket original) {
-            super(original);
-            if (original.parentTicket != null){
-                throw new UnsupportedOperationException("Only parent tickets can be used as originals for this builder");
-            }
-            subbuilders = original.subtickets.stream().map(ticket -> new Subbuilder(this, ticket))
-                    .collect(Collectors.toSet());
-        }
-
-        /**
-         * @return
-         */
-        public Subbuilder withSubticket() {
-            Subbuilder subbuilder = new Subbuilder(this);
-            subbuilders.add(subbuilder);
-            return subbuilder;
-        }
-
-        /**
-         *
-         * @param id
-         * @return
-         */
-        public Subbuilder withSubticket(long id) {
-            Optional<Subbuilder> subbuilder = subbuilders.stream().filter(builder -> builder.id == id).findFirst();
-            if (subbuilder.isPresent()) {
-                return subbuilder.get();
-            } else {
-                return withSubticket().withId(id);
-            }
+            return this;
         }
 
         /**
          * @return
          */
         public Ticket build() {
-            Stream<Ticket> subtickets = subbuilders.stream().map(Subbuilder::build);
-            return new Ticket(id, state, opened, closed, type, priority, null, subtickets, location,
-                    details, reporterName, reporterPhone);
+            return new Ticket(id, state, opened, closed, type, priority, location, details, reporterName,
+                    reporterPhone);
         }
     }
 
-    /**
-     *
-     */
-    public static class Subbuilder extends AbstractBuilder<Subbuilder> {
-
-        private final Builder parentBuilder;
-
-        Subbuilder(Builder parentBuilder) {
-            this.parentBuilder = parentBuilder;
-        }
-
-        Subbuilder(Builder parentBuilder, Ticket original) {
-            super(original);
-            this.parentBuilder = parentBuilder;
-        }
-
-        Ticket build() {
-            return new Ticket(id, state, opened, closed, type, priority, null, Stream.empty(), location,
-                    details, reporterName, reporterPhone);
-        }
-
-        /**
-         * @return
-         */
-        public Builder and() {
-            return parentBuilder;
-        }
-    }
 
     /**
-     *
      * @return
      */
     public static Builder builder() {
