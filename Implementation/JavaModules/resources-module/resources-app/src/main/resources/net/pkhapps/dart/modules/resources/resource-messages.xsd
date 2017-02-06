@@ -1,0 +1,382 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.pkhapps.net/dart/resources/1.0"
+           xmlns="http://www.pkhapps.net/dart/resources/1.0"
+           elementFormDefault="qualified">
+
+    <!-- Data types -->
+    <!-- TODO Document the data types -->
+
+    <xs:complexType name="coordinates">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="latitude" type="xs:decimal">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="longitude" type="xs:decimal">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="resourceLocation">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="coordinates" type="coordinates">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="lastChanged" type="xs:dateTime">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="resourceState">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="IN_SERVICE_AT_STATION"/>
+            <xs:enumeration value="IN_SERVICE_OVER_RADIO"/>
+            <xs:enumeration value="ASSIGNED_AT_STATION"/>
+            <xs:enumeration value="ASSIGNED_OVER_RADIO"/>
+            <xs:enumeration value="DISPATCHED_AT_STATION"/>
+            <xs:enumeration value="DISPATCHED_OVER_RADIO"/>
+            <xs:enumeration value="EN_ROUTE"/>
+            <xs:enumeration value="ON_SCENE"/>
+            <xs:enumeration value="OUT_OF_SERVICE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="resourceStatus">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="state" type="resourceState">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="lastChanged" type="xs:dateTime">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ticketId" type="xs:NCName" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="resourceType">
+        <xs:annotation>
+            <xs:documentation>
+                A resource type is used to describe the capabilities of a resource.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="id" type="xs:ID">
+                <xs:annotation>
+                    <xs:documentation>
+                        A unique identifier used to identify this particular instance of resource type. Once assigned,
+                        the ID never changes.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="code" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        A human readable code that is unique among all the 'active' resource types. For example, an
+                        'incident commander' resource type might have the code of 'IC'.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="name" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        A human readable name that explains what this resource type is, for example
+                        'incident commander'.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="active" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>
+                        A boolean flag indicating whether this resource type is active or not.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="resource">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="id" type="xs:ID">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="callSign" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="resourceTypeId" type="xs:NCName">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="status" type="resourceStatus" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="location" type="resourceLocation" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="active" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Queries and responses -->
+    <!-- TODO Define the queries -->
+
+    <!-- Incoming Events -->
+    <!-- TODO Document events -->
+
+    <xs:complexType name="resourceEvent">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="resourceId" type="xs:NCName">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="resourceLocationChanged">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="resourceEvent">
+                <xs:sequence>
+                    <xs:element name="location" type="coordinates">
+                        <xs:annotation>
+                            <xs:documentation>
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="resourceAssigned">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="resourceEvent">
+                <xs:sequence>
+                    <xs:element name="ticketId" type="xs:NCName">
+                        <xs:annotation>
+                            <xs:documentation>
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="resourceDispatched">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="resourceEvent">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="resourceEnRoute">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="resourceEvent">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="resourceOnScene">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="resourceEvent">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="resourceOutOfService">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="resourceEvent">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="resourceInService">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="resourceEvent">
+                <xs:sequence>
+                    <xs:element name="atStation" type="xs:boolean" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="resourceEventMessage">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="resourceLocationChanged" type="resourceLocationChanged" minOccurs="0"
+                            maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="resourceAssigned" type="resourceAssigned" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="resourceDispatched" type="resourceDispatched" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="resourceEnRoute" type="resourceEnRoute" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="resourceOnScene" type="resourceOnScene" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="resourceOutOfService" type="resourceOutOfService" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="resourceInService" type="resourceInService" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Outgoing events -->
+    <!-- TODO Document events -->
+
+    <xs:complexType name="resourceChanged">
+        <xs:annotation>
+            <xs:documentation>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="resource" type="resource">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="resourceType" type="resourceType">
+                <xs:annotation>
+                    <xs:documentation>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
