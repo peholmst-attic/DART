@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">DART Status Panel</string>
+
+    <!-- Main activity -->
+    <string name="action_bar_title">Status Panel</string>
+    <string name="no_status">No status information available</string>
+    <string name="current_status">Current status: &lt;b&gt;%1$s&lt;/b&gt; (%2$td.%2$tm.%2$tY %2$tT)</string>
+    <string name="waiting_for_service">Waiting for service</string>
+
+    <!-- Main menu -->
+    <string name="settings_menu_item">Settings</string>
+    <string name="shutdown_menu_item">Shutdown</string>
+
+    <!-- Status notification -->
+    <string name="status_notification_title">The Status Panel is running</string>
+    <string name="status_notification_text">Touch to open it</string>
+</resources>
