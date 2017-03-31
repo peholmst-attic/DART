@@ -1,9 +1,11 @@
 package net.pkhapps.dart.statuspanel;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -13,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import net.pkhapps.dart.statuspanel.json.JsonSetStatusCommand;
 import net.pkhapps.dart.statuspanel.model.IStatusDescriptor;
 import net.pkhapps.dart.statuspanel.model.IStatusService;
 import net.pkhapps.dart.statuspanel.model.IStatusServiceListener;
@@ -31,11 +34,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by peholmst on 30/03/2017.
  */
 
-public class StatusService extends Service implements IStatusService {
+public class StatusService extends Service implements IStatusService, IRabbitMQManagerStateListener {
 
     private static final String TAG = "StatusService";
 
     private static final int NOTIFICATION_ID = 123;
+
+    private static final long[] VIBRATE_CONNECTING = {0, 200, 200, 200, 200, 200};
+    private static final long[] VIBRATE_CONNECTED = {0, 1000};
 
     private final IBinder binder = new LocalBinder();
 
@@ -48,6 +54,8 @@ public class StatusService extends Service implements IStatusService {
     private Set<IStatusServiceListener> listeners = new HashSet<>();
 
     private final AtomicBoolean started = new AtomicBoolean(false);
+    private final RabbitMQManager rabbitMQManager = new RabbitMQManager();
+
 
     public StatusService() {
         statusDescriptors.add(new StatusDescriptorImpl(1L, "På väg", Color.CYAN, true, true, Arrays.asList(2L, 3L)));
@@ -68,6 +76,22 @@ public class StatusService extends Service implements IStatusService {
         return START_STICKY;
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        rabbitMQManager.init();
+        rabbitMQManager.connect();
+        rabbitMQManager.addStateListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        rabbitMQManager.removeStateListener(this);
+        rabbitMQManager.disconnect();
+        rabbitMQManager.destroy();
+    }
+
     private Notification createStatusBarNotification() {
         // Create an intent for showing the main activity. Build an artificial back stack to make
         // sure navigating backward from the main activity leads to the home screen.
@@ -78,14 +102,35 @@ public class StatusService extends Service implements IStatusService {
         final PendingIntent pendingIntent = stackBuilder.getPendingIntent(0,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        return new Notification.Builder(this)
-                .setSmallIcon(R.drawable.ic_whatshot_white_24dp)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_whatshot_white_24dp))
-                .setContentTitle(getResources().getString(R.string.status_notification_title))
-                .setContentText(getResources().getString(R.string.status_notification_text))
+        Notification.Builder builder = new Notification.Builder(this)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
-                .build();
+                .setContentText(getResources().getString(R.string.status_notification_text));
+        int icon = R.drawable.ic_error_white_24dp;
+        int title;
+        switch (rabbitMQManager.getState()) {
+            case CONNECTED:
+                title = R.string.status_notification_title_connected;
+                icon = R.drawable.ic_whatshot_white_24dp;
+                builder.setVibrate(VIBRATE_CONNECTED);
+                break;
+            case DISCONNECTED:
+            case DISCONNECTING:
+                title = R.string.status_notification_title_disconnected;
+                break;
+            case CONNECTING:
+                title = R.string.status_notification_title_connecting;
+                builder.setProgress(0, 0, true);
+                builder.setVibrate(VIBRATE_CONNECTING);
+                break;
+            default:
+                title = R.string.status_notification_title_setup;
+        }
+        builder
+                .setSmallIcon(icon)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), icon))
+                .setContentTitle(getResources().getString(title));
+        return builder.build();
     }
 
     @Nullable
@@ -103,6 +148,8 @@ public class StatusService extends Service implements IStatusService {
 
     @Override
     public void sendStatus(@NonNull IStatusDescriptor statusDescriptor) {
+        rabbitMQManager.publishToQueue(Routing.STATUS_COMMAND_QUEUE, null, new JsonSetStatusCommand(statusDescriptor.getId()));
+        // TODO Wait for message from the server that contains the status
         this.currentStatus = statusDescriptor;
         this.lastStatusChange = new Date();
         for (IStatusServiceListener listener : new HashSet<>(listeners)) {
@@ -143,6 +190,14 @@ public class StatusService extends Service implements IStatusService {
     @Override
     public void shutdown() {
         stopSelf();
+    }
+
+    @Override
+    public void onStateChange(@NonNull RabbitMQManager rabbitMQManager, @NonNull RabbitMQManagerState newState) {
+        // Update the status bar notification
+        Log.i(TAG, "RabbitMQ manager state has changed, updating status bar notification");
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_ID, createStatusBarNotification());
     }
 
     public class LocalBinder extends Binder {

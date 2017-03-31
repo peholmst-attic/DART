@@ -12,6 +12,9 @@
     <string name="shutdown_menu_item">Shutdown</string>
 
     <!-- Status notification -->
-    <string name="status_notification_title">The Status Panel is running</string>
-    <string name="status_notification_text">Touch to open it</string>
+    <string name="status_notification_text">Touch to open the status panel</string>
+    <string name="status_notification_title_connected">Connected to server</string>
+    <string name="status_notification_title_disconnected">Disconnected from server</string>
+    <string name="status_notification_title_connecting">Connecting to server…</string>
+    <string name="status_notification_title_setup">Setup required</string>
 </resources>
