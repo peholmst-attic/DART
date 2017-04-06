@@ -27,6 +27,9 @@
         <archaius.version>0.6.0</archaius.version>
         <jandex.version>2.0.3.Final</jandex.version>
         <c3p0.version>0.9.5.2</c3p0.version>
+        <bouncycastle.version>1.56</bouncycastle.version>
+        <junit.version>4.12</junit.version>
+        <assertj.version>3.6.1</assertj.version>
     </properties>
 
     <build>
@@ -108,6 +111,21 @@
                 <groupId>com.mchange</groupId>
                 <artifactId>c3p0</artifactId>
                 <version>${c3p0.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

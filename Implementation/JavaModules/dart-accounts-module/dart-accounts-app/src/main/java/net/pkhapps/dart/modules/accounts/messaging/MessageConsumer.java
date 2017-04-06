@@ -4,7 +4,7 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import net.pkhapps.dart.modules.accounts.domain.AccountService;
+import net.pkhapps.dart.modules.accounts.domain.AuthenticationBackend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +17,9 @@ import java.util.Map;
 public class MessageConsumer extends DefaultConsumer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageConsumer.class);
-    private final AccountService accountService;
+    private final AuthenticationBackend accountService;
 
-    public MessageConsumer(Channel channel, AccountService accountService) {
+    public MessageConsumer(Channel channel, AuthenticationBackend accountService) {
         super(channel);
         this.accountService = accountService;
     }
