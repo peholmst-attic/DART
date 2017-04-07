@@ -14,7 +14,7 @@ import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
 
 /**
- * Created by peholmst on 06/04/2017.
+ * Bean that registers and unregisters the {@link JmxAuthenticationBackend} with the {@code MBeanServer}.
  */
 @ApplicationScoped
 class MBeanRegistration {

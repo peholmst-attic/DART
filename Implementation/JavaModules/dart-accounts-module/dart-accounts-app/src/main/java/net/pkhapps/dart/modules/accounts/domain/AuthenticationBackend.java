@@ -1,23 +1,26 @@
 package net.pkhapps.dart.modules.accounts.domain;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * TODO document me
  */
 public interface AuthenticationBackend {
 
-    boolean login(String name, String password);
+    boolean login(@NotNull String name, @NotNull String password);
 
-    boolean checkResource(String name, String resourceName, ResourceType resourceType,
-                          ResourcePermission permission);
+    boolean checkResource(@NotNull String name, @NotNull String resourceName, @NotNull ResourceType resourceType,
+                          @NotNull ResourcePermission permission);
 
-    boolean checkTopic(String name, String resourceName, ResourceType resourceType, ResourcePermission permission,
-                       String routingKey);
+    boolean checkTopic(@NotNull String name, @NotNull String resourceName, @NotNull ResourceType resourceType,
+                       @NotNull ResourcePermission permission,
+                       @NotNull String routingKey);
 
-    void setPassword(String name, String password);
+    boolean setPassword(@NotNull String name, @NotNull String password);
 
-    void enableAccount(String name);
+    boolean enableAccount(@NotNull String name);
 
-    void disableAccount(String name);
-
+    boolean disableAccount(@NotNull String name);
+    
     // TODO Methods for adding and changing accounts and account types
 }

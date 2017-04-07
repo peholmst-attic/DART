@@ -48,27 +48,27 @@ class JmxAuthenticationBackend implements JmxAuthenticationBackendMBean {
     }
 
     @Override
-    public void setPassword(String name, String password) {
+    public boolean setPassword(String name, String password) {
         try {
-            delegate.setPassword(name, password);
+            return delegate.setPassword(name, password);
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }
     }
 
     @Override
-    public void enableAccount(String name) {
+    public boolean enableAccount(String name) {
         try {
-            delegate.enableAccount(name);
+            return delegate.enableAccount(name);
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }
     }
 
     @Override
-    public void disableAccount(String name) {
+    public boolean disableAccount(String name) {
         try {
-            delegate.disableAccount(name);
+            return delegate.disableAccount(name);
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }

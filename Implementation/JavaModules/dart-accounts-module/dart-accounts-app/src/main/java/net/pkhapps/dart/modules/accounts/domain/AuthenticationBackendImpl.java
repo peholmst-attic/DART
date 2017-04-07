@@ -1,6 +1,7 @@
 package net.pkhapps.dart.modules.accounts.domain;
 
 import net.pkhapps.dart.modules.accounts.domain.db.tables.records.AccountTypePermissionsRecord;
+import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ class AuthenticationBackendImpl implements AuthenticationBackend {
     DSLContext dslContext;
 
     @Override
-    public boolean login(String name, String password) {
+    public boolean login(@NotNull String name, @NotNull String password) {
         // @formatter:off
         final String actualPassword = dslContext.select(DART_ACCOUNTS.ACCOUNTS.PASSWORD)
                 .from(DART_ACCOUNTS.ACCOUNTS)
@@ -43,8 +44,8 @@ class AuthenticationBackendImpl implements AuthenticationBackend {
     }
 
     @Override
-    public boolean checkResource(String name, String resourceName, ResourceType resourceType,
-                                 ResourcePermission permission) {
+    public boolean checkResource(@NotNull String name, @NotNull String resourceName, @NotNull ResourceType resourceType,
+                                 @NotNull ResourcePermission permission) {
         TableField<AccountTypePermissionsRecord, String> permissionField;
         switch (permission) {
             case CONFIGURE:
@@ -83,41 +84,47 @@ class AuthenticationBackendImpl implements AuthenticationBackend {
     }
 
     @Override
-    public boolean checkTopic(String name, String resourceName, ResourceType resourceType,
-                              ResourcePermission permission, String routingKey) {
+    public boolean checkTopic(@NotNull String name, @NotNull String resourceName, @NotNull ResourceType resourceType,
+                              @NotNull ResourcePermission permission, @NotNull String routingKey) {
         // TODO We currently don't support topic authentication.
         return checkResource(name, resourceName, resourceType, permission);
     }
 
     @Override
-    public void setPassword(String name, String password) {
+    public boolean setPassword(@NotNull String name, @NotNull String password) {
         final int updatedRecords = dslContext.update(DART_ACCOUNTS.ACCOUNTS)
                 .set(DART_ACCOUNTS.ACCOUNTS.PASSWORD, PasswordUtil.hashPassword(password))
                 .where(DART_ACCOUNTS.ACCOUNTS.NAME.equalIgnoreCase(name)).execute();
         if (updatedRecords == 1) {
             LOGGER.debug("Password of account [{}] was changed successfully", name);
+            return true;
         } else {
             LOGGER.warn("Password of account [{}] could not be changed", name);
+            return false;
         }
     }
 
     @Override
-    public void enableAccount(String name) {
+    public boolean enableAccount(@NotNull String name) {
         final int updatedRecords = setEnabledFlag(name, true);
         if (updatedRecords == 1) {
             LOGGER.debug("Account [{}] was enabled successfully", name);
+            return true;
         } else {
             LOGGER.warn("Account [{}] could not be enabled", name);
+            return false;
         }
     }
 
     @Override
-    public void disableAccount(String name) {
+    public boolean disableAccount(@NotNull String name) {
         final int updatedRecords = setEnabledFlag(name, false);
         if (updatedRecords == 1) {
             LOGGER.debug("Account [{}] was disabled successfully", name);
+            return true;
         } else {
             LOGGER.warn("Account [{}] could not be disabled", name);
+            return false;
         }
     }
 
