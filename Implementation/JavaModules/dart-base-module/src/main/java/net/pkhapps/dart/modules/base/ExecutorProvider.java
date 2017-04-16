@@ -1,9 +1,10 @@
-package net.pkhapps.dart.modules.accounts;
+package net.pkhapps.dart.modules.base;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import java.util.concurrent.Executors;
@@ -19,6 +20,7 @@ class ExecutorProvider {
 
     @Produces
     @ApplicationScoped
+    @Alternative
     ScheduledExecutorService createExecutorService() {
         LOGGER.info("Creating executor service");
         return Executors.newSingleThreadScheduledExecutor();

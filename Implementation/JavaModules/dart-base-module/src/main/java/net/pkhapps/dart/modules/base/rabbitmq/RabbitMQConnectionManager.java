@@ -1,11 +1,10 @@
-package net.pkhapps.dart.modules.accounts;
+package net.pkhapps.dart.modules.base.rabbitmq;
 
-import com.netflix.config.DynamicPropertyFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.ShutdownSignalException;
-import net.pkhapps.dart.modules.accounts.event.RabbitMQConnectionClosed;
-import net.pkhapps.dart.modules.accounts.event.RabbitMQConnectionOpened;
+import net.pkhapps.dart.modules.base.rabbitmq.event.RabbitMQConnectionClosed;
+import net.pkhapps.dart.modules.base.rabbitmq.event.RabbitMQConnectionOpened;
 import org.jboss.weld.environment.se.events.ContainerInitialized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,21 +19,21 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Manager that creates a connection to RabbitMQ and automatically attempts to reconnect if the connection is lost.
+ * Manager that creates a connection to RabbitMQ as soon as the WELD container is
+ * {@link ContainerInitialized initialized} and automatically attempts to reconnect if the connection is lost. It
+ * fires a {@link RabbitMQConnectionOpened} event when the connection is established and a
+ * {@link RabbitMQConnectionClosed} event when the connection is closed. However, it is recommended for modules that
+ * use RabbitMQ to use {@link com.rabbitmq.client.ShutdownListener}s to detect when a connection or channel goes down.
+ *
+ * @see RabbitMQChannelManager
  */
 @ApplicationScoped
-class RabbitMQManager {
+class RabbitMQConnectionManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQConnectionManager.class);
 
-    private static final String RABBITMQ_RECONNECTION_DELAY_MS = "rabbitmq.reconnectionDelayMs";
-    private static final String RABBITMQ_HOST = "rabbitmq.host";
-    private static final String RABBITMQ_PORT = "rabbitmq.port";
-    private static final String RABBITMQ_VIRTUAL_HOST = "rabbitmq.virtualHost";
-    private static final String RABBITMQ_USERNAME = "rabbitmq.username";
-    private static final String RABBITMQ_PASSWORD = "rabbitmq.password";
-    private static final String RABBITMQ_CONNECTION_TIMEOUT_MS = "rabbitmq.connectionTimeoutMs";
-    private static final String RABBITMQ_HANDSHAKE_TIMEOUT_MS = "rabbitmq.handshakeTimeoutMs";
+    @Inject
+    RabbitMQProperties rabbitMQProperties;
 
     @Inject
     Event<RabbitMQConnectionOpened> rabbitMQConnectionOpenedEvent;
@@ -47,16 +46,20 @@ class RabbitMQManager {
 
     private Connection connection;
 
-    void onContainerInitialized(@Observes ContainerInitialized containerInitialized) {
+    private void onContainerInitialized(@Observes ContainerInitialized containerInitialized) {
         connect();
     }
 
     private synchronized void connect() {
         LOGGER.info("Connecting to RabbitMQ");
         try {
-            connection = createConnectionFactory().newConnection();
-            connection.addShutdownListener(this::onShutdown);
-            LOGGER.info("Connected to RabbitMQ using connection [{}]", connection);
+            if (connection == null) {
+                connection = createConnectionFactory().newConnection();
+                connection.addShutdownListener(this::onShutdown);
+                LOGGER.info("Connected to RabbitMQ using connection [{}]", connection);
+            } else {
+                LOGGER.info("Already connected to RabbitMQ using connection [{}]", connection);
+            }
             rabbitMQConnectionOpenedEvent.fire(new RabbitMQConnectionOpened(connection));
         } catch (Exception ex) {
             LOGGER.error("Error connecting to RabbitMQ", ex);
@@ -80,7 +83,7 @@ class RabbitMQManager {
         if (cause.isInitiatedByApplication()) {
             LOGGER.info("RabbitMQ connection closed by application");
         } else {
-            LOGGER.warn("RabbitMQ connection closed by broker", cause);
+            LOGGER.warn("RabbitMQ connection closed by broker: {}", cause.getMessage());
         }
         try {
             rabbitMQConnectionClosedEvent.fire(new RabbitMQConnectionClosed(connection));
@@ -93,26 +96,22 @@ class RabbitMQManager {
     }
 
     private void scheduleReconnect() {
-        final int delay = DynamicPropertyFactory.getInstance().
-                getIntProperty(RABBITMQ_RECONNECTION_DELAY_MS, 5000).get();
+        final int delay = rabbitMQProperties.getReconnectionDelayMs().get();
         LOGGER.info("Scheduling reconnection attempt in {} ms", delay);
         executorService.schedule(this::connect, delay, TimeUnit.MILLISECONDS);
     }
 
     private ConnectionFactory createConnectionFactory() {
         final ConnectionFactory connectionFactory = new ConnectionFactory();
-        final DynamicPropertyFactory propertyFactory = DynamicPropertyFactory.getInstance();
 
-        connectionFactory.setHost(propertyFactory.getStringProperty(RABBITMQ_HOST, "localhost").get());
-        connectionFactory.setPort(propertyFactory.getIntProperty(RABBITMQ_PORT, 5672).get());
-        connectionFactory.setUsername(propertyFactory.getStringProperty(RABBITMQ_USERNAME, "guest").get());
-        connectionFactory.setPassword(propertyFactory.getStringProperty(RABBITMQ_PASSWORD, "guest").get());
-        connectionFactory.setVirtualHost(propertyFactory.getStringProperty(RABBITMQ_VIRTUAL_HOST, "").get());
+        connectionFactory.setHost(rabbitMQProperties.getHost().get());
+        connectionFactory.setPort(rabbitMQProperties.getPort().get());
+        connectionFactory.setUsername(rabbitMQProperties.getUsername().get());
+        connectionFactory.setPassword(rabbitMQProperties.getPassword().get());
+        connectionFactory.setVirtualHost(rabbitMQProperties.getVirtualHost().get());
 
-        connectionFactory
-                .setConnectionTimeout(propertyFactory.getIntProperty(RABBITMQ_CONNECTION_TIMEOUT_MS, 1000).get());
-        connectionFactory
-                .setHandshakeTimeout(propertyFactory.getIntProperty(RABBITMQ_HANDSHAKE_TIMEOUT_MS, 1000).get());
+        connectionFactory.setConnectionTimeout(rabbitMQProperties.getConnectionTimeoutMs().get());
+        connectionFactory.setHandshakeTimeout(rabbitMQProperties.getHandshakeTimeoutMs().get());
 
         // We'll handle recovery ourselves
         connectionFactory.setAutomaticRecoveryEnabled(false);
