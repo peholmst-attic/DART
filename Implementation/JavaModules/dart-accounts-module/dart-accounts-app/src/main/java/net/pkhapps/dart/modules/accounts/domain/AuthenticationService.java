@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * TODO document me
  */
-public interface AuthenticationBackend {
+public interface AuthenticationService {
 
     boolean login(@NotNull String name, @NotNull String password);
 
@@ -21,6 +21,6 @@ public interface AuthenticationBackend {
     boolean enableAccount(@NotNull String name);
 
     boolean disableAccount(@NotNull String name);
-    
+
     // TODO Methods for adding and changing accounts and account types
 }

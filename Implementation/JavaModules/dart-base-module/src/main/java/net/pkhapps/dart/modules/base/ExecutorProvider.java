@@ -20,7 +20,6 @@ class ExecutorProvider {
 
     @Produces
     @ApplicationScoped
-    @Alternative
     ScheduledExecutorService createExecutorService() {
         LOGGER.info("Creating executor service");
         return Executors.newSingleThreadScheduledExecutor();

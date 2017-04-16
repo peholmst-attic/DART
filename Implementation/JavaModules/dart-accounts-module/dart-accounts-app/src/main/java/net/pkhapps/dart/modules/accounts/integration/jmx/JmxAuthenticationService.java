@@ -1,18 +1,18 @@
 package net.pkhapps.dart.modules.accounts.integration.jmx;
 
-import net.pkhapps.dart.modules.accounts.domain.AuthenticationBackend;
+import net.pkhapps.dart.modules.accounts.domain.AuthenticationService;
 import net.pkhapps.dart.modules.accounts.domain.ResourcePermission;
 import net.pkhapps.dart.modules.accounts.domain.ResourceType;
 
 /**
- * Default implementation of {@link JmxAuthenticationBackendMBean} that delegates all the operations to an
- * {@link AuthenticationBackend}.
+ * Default implementation of {@link JmxAuthenticationServiceMBean} that delegates all the operations to an
+ * {@link AuthenticationService}.
  */
-class JmxAuthenticationBackend implements JmxAuthenticationBackendMBean {
+class JmxAuthenticationService implements JmxAuthenticationServiceMBean {
 
-    private final AuthenticationBackend delegate;
+    private final AuthenticationService delegate;
 
-    public JmxAuthenticationBackend(AuthenticationBackend delegate) {
+    public JmxAuthenticationService(AuthenticationService delegate) {
         this.delegate = delegate;
     }
 

@@ -18,18 +18,19 @@
         <project.build.target>1.8</project.build.target>
 
         <!-- Dependency versions -->
-        <rabbitmq.version>4.1.0</rabbitmq.version>
+
+        <!-- DART -->
+        <dart-base-module.version>2017.4</dart-base-module.version>
+
+        <!-- The rest -->
         <postgresql.version>9.4.1208.jre7</postgresql.version>
         <jooq.version>3.9.1</jooq.version>
-        <weld.version>2.4.1.Final</weld.version>
-        <slf4j.version>1.7.21</slf4j.version>
-        <logback.version>1.1.7</logback.version>
-        <archaius.version>0.6.0</archaius.version>
         <jandex.version>2.0.3.Final</jandex.version>
         <c3p0.version>0.9.5.2</c3p0.version>
         <bouncycastle.version>1.56</bouncycastle.version>
         <junit.version>4.12</junit.version>
         <assertj.version>3.6.1</assertj.version>
+        <flyway.version>4.1.2</flyway.version>
     </properties>
 
     <build>
@@ -56,6 +57,10 @@
                     <artifactId>jooq-codegen-maven</artifactId>
                     <version>${jooq.version}</version>
                 </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.18.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -63,9 +68,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.rabbitmq</groupId>
-                <artifactId>amqp-client</artifactId>
-                <version>${rabbitmq.version}</version>
+                <groupId>net.pkhapps.dart.modules.base</groupId>
+                <artifactId>dart-base-module</artifactId>
+                <version>${dart-base-module.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
@@ -81,31 +86,6 @@
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq</artifactId>
                 <version>${jooq.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.weld.se</groupId>
-                <artifactId>weld-se</artifactId>
-                <version>${weld.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netflix.archaius</groupId>
-                <artifactId>archaius-core</artifactId>
-                <version>${archaius.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss</groupId>
-                <artifactId>jandex</artifactId>
-                <version>${jandex.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mchange</groupId>

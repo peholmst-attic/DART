@@ -14,13 +14,13 @@ import java.util.regex.Pattern;
 import static net.pkhapps.dart.modules.accounts.domain.db.DartAccounts.DART_ACCOUNTS;
 
 /**
- * Default implementation of {@link AuthenticationBackend} that reads the user data from the database using JOOQ and
+ * Default implementation of {@link AuthenticationService} that reads the user data from the database using JOOQ and
  * uses {@link PasswordUtil} to verify passwords.
  */
 @ApplicationScoped
-class AuthenticationBackendImpl implements AuthenticationBackend {
+class AuthenticationServiceImpl implements AuthenticationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationBackendImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     @Inject
     DSLContext dslContext;

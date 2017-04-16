@@ -1,0 +1,15 @@
+# TODO Add all available properties, their default values and explanations
+rabbitmq.host=
+rabbitmq.port=
+rabbitmq.username=
+rabbitmq.password=password
+rabbitmq.virtualHost=
+
+rabbitmq.reconnectionDelayMs=
+
+jdbc.url=
+jdbc.user=
+jdbc.password=
+
+jooq.dialect=POSTGRES
+

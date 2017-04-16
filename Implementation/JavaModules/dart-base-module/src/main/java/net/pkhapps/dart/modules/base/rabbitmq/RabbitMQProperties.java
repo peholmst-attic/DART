@@ -5,14 +5,12 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
 
 /**
  * Bean for getting easy access to the RabbitMQ configuration properties. Feel free to subclass if you want to add
- * more properties (this bean is annotated as an {@link Alternative} so it will not conflict with the subclass bean).
+ * more properties.
  */
 @ApplicationScoped
-@Alternative
 public class RabbitMQProperties {
 
     private static final String RABBITMQ_RECONNECTION_DELAY_MS = "rabbitmq.reconnectionDelayMs";
