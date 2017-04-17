@@ -1,0 +1,22 @@
+# Connection parameters for RabbitMQ
+rabbitmq.host=localhost
+rabbitmq.port=5672
+rabbitmq.username=guest
+rabbitmq.password=guest
+rabbitmq.virtualHost=
+
+# Timeouts for RabbitMQ
+rabbitmq.connectionTimeoutMs=1000
+rabbitmq.handshakeTimeoutMs=1000
+
+# How long to wait before retrying when something goes wrong
+rabbitmq.reconnectionDelayMs=1000
+
+# Connection parameters for JDBC
+jdbc.url=
+jdbc.user=
+jdbc.password=
+jdbc.testQuery=SELECT 1
+
+# Dialect that JOOQ should use when generating SQL
+jooq.dialect=POSTGRES

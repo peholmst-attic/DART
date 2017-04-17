@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.pkhapps.net/dart/modules/resources/1.0"
+           xmlns="http://www.pkhapps.net/dart/modules/resources/1.0"
+           elementFormDefault="qualified">
+
+    <!-- Data types -->
+
+    <xs:complexType name="coordinates">
+        <xs:sequence>
+            <xs:element name="latitude" type="xs:decimal"/>
+            <xs:element name="longitude" type="xs:decimal"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="resourceType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="station">
+        <xs:sequence>
+            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="location" type="coordinates"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="resource">
+        <xs:sequence>
+            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="resourceTypeId" type="xs:NCName"/>
+            <xs:element name="stationId" type="xs:NCName"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="statusDescriptor">
+        <xs:sequence>
+            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="color" type="xs:integer"/>
+            <xs:element name="userSelectable" type="xs:boolean"/>
+            <xs:element name="usingStationLocation" type="xs:boolean"/>
+            <xs:element name="usingLiveLocation" type="xs:boolean"/>
+            <xs:element name="allowedTransition" type="xs:NCName" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="resourceLocation">
+        <xs:sequence>
+            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="timestamp" type="xs:dateTime"/>
+            <xs:element name="location" type="coordinates"/>
+            <xs:element name="resourceId" type="xs:NCName"/>
+            <xs:element name="userName" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="resourceStatus">
+        <xs:sequence>
+            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="timestamp" type="xs:dateTime"/>
+            <xs:element name="statusDescriptorId" type="xs:NCName"/>
+            <xs:element name="resourceId" type="xs:NCName"/>
+            <xs:element name="userName" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Message Types -->
+
+    <xs:complexType name="findStatusDescriptors">
+        <xs:choice>
+            <xs:element name="request">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="includeId" type="xs:NCName" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="excludeId" type="xs:NCName" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="response">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="statusDescriptor" type="statusDescriptor" minOccurs="0"
+                                    maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="findResourceStatus">
+        <xs:choice>
+            <xs:element name="request">
+                <xs:complexType>
+                    <xs:choice>
+                        <xs:element name="resourceName" type="xs:string"/>
+                        <xs:element name="resourceId" type="xs:NCName"/>
+                    </xs:choice>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="response">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="resource" type="resource"/>
+                        <xs:element name="location" type="resourceLocation" minOccurs="0"/>
+                        <xs:element name="status" type="resourceStatus" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <!-- Actual format of the message documents -->
+
+    <xs:element name="message">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element name="findStatusDescriptors" type="findStatusDescriptors"/>
+                <xs:element name="findResourceStatus" type="findResourceStatus"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
