@@ -109,7 +109,43 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <!-- TODO Make super executable JAR -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>net.pkhapps.dart.modules.base.DartApplication</mainClass>
+                        </manifest>
+                    </archive>
+                    <excludes>
+                        <!-- Configuration files should be read from the local file system and not from the JARs -->
+                        <exclude>config.properties</exclude>
+                        <exclude>config.properties.sample</exclude>
+                        <exclude>logback.xml</exclude>
+                        <!-- Migration files are not needed during runtime -->
+                        <exclude>db/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assembly/src.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
 </project>

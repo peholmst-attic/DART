@@ -18,9 +18,8 @@ import java.util.concurrent.TimeoutException;
 import static net.pkhapps.dart.modules.accounts.domain.db.DartAccounts.DART_ACCOUNTS;
 
 /**
- * Simple integration test for the {@link AccountsApp}. For this test to work, database must be setup and running,
- * RabbitMQ must be running and configured to use <b>rabbit_auth_backend_amqp</b> and the {@link AccountsApp}
- * application must be running.
+ * Simple integration test for the DART Accounts App. For this test to work, database must be setup and running,
+ * RabbitMQ must be running and configured to use <b>rabbit_auth_backend_amqp</b> and DART Accounts App must be running.
  */
 public class AccountsAppIntegrationTest {
 

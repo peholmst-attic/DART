@@ -1,21 +1,25 @@
 # DART Accounts Module
 
 This module is contains the user account management of DART. It plugs into RabbitMQ through the 
-[rabbitmq-auth-backend-amqp](https://github.com/rabbitmq/rabbitmq-auth-backend-amqp) plugin. This plugin is maybe not
+[rabbitmq-auth-backend-amqp](https://github.com/rabbitmq/rabbitmq-auth-backend-amqp) plugin. This plugin may not be
 ready for serious production use yet, but it suits the DART project fine because one of the main design principles of
 DART is to only use RabbitMQ for communication between components. Also, since DART is only a hobby project and not 
 intended to be used "for real", it does not matter that the plugin is still in development. 
 
 User accounts are stored in a PostgreSQL database and accessed through JOOQ. The schema is created using Flyway.
 
+## Setting up the database
+
+1. Create a new PostgreSQL database. Either use the credentials defined in [pom.xml](dart-accounts-app/pom.xml) or
+   edit the file so that the JDBC URL, username and password are correct.
+2. Inside [dart-accounts-app](dart-accounts-app), run `mvn flyway:migrate` to create the database schema. 
+   DART Accounts Module uses its own schema so the database need not even be empty.
+
 ## Building
 
-1. Build and install *dart-base-module* if you have not already.
-2. Make sure you have your PostgreSQL database up and running and change *dart-accounts-app/pom.xml* to use the correct 
-   JDBC URL, username and password.   
-3. Inside *dart-accounts-app*, run `mvn flyway:migrate` to create the database schema.
-4. Inside *dart-accounts-modle*, run `mvn clean install` to build the module. This will also generate the JOOQ classes 
-   from the newly created database schema.
+1. Build and install [dart-base-module](../dart-base-module) if you have not already.
+2. Run `mvn clean install` to build the module. This will also generate the JOOQ classes from the newly created database
+   schema and a ZIP-file for distribution.
 
 ## Configuring RabbitMQ
 
@@ -40,6 +44,19 @@ User accounts are stored in a PostgreSQL database and accessed through JOOQ. The
    ].
 ```
 
-## Trying it out
+## Trying it out in the IDE
 
-TODO Explain how to run the application from the JAR
+1. Make a copy of [config.properties.samle](dart-accounts-app/src/main/resources/config.properties.sample) and rename it
+   to *config.properties*. Make the necessary changes for your environment. This file will must not be checked into GIT,
+   nor will it be included in the final JAR.
+2. Run `net.pkhapps.dart.modules.base.DartApplication`.
+3. Run [AccountsAppIntegrationTest](dart-accounts-app/src/test/java/net/pkhapps/dart/modules/accounts/AccountsAppIntegrationTest.java).
+   If everything is set up as it should be, the test should pass.
+   
+## Running from the distribution (Linux/OS X)
+
+1. After building, copy *target/dart-accounts-app-VERSION-full.zip* into a suitable directory and unzip it.
+2. Make the necessary changes to *dart-accounts-app-config.properties*. If you want to use a separate configuration 
+   file, you can edit the shell script to point to it.
+3. Start the application by running the shell script *dart-accounts-app.sh*.
+
