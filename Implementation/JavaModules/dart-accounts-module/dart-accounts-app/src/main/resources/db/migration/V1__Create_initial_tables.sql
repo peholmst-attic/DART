@@ -1,4 +1,4 @@
---- We use a separate database schema for DART Accounts
+-- We use a separate database schema for DART Accounts
 CREATE SCHEMA IF NOT EXISTS dart_accounts;
 
 -- Account types are used to determine the access to RabbitMQ

@@ -25,7 +25,6 @@
         <!-- The rest -->
         <postgresql.version>9.4.1208.jre7</postgresql.version>
         <jooq.version>3.9.1</jooq.version>
-        <jandex.version>2.0.3.Final</jandex.version>
         <c3p0.version>0.9.5.2</c3p0.version>
         <bouncycastle.version>1.56</bouncycastle.version>
         <junit.version>4.12</junit.version>
