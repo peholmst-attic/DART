@@ -9,17 +9,19 @@ CREATE TABLE IF NOT EXISTS dart_accounts.account_types (
   UNIQUE (name)
 );
 
+-- Account type permissions are used to determine access to RabbitMQ resources (exchanges, topics, queues)
 CREATE TABLE IF NOT EXISTS dart_accounts.account_type_permissions (
   type_id       BIGINT       NOT NULL,
   resource_type VARCHAR(255) NOT NULL,
-  configure     VARCHAR(255) NOT NULL DEFAULT '',
-  write         VARCHAR(255) NOT NULL DEFAULT '',
-  read          VARCHAR(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (type_id, resource_type),
-  UNIQUE (type_id, resource_type),
+  resource_name VARCHAR(255) NOT NULL,
+  configure     BOOLEAN DEFAULT FALSE,
+  write         BOOLEAN DEFAULT FALSE,
+  read          BOOLEAN DEFAULT FALSE,
+  PRIMARY KEY (type_id, resource_type, resource_name),
   FOREIGN KEY (type_id) REFERENCES dart_accounts.account_types (id)
 );
 
+-- Accounts represent users (either human users or system users)
 CREATE TABLE IF NOT EXISTS dart_accounts.accounts (
   id       BIGSERIAL    NOT NULL,
   name     VARCHAR(255) NOT NULL,

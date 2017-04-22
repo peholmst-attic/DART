@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.regex.Pattern;
+import java.util.Optional;
 
 import static net.pkhapps.dart.modules.accounts.domain.db.DartAccounts.DART_ACCOUNTS;
 
@@ -46,7 +46,7 @@ class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public boolean checkResource(@NotNull String name, @NotNull String resourceName, @NotNull ResourceType resourceType,
                                  @NotNull ResourcePermission permission) {
-        TableField<AccountTypePermissionsRecord, String> permissionField;
+        TableField<AccountTypePermissionsRecord, Boolean> permissionField;
         switch (permission) {
             case CONFIGURE:
                 permissionField = DART_ACCOUNTS.ACCOUNT_TYPE_PERMISSIONS.CONFIGURE;
@@ -63,16 +63,16 @@ class AuthenticationServiceImpl implements AuthenticationService {
 
         }
         // @formatter:off
-        String permissionRegex = dslContext.select(permissionField).from(DART_ACCOUNTS.ACCOUNT_TYPE_PERMISSIONS)
+        boolean result = Optional.ofNullable(dslContext.select(permissionField).from(DART_ACCOUNTS.ACCOUNT_TYPE_PERMISSIONS)
                 .join(DART_ACCOUNTS.ACCOUNT_TYPES)
                     .on(DART_ACCOUNTS.ACCOUNT_TYPES.ID.eq(DART_ACCOUNTS.ACCOUNT_TYPE_PERMISSIONS.TYPE_ID))
                 .join(DART_ACCOUNTS.ACCOUNTS)
                     .on(DART_ACCOUNTS.ACCOUNTS.TYPE_ID.eq(DART_ACCOUNTS.ACCOUNT_TYPES.ID))
                 .where(DART_ACCOUNTS.ACCOUNTS.NAME.equalIgnoreCase(name))
                     .and(DART_ACCOUNTS.ACCOUNT_TYPE_PERMISSIONS.RESOURCE_TYPE.equalIgnoreCase(resourceType.name()))
-                .fetchOne(permissionField);
+                    .and(DART_ACCOUNTS.ACCOUNT_TYPE_PERMISSIONS.RESOURCE_NAME.equalIgnoreCase(resourceName))
+                .fetchOne(permissionField)).orElse(false);
         // @formatter:on
-        final boolean result = permissionRegex != null && Pattern.matches(permissionRegex, resourceName);
         if (result) {
             LOGGER.debug("Account [{}] was granted [{}] access to resource [{}] of type [{}]", name, permission,
                     resourceName, resourceType);
