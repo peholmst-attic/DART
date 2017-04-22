@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * CDI provider that creates and destroys a JDBC connection pool and a {@link DSLContext}.
+ * CDI producer that creates and destroys a JDBC connection pool and a {@link DSLContext}.
  */
 @ApplicationScoped
 class DatabaseProvider {

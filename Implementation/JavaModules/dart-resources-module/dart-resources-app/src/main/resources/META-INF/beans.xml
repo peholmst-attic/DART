@@ -1,2 +1,5 @@
 <beans xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.1" bean-discovery-mode="annotated">
+    <alternatives>
+        <class>net.pkhapps.dart.modules.resources.RabbitMQProperties</class>
+    </alternatives>
 </beans>

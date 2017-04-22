@@ -4,6 +4,12 @@
            xmlns="http://www.pkhapps.net/dart/modules/resources/1.0"
            elementFormDefault="qualified">
 
+    <!--
+    This XSD defines the messages that DART Resources Module produces and consumes over RabbitMQ.
+    XSD is used to make it easy to generate the necessary Java classes wherever they are needed without resorting to
+    shared libraries.
+    -->
+
     <!-- Data types -->
 
     <xs:complexType name="coordinates">
@@ -73,6 +79,13 @@
     <!-- Message Types -->
 
     <xs:complexType name="findStatusDescriptors">
+        <xs:annotation>
+            <xs:documentation>
+                Request/response for retrieving status descriptors. The list of returned descriptors can be filtered by
+                explicitly including or excluding certain descriptors. If no filter has been applied, all active
+                descriptors are returned.
+            </xs:documentation>
+        </xs:annotation>
         <xs:choice>
             <xs:element name="request">
                 <xs:complexType>
@@ -93,26 +106,86 @@
         </xs:choice>
     </xs:complexType>
 
-    <xs:complexType name="findResourceStatus">
+    <xs:complexType name="findResources">
+        <xs:annotation>
+            <xs:documentation>
+                Request/response for retrieving resources. The list of returned resources can be filtered by
+                explicitly including or excluding certain resources. If no filter has been applied, all active
+                resources are returned. It is also possible to specify which additional information should be included
+                in the result (location, status, type, station).
+            </xs:documentation>
+        </xs:annotation>
         <xs:choice>
             <xs:element name="request">
                 <xs:complexType>
                     <xs:choice>
-                        <xs:element name="resourceName" type="xs:string"/>
-                        <xs:element name="resourceId" type="xs:NCName"/>
+                        <xs:element name="includeName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="excludeName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="includeLocation" type="xs:boolean" minOccurs="0"/>
+                        <xs:element name="includeStatus" type="xs:boolean" minOccurs="0"/>
+                        <xs:element name="includeType" type="xs:boolean" minOccurs="0"/>
+                        <xs:element name="includeStation" type="xs:boolean" minOccurs="0"/>
                     </xs:choice>
                 </xs:complexType>
             </xs:element>
             <xs:element name="response">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="resource" type="resource"/>
-                        <xs:element name="location" type="resourceLocation" minOccurs="0"/>
-                        <xs:element name="status" type="resourceStatus" minOccurs="0"/>
+                        <xs:element name="resource" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:complexContent>
+                                    <xs:extension base="resource">
+                                        <xs:sequence>
+                                            <xs:element name="location" type="resourceLocation" minOccurs="0"/>
+                                            <xs:element name="status" type="resourceStatus" minOccurs="0"/>
+                                            <xs:element name="type" type="resourceType" minOccurs="0"/>
+                                            <xs:element name="station" type="station" minOccurs="0"/>
+                                        </xs:sequence>
+                                    </xs:extension>
+                                </xs:complexContent>
+                            </xs:complexType>
+                        </xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="setResourceStatusCommand">
+        <xs:annotation>
+            <xs:documentation>
+                Command for setting the status of a resource.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="resourceName" type="xs:string"/>
+            <xs:element name="statusDescriptorId" type="xs:NCName"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="setResourceLocationCommand">
+        <xs:annotation>
+            <xs:documentation>
+                Command for setting the location of a resource.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="resourceName" type="xs:string"/>
+            <xs:element name="location" type="coordinates"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="resourceStatusOrLocationChangedEvent">
+        <xs:annotation>
+            <xs:documentation>
+                Event published whenever the status or the location of a resource is changed.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="resourceName" type="xs:string"/>
+            <xs:element name="status" type="resourceStatus" minOccurs="0"/>
+            <xs:element name="location" type="resourceLocation" minOccurs="0"/>
+        </xs:sequence>
     </xs:complexType>
 
     <!-- Actual format of the message documents -->
@@ -121,7 +194,10 @@
         <xs:complexType>
             <xs:choice>
                 <xs:element name="findStatusDescriptors" type="findStatusDescriptors"/>
-                <xs:element name="findResourceStatus" type="findResourceStatus"/>
+                <xs:element name="findResources" type="findResources"/>
+                <xs:element name="setResourceStatusCommand" type="setResourceStatusCommand"/>
+                <xs:element name="setResourceLocationCommand" type="setResourceLocationCommand"/>
+                <xs:element name="resourceStatusOrLocationChangedEvent" type="resourceStatusOrLocationChangedEvent"/>
             </xs:choice>
         </xs:complexType>
     </xs:element>

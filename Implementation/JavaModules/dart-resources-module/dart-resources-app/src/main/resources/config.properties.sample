@@ -12,6 +12,10 @@ rabbitmq.handshakeTimeoutMs=1000
 # How long to wait before retrying when something goes wrong
 rabbitmq.reconnectionDelayMs=1000
 
+# Parameters for messages sent by this application
+rabbitmq.message.expiration=30000
+rabbitmq.message.appId=net.pkhapps.dart.modules.resources
+
 # Connection parameters for JDBC
 jdbc.url=
 jdbc.user=
