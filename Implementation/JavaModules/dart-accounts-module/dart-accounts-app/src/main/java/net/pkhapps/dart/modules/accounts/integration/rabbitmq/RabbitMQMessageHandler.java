@@ -63,7 +63,7 @@ class RabbitMQMessageHandler extends DefaultConsumer {
             default:
                 LOGGER.warn("Action \"{}\" is unknown, ignoring", action);
         }
-        LOGGER.debug("Acknowledging message [{}]", envelope.getDeliveryTag());
+        LOGGER.trace("Acknowledging message [{}]", envelope.getDeliveryTag());
         getChannel().basicAck(envelope.getDeliveryTag(), false);
     }
 
