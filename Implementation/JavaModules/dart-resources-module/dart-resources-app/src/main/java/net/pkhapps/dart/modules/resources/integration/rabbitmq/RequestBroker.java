@@ -18,7 +18,7 @@ public interface RequestBroker {
      * @throws AccessDeniedException
      */
     @NotNull
-    Object handleRequest(@NotNull Message message, @Nullable String userId)
+    Message handleRequest(@NotNull Message message, @Nullable String userId)
             throws HandlerNotFoundException, HandlerException, AccessDeniedException;
 
 }

@@ -36,7 +36,8 @@ abstract class AbstractMessageHandlerManager<H extends AbstractMessageHandler> e
         channel.queueDeclare(queueName, false, false, false, null);
         logger.info("Declared RabbitMQ queue [{}]", queueName);
 
-        channel.queueBind(queueName, Queues.EXCHANGE, routingKey);
-        logger.info("Bound queue [{}] to exchange [{}] using routing key [{}]", queueName, Queues.EXCHANGE, routingKey);
+        channel.queueBind(queueName, Routing.EXCHANGE, routingKey);
+        logger.info("Bound queue [{}] to exchange [{}] using routing key [{}]", queueName, Routing.EXCHANGE,
+                routingKey);
     }
 }

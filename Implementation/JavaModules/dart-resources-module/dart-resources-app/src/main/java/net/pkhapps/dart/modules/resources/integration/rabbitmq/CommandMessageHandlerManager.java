@@ -27,7 +27,7 @@ public class CommandMessageHandlerManager extends AbstractMessageHandlerManager<
     JAXBContext jaxbContext;
 
     CommandMessageHandlerManager() {
-        super(Queues.EXCHANGE, Queues.COMMANDS_QUEUE, Queues.COMMANDS_ROUTING_KEY);
+        super(Routing.EXCHANGE, Routing.COMMANDS_QUEUE, Routing.COMMANDS_ROUTING_KEY);
     }
 
     @Override

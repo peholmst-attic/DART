@@ -30,6 +30,7 @@
         <assertj.version>3.6.1</assertj.version>
         <flyway.version>4.1.2</flyway.version>
         <commons-codec.version>1.10</commons-codec.version>
+        <moxy.version>2.6.4</moxy.version>
     </properties>
 
     <build>
@@ -118,6 +119,11 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.moxy</artifactId>
+                <version>${moxy.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

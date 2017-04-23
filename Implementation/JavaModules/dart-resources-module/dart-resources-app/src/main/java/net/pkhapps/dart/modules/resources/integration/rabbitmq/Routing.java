@@ -3,7 +3,7 @@ package net.pkhapps.dart.modules.resources.integration.rabbitmq;
 /**
  * Created by peholmst on 22/04/2017.
  */
-public final class Queues {
+public final class Routing {
 
     public static final String EXCHANGE = "dart-resources-module";
 
@@ -13,6 +13,6 @@ public final class Queues {
     public static final String REQUESTS_ROUTING_KEY = "requests";
     public static final String REQUESTS_QUEUE = EXCHANGE + "." + REQUESTS_ROUTING_KEY;
 
-    private Queues() {
+    private Routing() {
     }
 }

@@ -21,7 +21,7 @@
 
     <xs:complexType name="resourceType">
         <xs:sequence>
-            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="id" type="xs:long"/>
             <xs:element name="name" type="xs:string"/>
             <xs:element name="description" type="xs:string"/>
         </xs:sequence>
@@ -29,7 +29,7 @@
 
     <xs:complexType name="station">
         <xs:sequence>
-            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="id" type="xs:long"/>
             <xs:element name="name" type="xs:string"/>
             <xs:element name="location" type="coordinates"/>
         </xs:sequence>
@@ -37,42 +37,42 @@
 
     <xs:complexType name="resource">
         <xs:sequence>
-            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="id" type="xs:long"/>
             <xs:element name="name" type="xs:string"/>
-            <xs:element name="resourceTypeId" type="xs:NCName"/>
-            <xs:element name="stationId" type="xs:NCName"/>
+            <xs:element name="resourceTypeId" type="xs:long"/>
+            <xs:element name="stationId" type="xs:long"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="statusDescriptor">
         <xs:sequence>
-            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="id" type="xs:long"/>
             <xs:element name="name" type="xs:string"/>
             <xs:element name="color" type="xs:integer"/>
             <xs:element name="userSelectable" type="xs:boolean"/>
             <xs:element name="usingStationLocation" type="xs:boolean"/>
             <xs:element name="usingLiveLocation" type="xs:boolean"/>
-            <xs:element name="allowedTransition" type="xs:NCName" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="allowedTransition" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="resourceLocation">
         <xs:sequence>
-            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="id" type="xs:long"/>
             <xs:element name="timestamp" type="xs:dateTime"/>
             <xs:element name="location" type="coordinates"/>
-            <xs:element name="resourceId" type="xs:NCName"/>
-            <xs:element name="userName" type="xs:string"/>
+            <xs:element name="resourceId" type="xs:long"/>
+            <xs:element name="userId" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="resourceStatus">
         <xs:sequence>
-            <xs:element name="id" type="xs:ID"/>
+            <xs:element name="id" type="xs:long"/>
             <xs:element name="timestamp" type="xs:dateTime"/>
-            <xs:element name="statusDescriptorId" type="xs:NCName"/>
-            <xs:element name="resourceId" type="xs:NCName"/>
-            <xs:element name="userName" type="xs:string"/>
+            <xs:element name="statusDescriptorId" type="xs:long"/>
+            <xs:element name="resourceId" type="xs:long"/>
+            <xs:element name="userId" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -90,8 +90,8 @@
             <xs:element name="request">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="includeId" type="xs:NCName" minOccurs="0" maxOccurs="unbounded"/>
-                        <xs:element name="excludeId" type="xs:NCName" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="includeId" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="excludeId" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -159,7 +159,7 @@
         </xs:annotation>
         <xs:sequence>
             <xs:element name="resourceName" type="xs:string"/>
-            <xs:element name="statusDescriptorId" type="xs:NCName"/>
+            <xs:element name="statusDescriptorId" type="xs:long"/>
         </xs:sequence>
     </xs:complexType>
 

@@ -1,6 +1,7 @@
 package net.pkhapps.dart.modules.resources.integration;
 
 import net.pkhapps.dart.modules.resources.integration.xsd.ObjectFactory;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -16,6 +17,8 @@ class JAXBProvider {
     @Produces
     @ApplicationScoped
     JAXBContext getJAXBContext() throws JAXBException {
-        return JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+        // By using Moxy, we can support both XML and JSON using the same JAXB API.
+        return JAXBContextFactory
+                .createContext(ObjectFactory.class.getPackage().getName(), getClass().getClassLoader());
     }
 }

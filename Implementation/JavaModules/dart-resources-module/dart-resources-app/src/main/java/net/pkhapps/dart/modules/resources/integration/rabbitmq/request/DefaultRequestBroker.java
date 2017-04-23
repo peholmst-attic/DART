@@ -13,7 +13,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Default implementation of {@link RequestBroker}. To keep things simple, the message is extracted and directed to the
@@ -30,7 +32,7 @@ class DefaultRequestBroker implements RequestBroker {
 
     @Override
     @NotNull
-    public Object handleRequest(@NotNull Message message, @Nullable String userId)
+    public Message handleRequest(@NotNull Message message, @Nullable String userId)
             throws HandlerNotFoundException, HandlerException, AccessDeniedException {
 
         FindStatusDescriptors.Request findStatusDescriptors =
@@ -39,18 +41,33 @@ class DefaultRequestBroker implements RequestBroker {
                 getRequest(FindResources::getRequest, message.getFindResources());
 
         if (findStatusDescriptors != null) {
-            return handle(findStatusDescriptorsHandler, findStatusDescriptors, userId);
+            return setResponse(FindStatusDescriptors::new, FindStatusDescriptors::setResponse,
+                    Message::setFindStatusDescriptors,
+                    handle(findStatusDescriptorsHandler, findStatusDescriptors, userId));
         } else if (findResources != null) {
-            return handle(findResourcesHandler, findResources, userId);
+            return setResponse(FindResources::new, FindResources::setResponse, Message::setFindResources,
+                    handle(findResourcesHandler, findResources, userId));
         }
 
         throw new HandlerNotFoundException();
     }
 
     @Nullable
-    private static <REQUEST, MESSAGE> REQUEST getRequest(@NotNull Function<MESSAGE, REQUEST> getRequest,
-                                                         @Nullable MESSAGE message) {
-        return Optional.ofNullable(message).map(getRequest).orElse(null);
+    private static <REQUEST, PART> REQUEST getRequest(@NotNull Function<PART, REQUEST> getRequest,
+                                                      @Nullable PART PART) {
+        return Optional.ofNullable(PART).map(getRequest).orElse(null);
+    }
+
+    @NotNull
+    private static <RESPONSE, PART> Message setResponse(@NotNull Supplier<PART> createMessagePart,
+                                                        @NotNull BiConsumer<PART, RESPONSE> setResponse,
+                                                        @NotNull BiConsumer<Message, PART> setMessagePart,
+                                                        @NotNull RESPONSE response) {
+        PART part = createMessagePart.get();
+        setResponse.accept(part, response);
+        Message message = new Message();
+        setMessagePart.accept(message, part);
+        return message;
     }
 
     @NotNull

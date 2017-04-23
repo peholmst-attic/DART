@@ -27,7 +27,7 @@ class RequestMessageHandlerManager extends AbstractMessageHandlerManager<Request
     JAXBContext jaxbContext;
 
     RequestMessageHandlerManager() {
-        super(Queues.EXCHANGE, Queues.REQUESTS_QUEUE, Queues.REQUESTS_ROUTING_KEY);
+        super(Routing.EXCHANGE, Routing.REQUESTS_QUEUE, Routing.REQUESTS_ROUTING_KEY);
     }
 
     @Override
