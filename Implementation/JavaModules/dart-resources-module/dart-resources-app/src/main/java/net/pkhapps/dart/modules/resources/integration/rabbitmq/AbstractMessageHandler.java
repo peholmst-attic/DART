@@ -101,15 +101,18 @@ abstract class AbstractMessageHandler extends DefaultConsumer {
      * @throws IOException
      */
     void sendError(int code, @Nullable String message, @NotNull AMQP.BasicProperties properties) throws IOException {
-        logger.debug("Sending error [{}: {}] to [{}]", code, message,
-                properties.getReplyTo());
-        Map<String, Object> headers = new HashMap<>();
-        headers.put(StatusCodes.STATUS_CODE_HEADER, code);
-        if (message != null) {
-            headers.put(StatusCodes.STATUS_MESSAGE_HEADER, message);
+        if (properties.getReplyTo() != null) {
+            logger.debug("Sending error [{}: {}] to [{}]", code, message,
+                    properties.getReplyTo());
+            Map<String, Object> headers = new HashMap<>();
+            headers.put(StatusCodes.STATUS_CODE_HEADER, code);
+            if (message != null) {
+                headers.put(StatusCodes.STATUS_MESSAGE_HEADER, message);
+            }
+            getChannel()
+                    .basicPublish("", properties.getReplyTo(),
+                            buildReplyProperties(properties).headers(headers).build(),
+                            null);
         }
-        getChannel()
-                .basicPublish("", properties.getReplyTo(), buildReplyProperties(properties).headers(headers).build(),
-                        null);
     }
 }

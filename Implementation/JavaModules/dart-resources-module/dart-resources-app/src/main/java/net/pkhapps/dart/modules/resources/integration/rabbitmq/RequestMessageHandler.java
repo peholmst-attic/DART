@@ -38,6 +38,7 @@ class RequestMessageHandler extends AbstractMessageHandler {
         Message message = readMessage(properties, body);
         logger.trace("Acknowledging message [{}]", envelope.getDeliveryTag());
         getChannel().basicAck(envelope.getDeliveryTag(), false);
+        // No use in processing the request if there is no replyTo destination
         if (message != null && properties.getReplyTo() != null) {
             try {
                 logger.debug("Received message [{}]", message);

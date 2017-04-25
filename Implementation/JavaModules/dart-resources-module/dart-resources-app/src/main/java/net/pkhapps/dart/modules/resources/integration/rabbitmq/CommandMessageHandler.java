@@ -32,7 +32,8 @@ class CommandMessageHandler extends AbstractMessageHandler {
         Message message = readMessage(properties, body);
         logger.trace("Acknowledging message [{}]", envelope.getDeliveryTag());
         getChannel().basicAck(envelope.getDeliveryTag(), false);
-        if (message != null && properties.getReplyTo() != null) {
+        // Commands can be executed even without a replyTo destination (fire and forget)
+        if (message != null) {
             try {
                 logger.debug("Received message [{}]", message);
                 commandBroker.handleCommand(message, properties.getUserId());
@@ -48,9 +49,11 @@ class CommandMessageHandler extends AbstractMessageHandler {
     }
 
     private void sendOk(@NotNull AMQP.BasicProperties properties) throws IOException {
-        logger.debug("Sending OK response to [{}]", properties.getReplyTo());
-        AMQP.BasicProperties.Builder replyProperties = buildReplyProperties(properties)
-                .headers(Collections.singletonMap(StatusCodes.STATUS_CODE_HEADER, StatusCodes.OK));
-        getChannel().basicPublish("", properties.getReplyTo(), replyProperties.build(), null);
+        if (properties.getReplyTo() != null) {
+            logger.debug("Sending OK response to [{}]", properties.getReplyTo());
+            AMQP.BasicProperties.Builder replyProperties = buildReplyProperties(properties)
+                    .headers(Collections.singletonMap(StatusCodes.STATUS_CODE_HEADER, StatusCodes.OK));
+            getChannel().basicPublish("", properties.getReplyTo(), replyProperties.build(), null);
+        }
     }
 }
