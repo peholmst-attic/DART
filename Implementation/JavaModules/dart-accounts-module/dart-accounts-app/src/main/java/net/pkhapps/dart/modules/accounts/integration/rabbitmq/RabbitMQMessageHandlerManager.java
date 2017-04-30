@@ -8,6 +8,7 @@ import net.pkhapps.dart.modules.base.rabbitmq.RabbitMQChannelManager;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Channel manager bean that sets up the {@link RabbitMQMessageHandler}.
@@ -15,18 +16,22 @@ import javax.inject.Inject;
 @ApplicationScoped
 class RabbitMQMessageHandlerManager extends RabbitMQChannelManager {
 
-    @Inject
-    AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     @Inject
-    RabbitMQProperties rabbitMQProperties;
+    public RabbitMQMessageHandlerManager(ScheduledExecutorService executorService,
+                                         RabbitMQProperties rabbitMQProperties,
+                                         AuthenticationService authenticationService) {
+        super(executorService, rabbitMQProperties);
+        this.authenticationService = authenticationService;
+    }
 
     @Override
     protected void setUp(Channel channel) throws Exception {
         final String queueName = channel.queueDeclare().getQueue();
         logger.info("Declared RabbitMQ queue [{}] for authentication requests", queueName);
 
-        final String exchange = rabbitMQProperties.getAuthenticationExchange().get();
+        final String exchange = ((RabbitMQProperties) rabbitMQProperties).getAuthenticationExchange().get();
         channel.exchangeDeclare(exchange, BuiltinExchangeType.FANOUT);
         logger.info("Declared RabbitMQ exchange [{}]", exchange);
 
@@ -34,7 +39,7 @@ class RabbitMQMessageHandlerManager extends RabbitMQChannelManager {
         logger.info("Bound authentication queue [{}] to exchange [{}]", queueName, exchange);
 
         RabbitMQMessageHandler messageHandler =
-                new RabbitMQMessageHandler(channel, authenticationService, rabbitMQProperties);
+                new RabbitMQMessageHandler(channel, authenticationService, (RabbitMQProperties) rabbitMQProperties);
         channel.basicConsume(queueName, false, messageHandler);
     }
 }
