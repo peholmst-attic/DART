@@ -15,6 +15,11 @@ rabbitmq.reconnectionDelayMs=1000
 # Name of exchange to listen to for authentication messages
 rabbitmq.authentication.exchange=authentication
 
+# Integration testing user account
+rabbitmq.authentication.exchange.integration-test.enabled=false
+rabbitmq.authentication.exchange.integration-test.user=
+rabbitmq.authentication.exchange.integration-test.password=
+
 # Connection parameters for JDBC
 jdbc.url=
 jdbc.user=

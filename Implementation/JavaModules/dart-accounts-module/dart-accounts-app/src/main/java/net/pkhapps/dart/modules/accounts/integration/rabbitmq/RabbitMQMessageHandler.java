@@ -70,7 +70,13 @@ class RabbitMQMessageHandler extends DefaultConsumer {
     private void login(AMQP.BasicProperties properties) throws IOException {
         final String username = getHeader(HEADER_USERNAME, properties);
         final String password = getHeader(HEADER_PASSWORD, properties);
-        if (username != null && password != null && authenticationService.login(username, password)) {
+
+        if (rabbitMQProperties.getAuthenticationIntegrationTestEnabled().get() &&
+            rabbitMQProperties.getAuthenticationIntegrationTestUser().get().equals(username) &&
+            rabbitMQProperties.getAuthenticationIntegrationTestPassword().get().equals(password)) {
+            LOGGER.warn("Logging in as integration test user");
+            reply(properties, "".getBytes(StandardCharsets.UTF_8));
+        } else if (username != null && password != null && authenticationService.login(username, password)) {
             reply(properties, "".getBytes(StandardCharsets.UTF_8));
         } else {
             reply(properties, "refused".getBytes(StandardCharsets.UTF_8));
@@ -83,29 +89,41 @@ class RabbitMQMessageHandler extends DefaultConsumer {
 
     private void checkResource(AMQP.BasicProperties properties) throws IOException {
         final String username = getHeader(HEADER_USERNAME, properties);
-        final String vhost = getHeader(HEADER_VHOST, properties);
-        final String resourceName = getHeader(HEADER_NAME, properties);
-        final ResourceType resourceType = getHeader(HEADER_RESOURCE, properties, ResourceType.class);
-        final ResourcePermission permission = getHeader(HEADER_PERMISSION, properties, ResourcePermission.class);
-        final boolean result =
-                username != null && isValidVirtualHost(vhost) && resourceName != null && resourceType != null &&
-                permission != null &&
-                authenticationService.checkResource(username, resourceName, resourceType, permission);
-        reply(properties, toReplyBody(result));
+        if (rabbitMQProperties.getAuthenticationIntegrationTestEnabled().get() &&
+            rabbitMQProperties.getAuthenticationIntegrationTestUser().get().equals(username)) {
+            LOGGER.warn("Granting full access to integration test user");
+            reply(properties, toReplyBody(true));
+        } else {
+            final String vhost = getHeader(HEADER_VHOST, properties);
+            final String resourceName = getHeader(HEADER_NAME, properties);
+            final ResourceType resourceType = getHeader(HEADER_RESOURCE, properties, ResourceType.class);
+            final ResourcePermission permission = getHeader(HEADER_PERMISSION, properties, ResourcePermission.class);
+            final boolean result =
+                    username != null && isValidVirtualHost(vhost) && resourceName != null && resourceType != null &&
+                    permission != null &&
+                    authenticationService.checkResource(username, resourceName, resourceType, permission);
+            reply(properties, toReplyBody(result));
+        }
     }
 
     private void checkTopic(AMQP.BasicProperties properties) throws IOException {
         final String username = getHeader(HEADER_USERNAME, properties);
-        final String vhost = getHeader(HEADER_VHOST, properties);
-        final String resourceName = getHeader(HEADER_NAME, properties);
-        final ResourceType resourceType = getHeader(HEADER_RESOURCE, properties, ResourceType.class);
-        final ResourcePermission permission = getHeader(HEADER_PERMISSION, properties, ResourcePermission.class);
-        final String routingKey = getHeader("routing_key", properties);
-        final boolean result =
-                username != null && isValidVirtualHost(vhost) && resourceName != null && resourceType != null &&
-                permission != null && routingKey != null &&
-                authenticationService.checkTopic(username, resourceName, resourceType, permission, routingKey);
-        reply(properties, toReplyBody(result));
+        if (rabbitMQProperties.getAuthenticationIntegrationTestEnabled().get() &&
+            rabbitMQProperties.getAuthenticationIntegrationTestUser().get().equals(username)) {
+            LOGGER.warn("Granting full access to integration test user");
+            reply(properties, toReplyBody(true));
+        } else {
+            final String vhost = getHeader(HEADER_VHOST, properties);
+            final String resourceName = getHeader(HEADER_NAME, properties);
+            final ResourceType resourceType = getHeader(HEADER_RESOURCE, properties, ResourceType.class);
+            final ResourcePermission permission = getHeader(HEADER_PERMISSION, properties, ResourcePermission.class);
+            final String routingKey = getHeader("routing_key", properties);
+            final boolean result =
+                    username != null && isValidVirtualHost(vhost) && resourceName != null && resourceType != null &&
+                    permission != null && routingKey != null &&
+                    authenticationService.checkTopic(username, resourceName, resourceType, permission, routingKey);
+            reply(properties, toReplyBody(result));
+        }
     }
 
     private boolean isValidVirtualHost(String vhost) {
@@ -137,7 +155,7 @@ class RabbitMQMessageHandler extends DefaultConsumer {
     private void reply(AMQP.BasicProperties properties, byte[] body) throws IOException {
         String correlationId = properties.getCorrelationId();
         String replyTo = properties.getReplyTo();
-        LOGGER.debug("Sending reply to [{}] using correlationId [{}]", replyTo, correlationId);
+        LOGGER.trace("Sending reply to [{}] using correlationId [{}]", replyTo, correlationId);
         if (correlationId != null && replyTo != null) {
             AMQP.BasicProperties replyProperties
                     = new AMQP.BasicProperties.Builder().correlationId(correlationId).build();
