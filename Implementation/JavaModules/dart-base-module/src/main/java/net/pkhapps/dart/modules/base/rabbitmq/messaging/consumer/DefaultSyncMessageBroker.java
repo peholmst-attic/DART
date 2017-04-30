@@ -16,8 +16,12 @@ import java.util.concurrent.atomic.AtomicReference;
 @ApplicationScoped
 public class DefaultSyncMessageBroker implements SyncMessageBroker {
 
+    private final AsyncMessageBroker asyncMessageBroker;
+
     @Inject
-    AsyncMessageBroker asyncMessageBroker;
+    public DefaultSyncMessageBroker(AsyncMessageBroker asyncMessageBroker) {
+        this.asyncMessageBroker = asyncMessageBroker;
+    }
 
     @Override
     public <REQUEST, RESPONSE> RESPONSE sendRequest(@NotNull REQUEST request,
