@@ -46,6 +46,12 @@ class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public boolean checkResource(@NotNull String name, @NotNull String resourceName, @NotNull ResourceType resourceType,
                                  @NotNull ResourcePermission permission) {
+
+        // Grant all permissions to auto-generated resources
+        if (resourceName.startsWith("amq.gen-")) {
+            return true;
+        }
+
         TableField<AccountTypePermissionsRecord, Boolean> permissionField;
         switch (permission) {
             case CONFIGURE:
