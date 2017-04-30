@@ -49,17 +49,17 @@ public class DefaultRabbitMQProperties implements RabbitMQProperties {
 
     @Override
     public Supplier<Integer> getConnectionTimeoutMs() {
-        return DynamicPropertyFactory.getInstance().getIntProperty(RABBITMQ_CONNECTION_TIMEOUT_MS, 1000)::getValue;
+        return DynamicPropertyFactory.getInstance().getIntProperty(RABBITMQ_CONNECTION_TIMEOUT_MS, 5000)::getValue;
     }
 
     @Override
     public Supplier<Integer> getHandshakeTimeoutMs() {
-        return DynamicPropertyFactory.getInstance().getIntProperty(RABBITMQ_HANDSHAKE_TIMEOUT_MS, 1000)::getValue;
+        return DynamicPropertyFactory.getInstance().getIntProperty(RABBITMQ_HANDSHAKE_TIMEOUT_MS, 5000)::getValue;
     }
 
     @Override
     public Supplier<Integer> getReconnectionDelayMs() {
-        return DynamicPropertyFactory.getInstance().getIntProperty(RABBITMQ_RECONNECTION_DELAY_MS, 1000)::getValue;
+        return DynamicPropertyFactory.getInstance().getIntProperty(RABBITMQ_RECONNECTION_DELAY_MS, 5000)::getValue;
     }
 
     @Override
