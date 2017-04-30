@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import java.util.concurrent.Executors;
@@ -22,7 +21,7 @@ class ExecutorProvider {
     @ApplicationScoped
     ScheduledExecutorService createExecutorService() {
         LOGGER.info("Creating executor service");
-        return Executors.newSingleThreadScheduledExecutor();
+        return Executors.newScheduledThreadPool(10);
     }
 
     void destroyExecutorService(@Disposes ScheduledExecutorService executorService) {

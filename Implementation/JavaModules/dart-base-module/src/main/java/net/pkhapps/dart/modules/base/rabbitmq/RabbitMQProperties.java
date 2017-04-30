@@ -1,80 +1,55 @@
 package net.pkhapps.dart.modules.base.rabbitmq;
 
-import com.netflix.config.DynamicIntProperty;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
-
-import javax.enterprise.context.ApplicationScoped;
+import java.util.function.Supplier;
 
 /**
- * Bean for getting easy access to the RabbitMQ configuration properties. Feel free to subclass if you want to add
+ * Interface for getting easy access to the RabbitMQ configuration properties. Feel free to subclass if you want to add
  * more properties.
  */
-@ApplicationScoped
-public class RabbitMQProperties {
-
-    private static final String RABBITMQ_RECONNECTION_DELAY_MS = "rabbitmq.reconnectionDelayMs";
-    private static final String RABBITMQ_HOST = "rabbitmq.host";
-    private static final String RABBITMQ_PORT = "rabbitmq.port";
-    private static final String RABBITMQ_VIRTUAL_HOST = "rabbitmq.virtualHost";
-    private static final String RABBITMQ_USERNAME = "rabbitmq.username";
-    private static final String RABBITMQ_PASSWORD = "rabbitmq.password";
-    private static final String RABBITMQ_CONNECTION_TIMEOUT_MS = "rabbitmq.connectionTimeoutMs";
-    private static final String RABBITMQ_HANDSHAKE_TIMEOUT_MS = "rabbitmq.handshakeTimeoutMs";
+public interface RabbitMQProperties {
 
     /**
      * The host of the RabbitMQ server.
      */
-    public DynamicStringProperty getHost() {
-        return DynamicPropertyFactory.getInstance().getStringProperty(RABBITMQ_HOST, "localhost");
-    }
+    Supplier<String> getHost();
 
     /**
      * The port of the RabbitMQ server.
      */
-    public DynamicIntProperty getPort() {
-        return DynamicPropertyFactory.getInstance().getIntProperty(RABBITMQ_PORT, 5672);
-    }
+    Supplier<Integer> getPort();
 
     /**
      * The username to use when connecting to the RabbitMQ server.
      */
-    public DynamicStringProperty getUsername() {
-        return DynamicPropertyFactory.getInstance().getStringProperty(RABBITMQ_USERNAME, "guest");
-    }
+    Supplier<String> getUsername();
 
     /**
      * The password to use when connecting to the RabbitMQ server.
      */
-    public DynamicStringProperty getPassword() {
-        return DynamicPropertyFactory.getInstance().getStringProperty(RABBITMQ_PASSWORD, "guest");
-    }
+    Supplier<String> getPassword();
 
     /**
      * The virtual host to connect to.
      */
-    public DynamicStringProperty getVirtualHost() {
-        return DynamicPropertyFactory.getInstance().getStringProperty(RABBITMQ_VIRTUAL_HOST, "");
-    }
+    Supplier<String> getVirtualHost();
 
     /**
      * The connection timeout in milliseconds.
      */
-    public DynamicIntProperty getConnectionTimeoutMs() {
-        return DynamicPropertyFactory.getInstance().getIntProperty(RABBITMQ_CONNECTION_TIMEOUT_MS, 1000);
-    }
+    Supplier<Integer> getConnectionTimeoutMs();
 
     /**
      * The handshake timeout in milliseconds.
      */
-    public DynamicIntProperty getHandshakeTimeoutMs() {
-        return DynamicPropertyFactory.getInstance().getIntProperty(RABBITMQ_HANDSHAKE_TIMEOUT_MS, 1000);
-    }
+    Supplier<Integer> getHandshakeTimeoutMs();
 
     /**
      * The number of milliseconds to wait before retrying after a connection failure.
      */
-    public DynamicIntProperty getReconnectionDelayMs() {
-        return DynamicPropertyFactory.getInstance().getIntProperty(RABBITMQ_RECONNECTION_DELAY_MS, 1000);
-    }
+    Supplier<Integer> getReconnectionDelayMs();
+
+    /**
+     * The number of milliseconds to wait for a response when performing an asynchronous RPC call over RabbitMQ.
+     */
+    Supplier<Integer> getRpcResponseTimeoutMs();
 }

@@ -32,17 +32,20 @@ public abstract class RabbitMQChannelManager {
 
     private Channel channel;
 
-    @Inject
-    ScheduledExecutorService executorService;
+    protected final ScheduledExecutorService executorService;
+    protected final RabbitMQProperties rabbitMQProperties;
 
     @Inject
-    RabbitMQProperties rabbitMQProperties;
+    public RabbitMQChannelManager(ScheduledExecutorService executorService, RabbitMQProperties rabbitMQProperties) {
+        this.executorService = executorService;
+        this.rabbitMQProperties = rabbitMQProperties;
+    }
 
     // No need to react to the RabbitMQConnectionClosed event since we do that through the shutdown listener.
 
     private boolean channelClosedBecauseOfSetupError;
 
-    private void onRabbitMQConnectionOpened(@Observes RabbitMQConnectionOpened connectionOpened) throws
+    public void onRabbitMQConnectionOpened(@Observes RabbitMQConnectionOpened connectionOpened) throws
             IOException {
         setUpChannel(connectionOpened.getConnection());
     }
