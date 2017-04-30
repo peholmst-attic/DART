@@ -1,5 +1,7 @@
 package net.pkhapps.dart.modules.resources.integration.rabbitmq;
 
+import net.pkhapps.dart.modules.base.rabbitmq.messaging.StatusCodes;
+
 /**
  * Exception thrown by a broker when a handler throws an exception that should be reported back to the client that
  * sent the message.

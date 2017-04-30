@@ -1,6 +1,6 @@
 package net.pkhapps.dart.modules.resources.integration.rabbitmq;
 
-import net.pkhapps.dart.modules.resources.integration.xsd.Message;
+import net.pkhapps.dart.modules.resources.integration.xsd.Command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,12 +10,12 @@ import org.jetbrains.annotations.Nullable;
 public interface CommandBroker {
 
     /**
-     * @param message
+     * @param command
      * @param userId
      * @throws HandlerNotFoundException
      * @throws HandlerException
      * @throws AccessDeniedException
      */
-    void handleCommand(@NotNull Message message, @Nullable String userId)
+    void handleCommand(@NotNull Command command, @Nullable String userId)
             throws HandlerNotFoundException, HandlerException, AccessDeniedException;
 }

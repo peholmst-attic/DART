@@ -1,7 +1,10 @@
 package net.pkhapps.dart.modules.resources.integration.rabbitmq.request;
 
 import net.pkhapps.dart.modules.resources.integration.rabbitmq.AccessDeniedException;
-import net.pkhapps.dart.modules.resources.integration.xsd.FindResources;
+import net.pkhapps.dart.modules.resources.integration.xsd.FindResourcesRequest;
+import net.pkhapps.dart.modules.resources.integration.xsd.Request;
+import net.pkhapps.dart.modules.resources.integration.xsd.ResourcesResponse;
+import net.pkhapps.dart.modules.resources.integration.xsd.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,12 +14,12 @@ import javax.enterprise.context.ApplicationScoped;
  * TODO Document me!
  */
 @ApplicationScoped
-class FindResourcesHandler implements RequestHandler<FindResources.Request, FindResources.Response> {
+@HandlerFor(FindResourcesRequest.class)
+class FindResourcesHandler implements RequestHandler {
 
     @Override
     @NotNull
-    public FindResources.Response handleRequest(@NotNull FindResources.Request request,
-                                                @Nullable String userId) throws AccessDeniedException {
-        return null;
+    public Response handleRequest(@NotNull Request request, @Nullable String userId) throws AccessDeniedException {
+        return new ResourcesResponse();
     }
 }

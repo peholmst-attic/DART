@@ -3,87 +3,75 @@ package net.pkhapps.dart.modules.resources.integration.rabbitmq;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
+import net.pkhapps.dart.modules.base.rabbitmq.messaging.StatusCodes;
+import net.pkhapps.dart.modules.base.rabbitmq.messaging.util.MessageConverter;
+import net.pkhapps.dart.modules.base.rabbitmq.messaging.util.MessageConvertionException;
 import net.pkhapps.dart.modules.resources.RabbitMQProperties;
-import net.pkhapps.dart.modules.resources.integration.xsd.Message;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.Clock;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * TODO document me
  */
-abstract class AbstractMessageHandler extends DefaultConsumer {
-
-    static final String CONTENT_TYPE_XML = "application/xml";
-    static final String CONTENT_TYPE_JSON = "application/json";
-
+abstract class AbstractMessageHandler<M> extends DefaultConsumer {
 
     final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Class<M> messageClass;
     private final RabbitMQProperties rabbitMQProperties;
     private final Clock clock;
-    final Marshaller xmlMarshaller;
-    final Marshaller jsonMarshaller;
-    final Unmarshaller xmlUnmarshaller;
-    final Unmarshaller jsonUnmarshaller;
+    private final ExecutorService executorService;
+    private final MessageConverter messageConverter;
 
-    AbstractMessageHandler(Channel channel, RabbitMQProperties rabbitMQProperties, Clock clock, JAXBContext jaxbContext)
-            throws JAXBException {
+    AbstractMessageHandler(Channel channel, Class<M> messageClass, RabbitMQProperties rabbitMQProperties,
+                           Clock clock, ExecutorService executorService, MessageConverter messageConverter) {
         super(channel);
+        this.messageClass = messageClass;
         this.rabbitMQProperties = rabbitMQProperties;
         this.clock = clock;
-
-        xmlMarshaller = jaxbContext.createMarshaller();
-        xmlMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, CONTENT_TYPE_XML);
-
-        jsonMarshaller = jaxbContext.createMarshaller();
-        jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, CONTENT_TYPE_JSON);
-
-        xmlUnmarshaller = jaxbContext.createUnmarshaller();
-        xmlUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, CONTENT_TYPE_XML);
-
-        jsonUnmarshaller = jaxbContext.createUnmarshaller();
-        jsonUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, CONTENT_TYPE_JSON);
+        this.executorService = executorService;
+        this.messageConverter = messageConverter;
     }
 
-    /**
-     * @param properties
-     * @param body
-     * @return
-     */
-    Message readMessage(@NotNull AMQP.BasicProperties properties, @NotNull byte[] body) {
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(body)) {
-            if (CONTENT_TYPE_JSON.equals(properties.getContentType())) {
-                logger.trace("Unmarshalling message as JSON");
-                return (Message) jsonUnmarshaller.unmarshal(inputStream);
-            } else {
-                logger.trace("Unmarshalling message as XML");
-                return (Message) xmlUnmarshaller.unmarshal(inputStream);
-            }
-        } catch (Exception ex) {
-            logger.warn("Received unknown message, ignoring", ex);
-            return null;
+    @Override
+    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
+            throws IOException {
+        try {
+            M message = messageConverter.toPojo(messageClass, body, properties);
+            logger.trace("Acknowledging message [{}]", envelope.getDeliveryTag());
+            getChannel().basicAck(envelope.getDeliveryTag(), false);
+            executorService.submit(() -> {
+                try {
+                    handleMessage(message, properties);
+                } catch (IOException ex) {
+                    logger.error("Could not handle message", ex);
+                }
+            });
+        } catch (MessageConvertionException ex) {
+            logger.warn("Could not convert incoming message, ignoring", ex);
         }
     }
 
     /**
+     * @param message
+     * @param properties
+     * @throws IOException
+     */
+    protected abstract void handleMessage(@NotNull M message, @NotNull AMQP.BasicProperties properties)
+            throws IOException;
+
+    /**
      * @param properties
      * @return
      */
-    AMQP.BasicProperties.Builder buildReplyProperties(@NotNull AMQP.BasicProperties properties) {
+    private AMQP.BasicProperties.Builder buildReplyProperties(@NotNull AMQP.BasicProperties properties) {
         // @formatter:off
         return new AMQP.BasicProperties.Builder()
                 .timestamp(Date.from(clock.instant()))
@@ -100,19 +88,48 @@ abstract class AbstractMessageHandler extends DefaultConsumer {
      * @param properties
      * @throws IOException
      */
-    void sendError(int code, @Nullable String message, @NotNull AMQP.BasicProperties properties) throws IOException {
+    protected void sendError(int code, @Nullable String message, @NotNull AMQP.BasicProperties properties)
+            throws IOException {
+        Objects.requireNonNull(properties, "properties must not be null");
         if (properties.getReplyTo() != null) {
             logger.debug("Sending error [{}: {}] to [{}]", code, message,
                     properties.getReplyTo());
-            Map<String, Object> headers = new HashMap<>();
+            final Map<String, Object> headers = new HashMap<>();
             headers.put(StatusCodes.STATUS_CODE_HEADER, code);
             if (message != null) {
                 headers.put(StatusCodes.STATUS_MESSAGE_HEADER, message);
             }
-            getChannel()
-                    .basicPublish("", properties.getReplyTo(),
-                            buildReplyProperties(properties).headers(headers).build(),
-                            null);
+            synchronized (this) {
+                getChannel()
+                        .basicPublish("", properties.getReplyTo(),
+                                buildReplyProperties(properties).headers(headers).build(),
+                                null);
+            }
+        }
+    }
+
+    /**
+     * @param message
+     * @param properties
+     * @throws IOException
+     */
+    protected void sendOk(@Nullable Object message, @NotNull AMQP.BasicProperties properties) throws IOException {
+        Objects.requireNonNull(properties, "properties must not be null");
+        if (properties.getReplyTo() != null) {
+            logger.debug("Sending OK response to [{}]", properties.getReplyTo());
+            AMQP.BasicProperties.Builder replyProperties = buildReplyProperties(properties)
+                    .headers(Collections.singletonMap(StatusCodes.STATUS_CODE_HEADER, StatusCodes.OK));
+            try {
+                byte[] body = null;
+                if (message != null) {
+                    body = messageConverter.fromPojo(message, replyProperties);
+                }
+                synchronized (this) {
+                    getChannel().basicPublish("", properties.getReplyTo(), replyProperties.build(), body);
+                }
+            } catch (MessageConvertionException ex) {
+                throw new IOException("Could not convert message", ex);
+            }
         }
     }
 }

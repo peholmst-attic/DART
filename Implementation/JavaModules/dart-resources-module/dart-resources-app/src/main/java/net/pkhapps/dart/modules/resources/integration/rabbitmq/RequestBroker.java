@@ -1,6 +1,7 @@
 package net.pkhapps.dart.modules.resources.integration.rabbitmq;
 
-import net.pkhapps.dart.modules.resources.integration.xsd.Message;
+import net.pkhapps.dart.modules.resources.integration.xsd.Request;
+import net.pkhapps.dart.modules.resources.integration.xsd.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public interface RequestBroker {
 
     /**
-     * @param message
+     * @param request
      * @param userId
      * @return
      * @throws HandlerNotFoundException
@@ -18,7 +19,7 @@ public interface RequestBroker {
      * @throws AccessDeniedException
      */
     @NotNull
-    Message handleRequest(@NotNull Message message, @Nullable String userId)
+    Response handleRequest(@NotNull Request request, @Nullable String userId)
             throws HandlerNotFoundException, HandlerException, AccessDeniedException;
 
 }

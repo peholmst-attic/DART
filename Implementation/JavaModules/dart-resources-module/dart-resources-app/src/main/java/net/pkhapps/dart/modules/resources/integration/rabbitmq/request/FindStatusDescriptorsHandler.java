@@ -1,23 +1,25 @@
 package net.pkhapps.dart.modules.resources.integration.rabbitmq.request;
 
 import net.pkhapps.dart.modules.resources.integration.rabbitmq.AccessDeniedException;
-import net.pkhapps.dart.modules.resources.integration.xsd.FindStatusDescriptors;
+import net.pkhapps.dart.modules.resources.integration.xsd.FindStatusDescriptorsRequest;
+import net.pkhapps.dart.modules.resources.integration.xsd.Request;
+import net.pkhapps.dart.modules.resources.integration.xsd.Response;
+import net.pkhapps.dart.modules.resources.integration.xsd.StatusDescriptorsResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.enterprise.context.ApplicationScoped;
 
 /**
- * Created by peholmst on 22/04/2017.
+ * TODO Document me!
  */
 @ApplicationScoped
-class FindStatusDescriptorsHandler
-        implements RequestHandler<FindStatusDescriptors.Request, FindStatusDescriptors.Response> {
+@HandlerFor(FindStatusDescriptorsRequest.class)
+class FindStatusDescriptorsHandler implements RequestHandler {
 
     @NotNull
     @Override
-    public FindStatusDescriptors.Response handleRequest(@NotNull FindStatusDescriptors.@NotNull Request request,
-                                                        @Nullable String userId) throws AccessDeniedException {
-        return null;
+    public Response handleRequest(@NotNull Request request, @Nullable String userId) throws AccessDeniedException {
+        return new StatusDescriptorsResponse();
     }
 }

@@ -3,6 +3,9 @@ package net.pkhapps.dart.modules.resources.integration.rabbitmq;
 import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import net.pkhapps.dart.modules.base.rabbitmq.RabbitMQChannelManager;
+import net.pkhapps.dart.modules.base.rabbitmq.RabbitMQProperties;
+
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * TODO Document me
@@ -13,7 +16,10 @@ abstract class AbstractMessageHandlerManager<H extends AbstractMessageHandler> e
     private final String queueName;
     private final String routingKey;
 
-    AbstractMessageHandlerManager(String exchange, String queueName, String routingKey) {
+    AbstractMessageHandlerManager(ScheduledExecutorService executorService,
+                                  RabbitMQProperties rabbitMQProperties, String exchange, String queueName,
+                                  String routingKey) {
+        super(executorService, rabbitMQProperties);
         this.exchange = exchange;
         this.queueName = queueName;
         this.routingKey = routingKey;

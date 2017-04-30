@@ -78,77 +78,113 @@
 
     <!-- Message Types -->
 
-    <xs:complexType name="findStatusDescriptors">
+    <xs:complexType name="command" abstract="true">
+        <xs:annotation>
+            <xs:documentation>Base type for commands.</xs:documentation>
+        </xs:annotation>
+    </xs:complexType>
+
+    <xs:complexType name="request" abstract="true">
+        <xs:annotation>
+            <xs:documentation>Base type for requests.</xs:documentation>
+        </xs:annotation>
+    </xs:complexType>
+
+    <xs:complexType name="response" abstract="true">
+        <xs:annotation>
+            <xs:documentation>Base type for responses.</xs:documentation>
+        </xs:annotation>
+    </xs:complexType>
+
+    <xs:complexType name="event" abstract="true">
+        <xs:annotation>
+            <xs:documentation>Base type for events.</xs:documentation>
+        </xs:annotation>
+    </xs:complexType>
+
+    <xs:complexType name="findStatusDescriptorsRequest">
         <xs:annotation>
             <xs:documentation>
-                Request/response for retrieving status descriptors. The list of returned descriptors can be filtered by
+                Request for retrieving status descriptors. The list of returned descriptors can be filtered by
                 explicitly including or excluding certain descriptors. If no filter has been applied, all active
                 descriptors are returned.
             </xs:documentation>
         </xs:annotation>
-        <xs:choice>
-            <xs:element name="request">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="includeId" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
-                        <xs:element name="excludeId" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="response">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="statusDescriptor" type="statusDescriptor" minOccurs="0"
-                                    maxOccurs="unbounded"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:choice>
+        <xs:complexContent>
+            <xs:extension base="request">
+                <xs:sequence>
+                    <xs:element name="includeId" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="excludeId" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
     </xs:complexType>
 
-    <xs:complexType name="findResources">
+    <xs:complexType name="statusDescriptorsResponse">
         <xs:annotation>
             <xs:documentation>
-                Request/response for retrieving resources. The list of returned resources can be filtered by
+                Response containing status descriptors.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="response">
+                <xs:sequence>
+                    <xs:element name="statusDescriptor" type="statusDescriptor" minOccurs="0"
+                                maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="findResourcesRequestType">
+        <xs:annotation>
+            <xs:documentation>
+                Request for retrieving resources. The list of returned resources can be filtered by
                 explicitly including or excluding certain resources. If no filter has been applied, all active
                 resources are returned. It is also possible to specify which additional information should be included
                 in the result (location, status, type, station).
             </xs:documentation>
         </xs:annotation>
-        <xs:choice>
-            <xs:element name="request">
-                <xs:complexType>
-                    <xs:choice>
-                        <xs:element name="includeName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                        <xs:element name="excludeName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                        <xs:element name="includeLocation" type="xs:boolean" minOccurs="0"/>
-                        <xs:element name="includeStatus" type="xs:boolean" minOccurs="0"/>
-                        <xs:element name="includeType" type="xs:boolean" minOccurs="0"/>
-                        <xs:element name="includeStation" type="xs:boolean" minOccurs="0"/>
-                    </xs:choice>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="response">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="resource" minOccurs="0" maxOccurs="unbounded">
-                            <xs:complexType>
-                                <xs:complexContent>
-                                    <xs:extension base="resource">
-                                        <xs:sequence>
-                                            <xs:element name="location" type="resourceLocation" minOccurs="0"/>
-                                            <xs:element name="status" type="resourceStatus" minOccurs="0"/>
-                                            <xs:element name="type" type="resourceType" minOccurs="0"/>
-                                            <xs:element name="station" type="station" minOccurs="0"/>
-                                        </xs:sequence>
-                                    </xs:extension>
-                                </xs:complexContent>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:choice>
+        <xs:complexContent>
+            <xs:extension base="request">
+                <xs:sequence>
+                    <xs:element name="includeName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="excludeName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="includeLocation" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="includeStatus" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="includeType" type="xs:boolean" minOccurs="0"/>
+                    <xs:element name="includeStation" type="xs:boolean" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="resourcesResponseType">
+        <xs:annotation>
+            <xs:documentation>
+                Response containing resources.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="response">
+                <xs:sequence>
+                    <xs:element name="resource" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="resource">
+                                    <xs:sequence>
+                                        <xs:element name="location" type="resourceLocation" minOccurs="0"/>
+                                        <xs:element name="status" type="resourceStatus" minOccurs="0"/>
+                                        <xs:element name="type" type="resourceType" minOccurs="0"/>
+                                        <xs:element name="station" type="station" minOccurs="0"/>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
     </xs:complexType>
 
     <xs:complexType name="setResourceStatusCommand">
@@ -157,10 +193,14 @@
                 Command for setting the status of a resource.
             </xs:documentation>
         </xs:annotation>
-        <xs:sequence>
-            <xs:element name="resourceName" type="xs:string"/>
-            <xs:element name="statusDescriptorId" type="xs:long"/>
-        </xs:sequence>
+        <xs:complexContent>
+            <xs:extension base="command">
+                <xs:sequence>
+                    <xs:element name="resourceName" type="xs:string"/>
+                    <xs:element name="statusDescriptorId" type="xs:long"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
     </xs:complexType>
 
     <xs:complexType name="setResourceLocationCommand">
@@ -169,10 +209,14 @@
                 Command for setting the location of a resource.
             </xs:documentation>
         </xs:annotation>
-        <xs:sequence>
-            <xs:element name="resourceName" type="xs:string"/>
-            <xs:element name="location" type="coordinates"/>
-        </xs:sequence>
+        <xs:complexContent>
+            <xs:extension base="command">
+                <xs:sequence>
+                    <xs:element name="resourceName" type="xs:string"/>
+                    <xs:element name="location" type="coordinates"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
     </xs:complexType>
 
     <xs:complexType name="resourceStatusOrLocationChangedEvent">
@@ -181,24 +225,23 @@
                 Event published whenever the status or the location of a resource is changed.
             </xs:documentation>
         </xs:annotation>
-        <xs:sequence>
-            <xs:element name="resourceName" type="xs:string"/>
-            <xs:element name="status" type="resourceStatus" minOccurs="0"/>
-            <xs:element name="location" type="resourceLocation" minOccurs="0"/>
-        </xs:sequence>
+        <xs:complexContent>
+            <xs:extension base="event">
+                <xs:sequence>
+                    <xs:element name="resourceName" type="xs:string"/>
+                    <xs:element name="status" type="resourceStatus" minOccurs="0"/>
+                    <xs:element name="location" type="resourceLocation" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
     </xs:complexType>
 
     <!-- Actual format of the message documents -->
 
-    <xs:element name="message">
-        <xs:complexType>
-            <xs:choice>
-                <xs:element name="findStatusDescriptors" type="findStatusDescriptors"/>
-                <xs:element name="findResources" type="findResources"/>
-                <xs:element name="setResourceStatusCommand" type="setResourceStatusCommand"/>
-                <xs:element name="setResourceLocationCommand" type="setResourceLocationCommand"/>
-                <xs:element name="resourceStatusOrLocationChangedEvent" type="resourceStatusOrLocationChangedEvent"/>
-            </xs:choice>
-        </xs:complexType>
-    </xs:element>
+    <xs:element name="setResourceStatusCommand" type="setResourceStatusCommand"/>
+    <xs:element name="setResourceLocationCommand" type="setResourceLocationCommand"/>
+    <xs:element name="findResourcesRequest" type="findResourcesRequestType"/>
+    <xs:element name="statusDescriptorsResponse" type="statusDescriptorsResponse"/>
+    <xs:element name="findStatusDescriptorsRequest" type="findStatusDescriptorsRequest"/>
+    <xs:element name="resourcesResponse" type="resourcesResponseType"/>
 </xs:schema>

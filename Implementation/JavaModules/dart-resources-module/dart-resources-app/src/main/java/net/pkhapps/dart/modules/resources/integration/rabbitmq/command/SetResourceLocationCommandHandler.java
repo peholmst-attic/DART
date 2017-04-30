@@ -1,7 +1,8 @@
 package net.pkhapps.dart.modules.resources.integration.rabbitmq.command;
 
 import net.pkhapps.dart.modules.resources.integration.rabbitmq.AccessDeniedException;
-import net.pkhapps.dart.modules.resources.integration.xsd.SetResourceLocationCommand;
+import net.pkhapps.dart.modules.resources.integration.xsd.Command;
+import net.pkhapps.dart.modules.resources.integration.xsd.SetResourceStatusCommand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -10,16 +11,16 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 
 /**
- * Created by peholmst on 22/04/2017.
+ * TODO Document me!
  */
 @ApplicationScoped
-class SetResourceLocationCommandHandler implements CommandHandler<SetResourceLocationCommand> {
+@HandlerFor(SetResourceStatusCommand.class)
+class SetResourceLocationCommandHandler implements CommandHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetResourceStatusCommandHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetResourceLocationCommandHandler.class);
 
     @Override
-    public void handleCommand(@NotNull SetResourceLocationCommand setResourceLocationCommand,
-                              @Nullable String userId) throws AccessDeniedException {
-        LOGGER.info("Received command {}", setResourceLocationCommand);
+    public void handleCommand(@NotNull Command command, @Nullable String userId) throws AccessDeniedException {
+        LOGGER.info("Received command {}", command);
     }
 }
