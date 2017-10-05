@@ -24,6 +24,8 @@ public abstract class AbstractAggregateRoot extends org.springframework.data.dom
     @Version
     private Long version;
 
+    private Long nextFreeLocalId;
+
     /**
      * Default constructor.
      */
@@ -39,6 +41,18 @@ public abstract class AbstractAggregateRoot extends org.springframework.data.dom
         Objects.requireNonNull(original, "original must not be null");
         this.id = original.id;
         this.version = original.version;
+        this.nextFreeLocalId = original.nextFreeLocalId;
+    }
+
+    /**
+     * Returns the next free local ID to be used by a {@link AbstractLocalEntity}. This method never returns the same
+     * value twice when invoked on the same object instance.
+     */
+    Long getNextFreeLocalId() {
+        if (nextFreeLocalId == null) {
+            nextFreeLocalId = 0L;
+        }
+        return nextFreeLocalId++;
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -17,6 +18,12 @@ import java.util.stream.Collectors;
 public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregateRoot implements Auditable {
 
     private List<ActionRecord> actionRecords;
+
+    @Indexed
+    private Instant created;
+
+    @Indexed
+    private Instant lastModified;
 
     /**
      * Default constructor.
@@ -33,7 +40,7 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
     public AbstractEventSourcedAggregateRoot(@NotNull AbstractEventSourcedAggregateRoot original) {
         super(original);
         // Replay all the actions to bring the state of the copied aggregate root up-to-date.
-        original.actionRecords.forEach(r -> r.getAction().apply(this));
+        original.actionRecords.forEach(r -> r.getAction().perform(this));
         // Copy the records
         actionRecords = original.actionRecords.stream().map(ActionRecord::copy).collect(Collectors.toList());
     }
@@ -48,12 +55,26 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
     /**
      * Performs the given {@code action} and records it. Clients should never use this method directly. Instead, they
      * should invoke business methods on the aggregate root, that in turn perform the actions.
+     *
+     * @throws IllegalStateException if the action cannot be performed at this time.
+     * @see Action#canPerform(AbstractEventSourcedAggregateRoot)
      */
     protected void performAction(@NotNull Action action) {
         Objects.requireNonNull(action, "action must not be null");
-        action.apply(this);
+        if (!action.canPerform(this)) {
+            throw new IllegalStateException("The action cannot be performed at this time");
+        }
+        action.perform(this);
         ActionRecord record = new ActionRecord(actionRecords.size(), DomainContext.getInstance().now(),
                 DomainContext.getInstance().currentUserId().orElse(null), action);
+
+        // Update date time indexes (for sorting)
+        if (actionRecords.isEmpty()) {
+            created = record.getTimestamp();
+        }
+        lastModified = record.getTimestamp();
+
+        // Store record
         actionRecords.add(record);
     }
 
@@ -93,7 +114,11 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
         /**
          * @param aggregateRoot
          */
-        void apply(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot);
+        void perform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot);
+
+        default boolean canPerform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
+            return true;
+        }
 
         /**
          * @param locale
@@ -123,11 +148,11 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
         /**
          * @param aggregateRoot
          */
-        protected abstract void doApply(@NotNull A aggregateRoot);
+        protected abstract void doPerform(@NotNull A aggregateRoot);
 
         @Override
-        public void apply(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
-            doApply(aggregateRootClass.cast(aggregateRoot));
+        public void perform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
+            doPerform(aggregateRootClass.cast(aggregateRoot));
         }
 
         @Override

@@ -35,7 +35,7 @@ public class TicketType extends AbstractEventSourcedAggregateRoot implements Sof
         }
 
         @Override
-        protected void doApply(@NotNull TicketType aggregateRoot) {
+        protected void doPerform(@NotNull TicketType aggregateRoot) {
             aggregateRoot.code = this.code;
             aggregateRoot.active = true;
         }
@@ -44,7 +44,7 @@ public class TicketType extends AbstractEventSourcedAggregateRoot implements Sof
     public static class Deactivate extends AbstractAction<TicketType> {
 
         @Override
-        protected void doApply(@NotNull TicketType aggregateRoot) {
+        protected void doPerform(@NotNull TicketType aggregateRoot) {
             aggregateRoot.active = false;
         }
     }
@@ -52,7 +52,7 @@ public class TicketType extends AbstractEventSourcedAggregateRoot implements Sof
     public static class Activate extends AbstractAction<TicketType> {
 
         @Override
-        protected void doApply(@NotNull TicketType aggregateRoot) {
+        protected void doPerform(@NotNull TicketType aggregateRoot) {
             aggregateRoot.active = true;
         }
     }
@@ -69,7 +69,7 @@ public class TicketType extends AbstractEventSourcedAggregateRoot implements Sof
         }
 
         @Override
-        protected void doApply(@NotNull TicketType aggregateRoot) {
+        protected void doPerform(@NotNull TicketType aggregateRoot) {
             aggregateRoot.descriptionFi = this.descriptionFi;
             aggregateRoot.descriptionSv = this.descriptionSv;
         }
