@@ -58,9 +58,13 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
      *
      * @throws IllegalStateException if the action cannot be performed at this time.
      * @see Action#canPerform(AbstractEventSourcedAggregateRoot)
+     * @see Action#willChangeState(AbstractEventSourcedAggregateRoot)
      */
     protected void performAction(@NotNull Action action) {
         Objects.requireNonNull(action, "action must not be null");
+        if (!action.willChangeState(this)) {
+            return; // This action will not actually do anything so silently ignore it
+        }
         if (!action.canPerform(this)) {
             throw new IllegalStateException("The action cannot be performed at this time");
         }
@@ -112,11 +116,35 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
     public interface Action extends Serializable {
 
         /**
-         * @param aggregateRoot
+         * Performs the action on the specified aggregate root. When this method is called, both
+         * {@link #willChangeState(AbstractEventSourcedAggregateRoot)} and
+         * {@link #canPerform(AbstractEventSourcedAggregateRoot)} have already been checked and returned true.
+         *
+         * @param aggregateRoot the aggregate root that the action will be performed on.
          */
         void perform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot);
 
+        /**
+         * Checks if this action can be performed at this time on the specified aggregate root. When this method is
+         * called, {@link #willChangeState(AbstractEventSourcedAggregateRoot)} has already been checked and returned
+         * true. If an action cannot be performed, an exception will be thrown if the action is performed anyway.
+         *
+         * @param aggregateRoot the aggregate root that the action will be performed on.
+         * @return true if the action can be performed (default), false if not.
+         */
         default boolean canPerform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
+            return true;
+        }
+
+        /**
+         * Checks if this action will actually change the state of the specified aggregate root. If no state will be
+         * changed, the action will be silently ignored. This situation could for example occur when you try to
+         * perform the exact same action twice in a row.
+         *
+         * @param aggregateRoot the aggregate root that the action will be performed on.
+         * @return true if the action changes the state (default), false if not.
+         */
+        default boolean willChangeState(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
             return true;
         }
 

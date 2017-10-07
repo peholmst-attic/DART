@@ -4,6 +4,7 @@ import net.pkhapps.dart.modules.dispatch.domain.base.AbstractEventSourcedAggrega
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -20,10 +21,12 @@ import java.util.Objects;
 public class Ticket extends AbstractEventSourcedAggregateRoot {
 
     @DBRef
+    @Indexed
     private TicketType type;
 
     private TicketUrgency urgency;
 
+    @Indexed
     private TicketState state;
 
     private TicketAddress address;
@@ -49,19 +52,34 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         }
     }
 
-    public static class Close extends AbstractAction<Ticket> {
-
-        @Override
-        protected void doPerform(@NotNull Ticket aggregateRoot) {
-            aggregateRoot.state = TicketState.CLOSED;
-        }
-    }
-
     public static abstract class AbstractTicketAction extends AbstractAction<Ticket> {
 
         @Override
         public boolean canPerform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
             return (aggregateRoot instanceof Ticket) && !((Ticket) aggregateRoot).getState().equals(TicketState.CLOSED);
+        }
+
+        @Override
+        public boolean willChangeState(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
+            return (aggregateRoot instanceof Ticket) && willChangeState((Ticket) aggregateRoot);
+        }
+
+        protected boolean willChangeState(Ticket ticket) {
+            return true;
+        }
+    }
+
+    public static class Close extends AbstractTicketAction {
+
+        @Override
+        protected void doPerform(@NotNull Ticket aggregateRoot) {
+            aggregateRoot.state = TicketState.CLOSED;
+        }
+
+        @Override
+        public boolean canPerform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
+            return (aggregateRoot instanceof Ticket) &&
+                   ((Ticket) aggregateRoot).getState().canTransitionTo(TicketState.CLOSED);
         }
     }
 
@@ -79,6 +97,11 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.type = type;
         }
+
+        @Override
+        protected boolean willChangeState(Ticket ticket) {
+            return !Objects.equals(type, ticket.type);
+        }
     }
 
     public static class SetUrgency extends AbstractTicketAction {
@@ -93,6 +116,91 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.urgency = urgency;
+        }
+
+        @Override
+        protected boolean willChangeState(Ticket ticket) {
+            return !Objects.equals(urgency, ticket.getUrgency());
+        }
+    }
+
+    public static class SetDetails extends AbstractTicketAction {
+
+        private final String details;
+
+        @PersistenceConstructor
+        SetDetails(@Nullable String details) {
+            this.details = details == null ? "" : details;
+        }
+
+        @Override
+        protected void doPerform(@NotNull Ticket aggregateRoot) {
+            aggregateRoot.details = details;
+        }
+
+        @Override
+        protected boolean willChangeState(Ticket ticket) {
+            return !Objects.equals(details, ticket.details);
+        }
+    }
+
+    public static class SetReporter extends AbstractTicketAction {
+
+        private final String reporter;
+
+        @PersistenceConstructor
+        SetReporter(@Nullable String reporter) {
+            this.reporter = reporter == null ? "" : reporter;
+        }
+
+        @Override
+        protected void doPerform(@NotNull Ticket aggregateRoot) {
+            aggregateRoot.reporter = reporter;
+        }
+
+        @Override
+        protected boolean willChangeState(Ticket ticket) {
+            return !Objects.equals(reporter, ticket.reporter);
+        }
+    }
+
+    public static class SetReporterPhone extends AbstractTicketAction {
+
+        private final String reporterPhone;
+
+        @PersistenceConstructor
+        SetReporterPhone(@Nullable String reporterPhone) {
+            this.reporterPhone = reporterPhone == null ? "" : reporterPhone;
+        }
+
+        @Override
+        protected void doPerform(@NotNull Ticket aggregateRoot) {
+            aggregateRoot.reporterPhone = reporterPhone;
+        }
+
+        @Override
+        protected boolean willChangeState(Ticket ticket) {
+            return !Objects.equals(reporterPhone, ticket.reporterPhone);
+        }
+    }
+
+    public static class SetAddress extends AbstractTicketAction {
+
+        private final TicketAddress address;
+
+        @PersistenceConstructor
+        SetAddress(@NotNull TicketAddress address) {
+            this.address = Objects.requireNonNull(address, "address must not be null");
+        }
+
+        @Override
+        protected void doPerform(@NotNull Ticket aggregateRoot) {
+            aggregateRoot.address = address;
+        }
+
+        @Override
+        protected boolean willChangeState(Ticket ticket) {
+            return !Objects.equals(address, ticket.address);
         }
     }
 
@@ -111,20 +219,11 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.resources.add(new TicketResource(aggregateRoot, callSign, assigned));
         }
-    }
-
-    public static class SetDetails extends AbstractTicketAction {
-
-        private final String details;
-
-        @PersistenceConstructor
-        SetDetails(@Nullable String details) {
-            this.details = details == null ? "" : details;
-        }
 
         @Override
-        protected void doPerform(@NotNull Ticket aggregateRoot) {
-            aggregateRoot.details = details;
+        protected boolean willChangeState(Ticket ticket) {
+            // If a resource has already been assigned to the ticket, it can't be reassigned
+            return ticket.resources.stream().noneMatch(r -> r.getCallSign().equals(callSign) && r.isAssignedToTicket());
         }
     }
 
@@ -163,18 +262,39 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         performAction(new SetDetails(details));
     }
 
+    public @NotNull String getReporter() {
+        return reporter;
+    }
+
+    public void setReporter(@Nullable String reporter) {
+        performAction(new SetReporter(reporter));
+    }
+
+    public @NotNull String getReporterPhone() {
+        return reporterPhone;
+    }
+
+    public void setReporterPhone(@Nullable String reporterPhone) {
+        performAction(new SetReporterPhone(reporterPhone));
+    }
+
+    public @Nullable TicketAddress getAddress() {
+        return address;
+    }
+
+    public void setAddress(@NotNull TicketAddress address) {
+        performAction(new SetAddress(address));
+    }
+
     public @NotNull List<TicketResource> getResources() {
         return Collections.unmodifiableList(resources);
     }
 
     public void assignResource(@NotNull String callSign, @NotNull Instant assigned) {
-        // If a resource has already been assigned to the ticket, it can't be reassigned
-        if (resources.stream().noneMatch(r -> r.getCallSign().equals(callSign) && r.isAssignedToTicket())) {
-            performAction(new AssignResource(callSign, assigned));
-        }
+        performAction(new AssignResource(callSign, assigned));
     }
 
-    // TODO Methods for chaning the timestamps (status) of the resources
+    // TODO Methods for changing the timestamps (status) of the resources
 
     public @NotNull TicketState getState() {
         return state;
@@ -183,7 +303,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
     /**
      * Opens a new ticket.
      */
-    public static Ticket open() {
+    public static @NotNull Ticket open() {
         Ticket ticket = new Ticket();
         ticket.performAction(new Open());
         return ticket;
@@ -193,8 +313,6 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
      * Closes the ticket.
      */
     public void close() {
-        if (getState().canTransitionTo(TicketState.CLOSED)) {
-            performAction(new Close());
-        }
+        performAction(new Close());
     }
 }

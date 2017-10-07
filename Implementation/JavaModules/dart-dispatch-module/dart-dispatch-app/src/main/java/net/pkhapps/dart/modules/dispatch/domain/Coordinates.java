@@ -1,18 +1,17 @@
 package net.pkhapps.dart.modules.dispatch.domain;
 
-import org.jetbrains.annotations.NotNull;
+import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Objects;
 
 /**
  * Value objects representing a pair of geographical coordinates.
  */
 public class Coordinates implements Serializable {
 
-    private BigDecimal latitude;
-    private BigDecimal longitude;
+    @GeoSpatialIndexed
+    private Point point;
 
     /**
      * Used by Spring Data only.
@@ -21,37 +20,32 @@ public class Coordinates implements Serializable {
     private Coordinates() {
     }
 
-    public Coordinates(@NotNull BigDecimal latitude, @NotNull BigDecimal longitude) {
-        Objects.requireNonNull(latitude, "latitude must not be null");
-        Objects.requireNonNull(longitude, "longitude must not be null");
-
-        requireWithinLimits(latitude, new BigDecimal(90), new BigDecimal(-90));
-        requireWithinLimits(longitude, new BigDecimal(180), new BigDecimal(-180));
-
-        this.latitude = latitude;
-        this.longitude = longitude;
+    public Coordinates(double latitude, double longitude) {
+        requireWithinLimits(latitude, 90, -90);
+        requireWithinLimits(longitude, 180, -180);
+        this.point = new Point(longitude, latitude);
     }
 
-    public @NotNull BigDecimal getLatitude() {
-        return latitude;
+    public double getLatitude() {
+        return point.getY();
     }
 
-    public @NotNull BigDecimal getLongitude() {
-        return longitude;
+    public double getLongitude() {
+        return point.getX();
     }
 
-    private static void requireWithinLimits(BigDecimal coordinate, BigDecimal max, BigDecimal min) {
-        if (coordinate.compareTo(max) > 0) {
+    private static void requireWithinLimits(double coordinate, double max, double min) {
+        if (coordinate > max) {
             throw new IllegalArgumentException("Coordinate must not be greater than " + max);
         }
-        if (coordinate.compareTo(min) < 0) {
+        if (coordinate < min) {
             throw new IllegalArgumentException("Coordinate must not be less than " + min);
         }
     }
 
     @Override
     public String toString() {
-        return String.format("Coordinates[lat=%s,lon=%s]", latitude, longitude);
+        return String.format("Coordinates[lat=%s,lon=%s]", point.getY(), point.getX());
     }
 
     @Override
@@ -65,16 +59,11 @@ public class Coordinates implements Serializable {
 
         Coordinates that = (Coordinates) o;
 
-        if (!latitude.equals(that.latitude)) {
-            return false;
-        }
-        return longitude.equals(that.longitude);
+        return point.equals(that.point);
     }
 
     @Override
     public int hashCode() {
-        int result = latitude.hashCode();
-        result = 31 * result + longitude.hashCode();
-        return result;
+        return point.hashCode();
     }
 }
