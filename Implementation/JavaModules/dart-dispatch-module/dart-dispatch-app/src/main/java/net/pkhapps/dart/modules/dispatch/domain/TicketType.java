@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * Entity representing a ticket type.
  */
-@Document
+@Document(collection = "ticketTypes")
 public class TicketType extends AbstractEventSourcedAggregateRoot implements SoftDeletable {
 
     @Indexed(unique = true)

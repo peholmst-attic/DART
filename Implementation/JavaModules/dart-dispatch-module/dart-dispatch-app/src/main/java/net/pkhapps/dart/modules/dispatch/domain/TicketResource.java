@@ -27,7 +27,7 @@ public class TicketResource extends AbstractLocalEntity {
     private TicketResource() {
     }
 
-    public TicketResource(@NotNull Ticket aggregateRoot, @NotNull String callSign, @NotNull Instant assigned) {
+    TicketResource(@NotNull Ticket aggregateRoot, @NotNull String callSign, @NotNull Instant assigned) {
         super(aggregateRoot);
         this.callSign = Objects.requireNonNull(callSign, "callSign must not be null");
         this.assigned = Objects.requireNonNull(assigned, "assigned must not be null");
@@ -50,6 +50,8 @@ public class TicketResource extends AbstractLocalEntity {
 
     /**
      * Returns the instant when this resource was assigned to the ticket.
+     *
+     * @see TicketResourceEventType#ASSIGNED
      */
     public @NotNull Instant getAssigned() {
         return assigned;
@@ -57,6 +59,8 @@ public class TicketResource extends AbstractLocalEntity {
 
     /**
      * Returns the instant when this resource was dispatched.
+     *
+     * @see TicketResourceEventType#DISPATCHED
      */
     public @Nullable Instant getDispatched() {
         return dispatched;
@@ -64,6 +68,8 @@ public class TicketResource extends AbstractLocalEntity {
 
     /**
      * Returns the instant when this resource responded after being dispatched.
+     *
+     * @see TicketResourceEventType#EN_ROUTE
      */
     public @Nullable Instant getEnRoute() {
         return enRoute;
@@ -71,6 +77,8 @@ public class TicketResource extends AbstractLocalEntity {
 
     /**
      * Returns the instant when this resource arrived on scene.
+     *
+     * @see TicketResourceEventType#ON_SCENE
      */
     public @Nullable Instant getOnScene() {
         return onScene;
@@ -78,6 +86,8 @@ public class TicketResource extends AbstractLocalEntity {
 
     /**
      * Returns the instant when this resource became available for another assignment again.
+     *
+     * @see TicketResourceEventType#AVAILABLE
      */
     public @Nullable Instant getAvailable() {
         return available;
@@ -85,9 +95,72 @@ public class TicketResource extends AbstractLocalEntity {
 
     /**
      * Returns the instant when this resources returned to where it was when it became dispatched.
+     *
+     * @see TicketResourceEventType#RETURNED
      */
     public @Nullable Instant getReturned() {
         return returned;
+    }
+
+    /**
+     * TODO Document me!
+     *
+     * @param eventType
+     * @return
+     */
+    public @Nullable Instant getEventInstant(@NotNull TicketResourceEventType eventType) {
+        Objects.requireNonNull(eventType, "eventType must not be null");
+        switch (eventType) {
+            case ASSIGNED:
+                return assigned;
+            case DISPATCHED:
+                return dispatched;
+            case EN_ROUTE:
+                return enRoute;
+            case ON_SCENE:
+                return onScene;
+            case AVAILABLE:
+                return available;
+            case RETURNED:
+                return returned;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * TODO Document me!
+     *
+     * @param eventType
+     * @param instant
+     */
+    void setEventInstantIfNotSet(@NotNull TicketResourceEventType eventType, @NotNull Instant instant) {
+        Objects.requireNonNull(eventType, "eventType must not be null");
+        Objects.requireNonNull(instant, "instant must not be null");
+        switch (eventType) {
+            case ASSIGNED:
+                assigned = newValueIfOldValueIsNull(assigned, instant);
+                break;
+            case DISPATCHED:
+                dispatched = newValueIfOldValueIsNull(dispatched, instant);
+                break;
+            case EN_ROUTE:
+                enRoute = newValueIfOldValueIsNull(enRoute, instant);
+                break;
+            case ON_SCENE:
+                onScene = newValueIfOldValueIsNull(onScene, instant);
+                break;
+            case AVAILABLE:
+                available = newValueIfOldValueIsNull(available, instant);
+                break;
+            case RETURNED:
+                returned = newValueIfOldValueIsNull(returned, instant);
+                break;
+        }
+    }
+
+    private static <T> T newValueIfOldValueIsNull(T oldValue, T newValue) {
+        return oldValue != null ? oldValue : newValue;
     }
 
     /**

@@ -3,11 +3,9 @@ package net.pkhapps.dart.modules.dispatch.domain.base;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -164,23 +162,15 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
      */
     public static abstract class AbstractAction<A extends AbstractEventSourcedAggregateRoot> implements Action {
 
-        @Transient
-        private final Class<A> aggregateRootClass;
-
-        @SuppressWarnings("unchecked")
-        public AbstractAction() {
-            aggregateRootClass =
-                    (Class<A>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        }
-
         /**
          * @param aggregateRoot
          */
         protected abstract void doPerform(@NotNull A aggregateRoot);
 
         @Override
+        @SuppressWarnings("unchecked")
         public void perform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
-            doPerform(aggregateRootClass.cast(aggregateRoot));
+            doPerform((A) aggregateRoot);
         }
 
         @Override

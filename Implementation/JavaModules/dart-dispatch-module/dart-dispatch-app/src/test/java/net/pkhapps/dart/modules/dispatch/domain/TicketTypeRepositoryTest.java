@@ -23,23 +23,23 @@ public class TicketTypeRepositoryTest {
 
     @Test
     public void saveAndFindByCode() {
-        TicketType ticketType = new TicketType("202");
-        ticketType.setDescription("tieliikenneonnettomuus: pieni", "vägtrafikolycka: liten");
+        TicketType ticketType = new TicketType("401");
+        ticketType.setDescription("rakennuspalo: pieni", "byggnadsbrand: liten");
         ticketType = ticketTypeRepository.save(ticketType);
 
-        Optional<TicketType> result = ticketTypeRepository.findByCodeAndActiveTrue("202");
+        Optional<TicketType> result = ticketTypeRepository.findByCodeAndActiveTrue("401");
         assertThat(result.isPresent()).isTrue();
         assertThat(result.get()).isEqualTo(ticketType);
     }
 
     @Test
     public void saveDeactivateAndFindByCode() {
-        TicketType ticketType = new TicketType("203");
-        ticketType.setDescription("tieliikenneonnettomuus: pieni", "vägtrafikolycka: liten");
+        TicketType ticketType = new TicketType("402");
+        ticketType.setDescription("rakennuspalo: keskisuuri", "byggnadsbrand: medelstor");
         ticketType.deactivate();
         ticketTypeRepository.save(ticketType);
 
-        Optional<TicketType> result = ticketTypeRepository.findByCodeAndActiveTrue("203");
+        Optional<TicketType> result = ticketTypeRepository.findByCodeAndActiveTrue("402");
         assertThat(result.isPresent()).isFalse();
     }
 }

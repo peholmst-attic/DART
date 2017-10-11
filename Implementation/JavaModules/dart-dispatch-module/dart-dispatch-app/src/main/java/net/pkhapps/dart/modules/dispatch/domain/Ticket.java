@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * TODO Document and complete me
  */
-@Document
+@Document(collection = "tickets")
 public class Ticket extends AbstractEventSourcedAggregateRoot {
 
     @DBRef
@@ -227,6 +227,36 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         }
     }
 
+    public static class RecordResourceEvent extends AbstractTicketAction {
+
+        private final String callSign;
+        private final TicketResourceEventType eventType;
+        private final Instant instant;
+
+        @PersistenceConstructor
+        RecordResourceEvent(@NotNull String callSign, @NotNull TicketResourceEventType eventType,
+                            @NotNull Instant instant) {
+            this.callSign = callSign;
+            this.eventType = eventType;
+            this.instant = instant;
+        }
+
+        @Override
+        protected void doPerform(@NotNull Ticket aggregateRoot) {
+            // TODO
+        }
+
+        @Override
+        protected boolean willChangeState(Ticket ticket) { // TODO
+            return super.willChangeState(ticket);
+        }
+
+        @Override
+        public boolean canPerform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
+            return super.canPerform(aggregateRoot);
+        }
+    }
+
     /**
      * Used by Spring Data only.
      */
@@ -294,7 +324,10 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         performAction(new AssignResource(callSign, assigned));
     }
 
-    // TODO Methods for changing the timestamps (status) of the resources
+    public void recordResourceEvent(@NotNull String callSign, @NotNull TicketResourceEventType eventType,
+                                    @NotNull Instant instant) {
+        performAction(new RecordResourceEvent(callSign, eventType, instant));
+    }
 
     public @NotNull TicketState getState() {
         return state;
