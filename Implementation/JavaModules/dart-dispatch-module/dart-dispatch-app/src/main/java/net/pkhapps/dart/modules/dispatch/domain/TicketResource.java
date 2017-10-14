@@ -8,7 +8,8 @@ import java.time.Instant;
 import java.util.Objects;
 
 /**
- * TODO Document me
+ * Local entity representing a resource assignment for a ticket. The entity is used to track the state changes
+ * of a resource.
  */
 public class TicketResource extends AbstractLocalEntity {
 
@@ -103,10 +104,8 @@ public class TicketResource extends AbstractLocalEntity {
     }
 
     /**
-     * TODO Document me!
-     *
-     * @param eventType
-     * @return
+     * Returns the instant for the given event type. This is a way of getting all the instants through a single method
+     * instead of having to invoke the individual getters.
      */
     public @Nullable Instant getEventInstant(@NotNull TicketResourceEventType eventType) {
         Objects.requireNonNull(eventType, "eventType must not be null");
@@ -129,38 +128,78 @@ public class TicketResource extends AbstractLocalEntity {
     }
 
     /**
-     * TODO Document me!
-     *
-     * @param eventType
-     * @param instant
+     * Checks if the instant for the given event type can be set for this particular resource assignment. A
+     * timestamp can only be set once. This method is designed to be used by {@link Ticket} only, which is why it is
+     * package protected.
      */
-    void setEventInstantIfNotSet(@NotNull TicketResourceEventType eventType, @NotNull Instant instant) {
+    boolean canSet(@NotNull TicketResourceEventType eventType) {
         Objects.requireNonNull(eventType, "eventType must not be null");
-        Objects.requireNonNull(instant, "instant must not be null");
         switch (eventType) {
             case ASSIGNED:
-                assigned = newValueIfOldValueIsNull(assigned, instant);
-                break;
+                if (assigned != null) {
+                    return false;
+                }
             case DISPATCHED:
-                dispatched = newValueIfOldValueIsNull(dispatched, instant);
-                break;
+                if (dispatched != null) {
+                    return false;
+                }
             case EN_ROUTE:
-                enRoute = newValueIfOldValueIsNull(enRoute, instant);
-                break;
+                if (enRoute != null) {
+                    return false;
+                }
             case ON_SCENE:
-                onScene = newValueIfOldValueIsNull(onScene, instant);
-                break;
+                if (onScene != null) {
+                    return false;
+                }
             case AVAILABLE:
-                available = newValueIfOldValueIsNull(available, instant);
-                break;
+                if (available != null) {
+                    return false;
+                }
             case RETURNED:
-                returned = newValueIfOldValueIsNull(returned, instant);
-                break;
+                if (returned != null) {
+                    return false;
+                }
+            default:
+                return true;
         }
     }
 
-    private static <T> T newValueIfOldValueIsNull(T oldValue, T newValue) {
-        return oldValue != null ? oldValue : newValue;
+    /**
+     * Sets the instant for the given event type if it can be set. This method is designed to be used by
+     * {@link Ticket} only, which is why it is
+     * package protected.
+     *
+     * @param eventType the event type
+     * @param instant   the instant.
+     * @return true if the instant was set, false if it was not.
+     */
+    boolean setEventInstantIfPossible(@NotNull TicketResourceEventType eventType, @NotNull Instant instant) {
+        if (!canSet(eventType)) {
+            return false;
+        }
+        Objects.requireNonNull(instant, "instant must not be null");
+        switch (eventType) {
+            case ASSIGNED:
+                assigned = instant;
+                return true;
+            case DISPATCHED:
+                dispatched = instant;
+                return true;
+            case EN_ROUTE:
+                enRoute = instant;
+                return true;
+            case ON_SCENE:
+                onScene = instant;
+                return true;
+            case AVAILABLE:
+                available = instant;
+                return true;
+            case RETURNED:
+                returned = instant;
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**

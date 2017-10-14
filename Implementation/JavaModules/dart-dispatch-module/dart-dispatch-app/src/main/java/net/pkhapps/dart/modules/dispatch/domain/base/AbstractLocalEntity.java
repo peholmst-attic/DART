@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * TODO Document me
+ * Base class for local entities that are owned and managed by an {@link AbstractAggregateRoot aggregate root}.
  */
 public abstract class AbstractLocalEntity implements Serializable {
 
@@ -19,7 +19,10 @@ public abstract class AbstractLocalEntity implements Serializable {
     }
 
     /**
-     * @param aggregateRoot
+     * Creates a new {@link AbstractLocalEntity}.
+     *
+     * @param aggregateRoot the aggregate root that owns the entity. It will be used to generate the entity ID.
+     * @see AbstractAggregateRoot#getNextFreeLocalId()
      */
     protected AbstractLocalEntity(@NotNull AbstractAggregateRoot aggregateRoot) {
         Objects.requireNonNull(aggregateRoot, "aggregateRoot must not be null");
@@ -27,7 +30,9 @@ public abstract class AbstractLocalEntity implements Serializable {
     }
 
     /**
-     * @param original
+     * Copy constructor
+     *
+     * @param original the original local entity to copy.
      */
     protected AbstractLocalEntity(@NotNull AbstractLocalEntity original) {
         Objects.requireNonNull(original, "original must not be null");

@@ -9,13 +9,13 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * TODO Document and complete me
+ * Entity representing a ticket, which corresponds to some incident that resources must be dispatched to handle.
+ * The ticket contains information about the incident, where it is, how urgent it is, what resources have been
+ * dispatched and when, etc.
  */
 @Document(collection = "tickets")
 public class Ticket extends AbstractEventSourcedAggregateRoot {
@@ -39,6 +39,9 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
 
     private List<TicketResource> resources;
 
+    /**
+     * Opens a new ticket and initializes its fields to their initial states.
+     */
     public static class Open extends AbstractAction<Ticket> {
 
         @Override
@@ -52,11 +55,14 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         }
     }
 
+    /**
+     * Base class for actions that can be performed on open tickets.
+     */
     public static abstract class AbstractTicketAction extends AbstractAction<Ticket> {
 
         @Override
         public boolean canPerform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
-            return (aggregateRoot instanceof Ticket) && !((Ticket) aggregateRoot).getState().equals(TicketState.CLOSED);
+            return (aggregateRoot instanceof Ticket) && canPerform((Ticket) aggregateRoot);
         }
 
         @Override
@@ -64,11 +70,24 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
             return (aggregateRoot instanceof Ticket) && willChangeState((Ticket) aggregateRoot);
         }
 
-        protected boolean willChangeState(Ticket ticket) {
+        /**
+         * Checks if this action will change the state of the ticket. Returns {@code true} by default.
+         */
+        protected boolean willChangeState(@NotNull Ticket ticket) {
             return true;
+        }
+
+        /**
+         * Checks if this action can be performed on the ticket. Returns true if the ticket is not closed by default.
+         */
+        protected boolean canPerform(@NotNull Ticket ticket) {
+            return !ticket.getState().equals(TicketState.CLOSED);
         }
     }
 
+    /**
+     * Closes the ticket.
+     */
     public static class Close extends AbstractTicketAction {
 
         @Override
@@ -77,12 +96,32 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         }
 
         @Override
-        public boolean canPerform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
-            return (aggregateRoot instanceof Ticket) &&
-                   ((Ticket) aggregateRoot).getState().canTransitionTo(TicketState.CLOSED);
+        protected boolean canPerform(@NotNull Ticket ticket) {
+            return ticket.getState().canTransitionTo(TicketState.CLOSED);
         }
     }
 
+    /**
+     * Puts the ticket on hold.
+     */
+    public static class PutOnHold extends AbstractTicketAction {
+
+        @Override
+        protected void doPerform(@NotNull Ticket aggregateRoot) {
+            aggregateRoot.state = TicketState.ON_HOLD;
+        }
+
+        @Override
+        protected boolean canPerform(@NotNull Ticket ticket) {
+            return ticket.getState().canTransitionTo(TicketState.ON_HOLD);
+        }
+
+        // TODO Maybe add additional checks when you can put a ticket on hold?
+    }
+
+    /**
+     * Sets the {@link Ticket#getType() type} of the ticket.
+     */
     public static class SetType extends AbstractTicketAction {
 
         @DBRef
@@ -99,11 +138,14 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         }
 
         @Override
-        protected boolean willChangeState(Ticket ticket) {
+        protected boolean willChangeState(@NotNull Ticket ticket) {
             return !Objects.equals(type, ticket.type);
         }
     }
 
+    /**
+     * Sets the {@link Ticket#getUrgency() urgency} of the ticket.
+     */
     public static class SetUrgency extends AbstractTicketAction {
 
         private final TicketUrgency urgency;
@@ -119,11 +161,14 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         }
 
         @Override
-        protected boolean willChangeState(Ticket ticket) {
+        protected boolean willChangeState(@NotNull Ticket ticket) {
             return !Objects.equals(urgency, ticket.getUrgency());
         }
     }
 
+    /**
+     * Sets the {@link Ticket#getDetails() details} of the ticket.
+     */
     public static class SetDetails extends AbstractTicketAction {
 
         private final String details;
@@ -139,11 +184,14 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         }
 
         @Override
-        protected boolean willChangeState(Ticket ticket) {
+        protected boolean willChangeState(@NotNull Ticket ticket) {
             return !Objects.equals(details, ticket.details);
         }
     }
 
+    /**
+     * Sets the {@link Ticket#getReporter() reporter} of the ticket.
+     */
     public static class SetReporter extends AbstractTicketAction {
 
         private final String reporter;
@@ -159,11 +207,14 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         }
 
         @Override
-        protected boolean willChangeState(Ticket ticket) {
+        protected boolean willChangeState(@NotNull Ticket ticket) {
             return !Objects.equals(reporter, ticket.reporter);
         }
     }
 
+    /**
+     * Sets the {@link Ticket#getReporterPhone() reporterPhone} of the ticket.
+     */
     public static class SetReporterPhone extends AbstractTicketAction {
 
         private final String reporterPhone;
@@ -179,11 +230,14 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         }
 
         @Override
-        protected boolean willChangeState(Ticket ticket) {
+        protected boolean willChangeState(@NotNull Ticket ticket) {
             return !Objects.equals(reporterPhone, ticket.reporterPhone);
         }
     }
 
+    /**
+     * Sets the {@link Ticket#getAddress() address} of the ticket.
+     */
     public static class SetAddress extends AbstractTicketAction {
 
         private final TicketAddress address;
@@ -199,11 +253,14 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         }
 
         @Override
-        protected boolean willChangeState(Ticket ticket) {
+        protected boolean willChangeState(@NotNull Ticket ticket) {
             return !Objects.equals(address, ticket.address);
         }
     }
 
+    /**
+     * Assigns a resource to the ticket.
+     */
     public static class AssignResource extends AbstractTicketAction {
 
         private final String callSign;
@@ -221,12 +278,15 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         }
 
         @Override
-        protected boolean willChangeState(Ticket ticket) {
+        protected boolean willChangeState(@NotNull Ticket ticket) {
             // If a resource has already been assigned to the ticket, it can't be reassigned
             return ticket.resources.stream().noneMatch(r -> r.getCallSign().equals(callSign) && r.isAssignedToTicket());
         }
     }
 
+    /**
+     * Records an event for a resource that has been assigned to the ticket.
+     */
     public static class RecordResourceEvent extends AbstractTicketAction {
 
         private final String callSign;
@@ -243,17 +303,56 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
 
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
-            // TODO
+            aggregateRoot.findLatestResource(callSign).ifPresent(resource -> doPerform(aggregateRoot, resource));
+        }
+
+        private void doPerform(Ticket ticket, TicketResource resource) {
+            if (resource.setEventInstantIfPossible(eventType, instant)) {
+                switch (eventType) {
+                    case DISPATCHED:
+                        if (ticket.getState().canTransitionTo(TicketState.DISPATCHED)) {
+                            ticket.state = TicketState.DISPATCHED;
+                        }
+                        break;
+                    case AVAILABLE:
+                    case RETURNED:
+                        boolean resourcesHaveBeenAtTheScene = false;
+                        boolean resourcesAreStillAssigned = false;
+
+                        for (TicketResource r : ticket.resources) {
+                            if (r.getOnScene() != null) {
+                                resourcesHaveBeenAtTheScene = true;
+                            }
+                            if (r.isAssignedToTicket()) {
+                                resourcesAreStillAssigned = true;
+                            }
+                        }
+
+                        if (!resourcesAreStillAssigned) {
+                            if (resourcesHaveBeenAtTheScene &&
+                                ticket.getState().canTransitionTo(TicketState.UNDER_OBSERVATION)) {
+                                ticket.state = TicketState.UNDER_OBSERVATION;
+                            } else if (ticket.getState().canTransitionTo(TicketState.ON_HOLD)) {
+                                ticket.state = TicketState.ON_HOLD;
+                            }
+                        }
+                }
+            }
         }
 
         @Override
-        protected boolean willChangeState(Ticket ticket) { // TODO
-            return super.willChangeState(ticket);
+        protected boolean willChangeState(@NotNull Ticket ticket) {
+            return ticket.findLatestResource(callSign)
+                    .filter(resource -> !Objects.equals(instant, resource.getEventInstant(eventType))).isPresent();
         }
 
         @Override
-        public boolean canPerform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
-            return super.canPerform(aggregateRoot);
+        protected boolean canPerform(@NotNull Ticket ticket) {
+            if (super.canPerform(ticket)) {
+                return ticket.findLatestResource(callSign).map(resource -> resource.canSet(eventType)).orElse(false);
+            } else {
+                return false;
+            }
         }
     }
 
@@ -320,10 +419,39 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         return Collections.unmodifiableList(resources);
     }
 
+    /**
+     * Finds all ticket resources with the given call sign. The same call sign can be assigned multiple times,
+     * for example if it detaches from an ongoing incident to attend another incident, then comes back.
+     */
+    public @NotNull List<TicketResource> findResources(@NotNull String callSign) {
+        Objects.requireNonNull(callSign, "callSign must not be null");
+        return this.resources.stream().filter(r -> r.getCallSign().equals(callSign))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Finds the latest ticket resource with the given call sign. Latest in this case has nothing to do with
+     * the timestamps but the order in which {@link #assignResource(String, Instant)} has been called.
+     */
+    public @NotNull Optional<TicketResource> findLatestResource(@NotNull String callSign) {
+        List<TicketResource> resources = findResources(callSign);
+        if (resources.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(resources.get(resources.size() - 1));
+        }
+    }
+
+    /**
+     * Assigns the given resource to the ticket.
+     */
     public void assignResource(@NotNull String callSign, @NotNull Instant assigned) {
         performAction(new AssignResource(callSign, assigned));
     }
 
+    /**
+     * Records the given resource event.
+     */
     public void recordResourceEvent(@NotNull String callSign, @NotNull TicketResourceEventType eventType,
                                     @NotNull Instant instant) {
         performAction(new RecordResourceEvent(callSign, eventType, instant));
@@ -347,5 +475,12 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
      */
     public void close() {
         performAction(new Close());
+    }
+
+    /**
+     * Puts the ticket on hold.
+     */
+    public void putOnHold() {
+        performAction(new PutOnHold());
     }
 }

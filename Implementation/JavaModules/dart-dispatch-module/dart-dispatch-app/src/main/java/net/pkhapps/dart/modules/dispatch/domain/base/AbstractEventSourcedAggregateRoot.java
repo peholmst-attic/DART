@@ -60,11 +60,11 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
      */
     protected void performAction(@NotNull Action action) {
         Objects.requireNonNull(action, "action must not be null");
-        if (!action.willChangeState(this)) {
-            return; // This action will not actually do anything so silently ignore it
-        }
         if (!action.canPerform(this)) {
             throw new IllegalStateException("The action cannot be performed at this time");
+        }
+        if (!action.willChangeState(this)) {
+            return; // This action will not actually do anything so silently ignore it
         }
         action.perform(this);
         ActionRecord record = new ActionRecord(actionRecords.size(), DomainContext.getInstance().now(),
@@ -109,7 +109,11 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
     }
 
     /**
-     * TODO Document me!
+     * Interface representing an action that can be performed on an aggregate root to change its state. Actions
+     * are immutable once created and can be performed on any aggregate root using the
+     * {@link AbstractEventSourcedAggregateRoot#performAction(Action)} method.
+     *
+     * @see AbstractAction
      */
     public interface Action extends Serializable {
 
@@ -123,9 +127,8 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
         void perform(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot);
 
         /**
-         * Checks if this action can be performed at this time on the specified aggregate root. When this method is
-         * called, {@link #willChangeState(AbstractEventSourcedAggregateRoot)} has already been checked and returned
-         * true. If an action cannot be performed, an exception will be thrown if the action is performed anyway.
+         * Checks if this action can be performed at this time on the specified aggregate root. If an action cannot
+         * be performed, an exception will be thrown if the action is performed anyway.
          *
          * @param aggregateRoot the aggregate root that the action will be performed on.
          * @return true if the action can be performed (default), false if not.
@@ -138,6 +141,10 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
          * Checks if this action will actually change the state of the specified aggregate root. If no state will be
          * changed, the action will be silently ignored. This situation could for example occur when you try to
          * perform the exact same action twice in a row.
+         * <p>
+         * When this method is called, {@link #canPerform(AbstractEventSourcedAggregateRoot)} has already been
+         * checked and returned
+         * true.
          *
          * @param aggregateRoot the aggregate root that the action will be performed on.
          * @return true if the action changes the state (default), false if not.
@@ -145,25 +152,16 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
         default boolean willChangeState(@NotNull AbstractEventSourcedAggregateRoot aggregateRoot) {
             return true;
         }
-
-        /**
-         * @param locale
-         * @return
-         */
-        default @NotNull String getDescription(@Nullable Locale locale) {
-            return getClass().getSimpleName();
-        }
     }
 
     /**
-     * TODO Document me!
-     *
-     * @param <A>
+     * Base class for {@link Action} that is parameterizable so that the implementation does not need to cast the
+     * aggregate root to the proper type.
      */
     public static abstract class AbstractAction<A extends AbstractEventSourcedAggregateRoot> implements Action {
 
         /**
-         * @param aggregateRoot
+         * Invoked by {@link #perform(AbstractEventSourcedAggregateRoot)} to actually perform the action.
          */
         protected abstract void doPerform(@NotNull A aggregateRoot);
 
@@ -180,7 +178,8 @@ public abstract class AbstractEventSourcedAggregateRoot extends AbstractAggregat
     }
 
     /**
-     * TODO Document me
+     * An action record represents an action that has been performed and includes information about when and by whom
+     * the action was performed.
      *
      * @see DomainContext
      */

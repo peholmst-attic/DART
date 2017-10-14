@@ -2,10 +2,7 @@ package net.pkhapps.dart.modules.dispatch.domain;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Enumeration of ticket states.
@@ -16,22 +13,35 @@ public enum TicketState {
      */
     CLOSED,
     /**
+     * Resources have been dispatched and left the scene, but will return later for checkups etc.
+     */
+    UNDER_OBSERVATION,
+    /**
      * Resources have been dispatched.
      */
-    DISPATCHED(CLOSED),
+    DISPATCHED,
     /**
-     * The ticket is on hold, waiting for resources to become available.
+     * The ticket is on hold, waiting for resources to become available. No resource have yet arrived at the scene.
      */
-    ON_HOLD(DISPATCHED, CLOSED),
+    ON_HOLD,
     /**
      * The ticket has just been opened. This is the first state.
      */
-    NEW(DISPATCHED, ON_HOLD, CLOSED);
+    NEW;
 
-    final Set<TicketState> allowedTransitions;
+    static Map<TicketState, Set<TicketState>> TRANSITION_RULES;
 
-    TicketState(TicketState... allowedTransitions) {
-        this.allowedTransitions = new HashSet<>(Arrays.asList(allowedTransitions));
+    static {
+        TRANSITION_RULES = new HashMap<>();
+        TRANSITION_RULES.put(CLOSED, Collections.emptySet());
+        TRANSITION_RULES.put(UNDER_OBSERVATION, set(CLOSED, DISPATCHED));
+        TRANSITION_RULES.put(DISPATCHED, set(UNDER_OBSERVATION, ON_HOLD, CLOSED));
+        TRANSITION_RULES.put(ON_HOLD, set(DISPATCHED, CLOSED));
+        TRANSITION_RULES.put(NEW, set(DISPATCHED, ON_HOLD, CLOSED));
+    }
+
+    private static <T> Set<T> set(T... items) {
+        return new HashSet<>(Arrays.asList(items));
     }
 
     /**
@@ -39,6 +49,6 @@ public enum TicketState {
      */
     public boolean canTransitionTo(@NotNull TicketState nextState) {
         Objects.requireNonNull(nextState, "nextState must not be null");
-        return this.allowedTransitions.contains(nextState);
+        return TRANSITION_RULES.get(this).contains(nextState);
     }
 }
