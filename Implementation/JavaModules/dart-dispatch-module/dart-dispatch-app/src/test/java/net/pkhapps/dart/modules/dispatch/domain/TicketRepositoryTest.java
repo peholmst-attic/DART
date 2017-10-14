@@ -77,6 +77,6 @@ public class TicketRepositoryTest {
         // Print the document just to check what it looks like
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(ticket.getId()));
-        mongoTemplate.executeQuery(query, "tickets", dbObject -> System.out.println(dbObject));
+        mongoTemplate.executeQuery(query, "tickets", System.out::println);
     }
 }

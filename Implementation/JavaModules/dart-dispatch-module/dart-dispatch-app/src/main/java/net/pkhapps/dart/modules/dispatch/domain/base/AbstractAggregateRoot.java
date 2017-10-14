@@ -99,6 +99,7 @@ public abstract class AbstractAggregateRoot extends org.springframework.data.dom
         return String.format("%s[id=%s, version=%d]", getClass().getSimpleName(), getId(), getVersion());
     }
 
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     @Override
     public boolean equals(Object obj) {
         if (null == obj) {

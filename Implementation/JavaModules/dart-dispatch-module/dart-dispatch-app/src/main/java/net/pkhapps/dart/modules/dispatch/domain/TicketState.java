@@ -29,7 +29,7 @@ public enum TicketState {
      */
     NEW;
 
-    static Map<TicketState, Set<TicketState>> TRANSITION_RULES;
+    static final Map<TicketState, Set<TicketState>> TRANSITION_RULES;
 
     static {
         TRANSITION_RULES = new HashMap<>();
@@ -40,6 +40,7 @@ public enum TicketState {
         TRANSITION_RULES.put(NEW, set(DISPATCHED, ON_HOLD, CLOSED));
     }
 
+    @SafeVarargs
     private static <T> Set<T> set(T... items) {
         return new HashSet<>(Arrays.asList(items));
     }
