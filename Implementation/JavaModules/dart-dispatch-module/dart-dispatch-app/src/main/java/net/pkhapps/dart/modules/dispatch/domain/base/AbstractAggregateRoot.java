@@ -4,19 +4,21 @@ import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.domain.AfterDomainEventPublication;
+import org.springframework.data.domain.DomainEvents;
 import org.springframework.data.domain.Persistable;
 import org.springframework.util.ClassUtils;
 
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Base class for aggregate roots.
  *
  * @see AbstractEventSourcedAggregateRoot
  */
-public abstract class AbstractAggregateRoot extends org.springframework.data.domain.AbstractAggregateRoot
-        implements Persistable<ObjectId> {
+public abstract class AbstractAggregateRoot implements Persistable<ObjectId> {
 
     @Id
     private ObjectId id;
@@ -25,6 +27,9 @@ public abstract class AbstractAggregateRoot extends org.springframework.data.dom
     private Long version;
 
     private Long nextFreeLocalId;
+
+    @Transient
+    private transient final List<Object> domainEvents = new ArrayList<>();
 
     /**
      * Default constructor.
@@ -87,6 +92,39 @@ public abstract class AbstractAggregateRoot extends org.springframework.data.dom
      */
     protected void setVersion(@Nullable Long version) {
         this.version = version;
+    }
+
+    /**
+     * Registers the given event object for publication on a call to a Spring Data repository's save methods.
+     *
+     * @see MergeEqualEvents
+     */
+    protected <T> @NotNull T registerEvent(@NotNull T event) {
+        Objects.requireNonNull(event, "event must not be null");
+        if (!event.getClass().isAnnotationPresent(MergeEqualEvents.class) || !domainEvents.contains(event)) {
+            this.domainEvents.add(event);
+        }
+        return event;
+    }
+
+    /**
+     * Clears all domain events currently held.
+     *
+     * @see AfterDomainEventPublication
+     */
+    @AfterDomainEventPublication
+    protected void clearDomainEvents() {
+        this.domainEvents.clear();
+    }
+
+    /**
+     * Returns all domain events currently captured by the aggregate root.
+     *
+     * @see DomainEvents
+     */
+    @DomainEvents
+    protected Collection<Object> domainEvents() {
+        return Collections.unmodifiableList(domainEvents);
     }
 
     @Override

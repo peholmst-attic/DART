@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.7.RELEASE</version>
+    </parent>
+
+    <groupId>net.pkhapps.dart.clients.dispatch</groupId>
+    <artifactId>dart-dispatch-client</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <dart.resources.version>2017.10</dart.resources.version>
+        <dart.dispatch.version>2017.10</dart.dispatch.version>
+        <nlsmap.version>1.0.0-SNAPSHOT</nlsmap.version>
+        <controlsfx.version>8.40.14</controlsfx.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>LATEST</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>net.pkhapps.dart.modules.resources</groupId>
+            <artifactId>dart-resources-messages</artifactId>
+            <version>${dart.resources.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.pkhapps.dart.modules.dispatch</groupId>
+            <artifactId>dart-dispatch-messages</artifactId>
+            <version>${dart.dispatch.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.pkhapps.nlsmap</groupId>
+            <artifactId>nlsmap-api</artifactId>
+            <version>${nlsmap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.pkhapps.nlsmap</groupId>
+            <artifactId>nlsmap-jdbc</artifactId>
+            <version>${nlsmap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>${controlsfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-integration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-amqp</artifactId>
+        </dependency>
+    </dependencies>
+</project>

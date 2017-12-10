@@ -1,6 +1,9 @@
 package net.pkhapps.dart.modules.dispatch.domain;
 
 import net.pkhapps.dart.modules.dispatch.domain.base.AbstractEventSourcedAggregateRoot;
+import net.pkhapps.dart.modules.dispatch.domain.event.TicketClosed;
+import net.pkhapps.dart.modules.dispatch.domain.event.TicketOpened;
+import net.pkhapps.dart.modules.dispatch.domain.event.TicketUpdated;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.PersistenceConstructor;
@@ -52,6 +55,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
             aggregateRoot.details = "";
             aggregateRoot.reporter = "";
             aggregateRoot.reporterPhone = "";
+            aggregateRoot.registerEvent(new TicketOpened(aggregateRoot));
         }
     }
 
@@ -93,6 +97,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.state = TicketState.CLOSED;
+            aggregateRoot.registerEvent(new TicketClosed(aggregateRoot));
         }
 
         @Override
@@ -109,6 +114,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.state = TicketState.ON_HOLD;
+            aggregateRoot.registerEvent(new TicketUpdated(aggregateRoot));
         }
 
         @Override
@@ -135,6 +141,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.type = type;
+            aggregateRoot.registerEvent(new TicketUpdated(aggregateRoot));
         }
 
         @Override
@@ -158,6 +165,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.urgency = urgency;
+            aggregateRoot.registerEvent(new TicketUpdated(aggregateRoot));
         }
 
         @Override
@@ -181,6 +189,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.details = details;
+            aggregateRoot.registerEvent(new TicketUpdated(aggregateRoot));
         }
 
         @Override
@@ -204,6 +213,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.reporter = reporter;
+            aggregateRoot.registerEvent(new TicketUpdated(aggregateRoot));
         }
 
         @Override
@@ -227,6 +237,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.reporterPhone = reporterPhone;
+            aggregateRoot.registerEvent(new TicketUpdated(aggregateRoot));
         }
 
         @Override
@@ -250,6 +261,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.address = address;
+            aggregateRoot.registerEvent(new TicketUpdated(aggregateRoot));
         }
 
         @Override
@@ -275,6 +287,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.resources.add(new TicketResource(aggregateRoot, callSign, assigned));
+            aggregateRoot.registerEvent(new TicketUpdated(aggregateRoot));
         }
 
         @Override
@@ -304,6 +317,7 @@ public class Ticket extends AbstractEventSourcedAggregateRoot {
         @Override
         protected void doPerform(@NotNull Ticket aggregateRoot) {
             aggregateRoot.findLatestResource(callSign).ifPresent(resource -> doPerform(aggregateRoot, resource));
+            aggregateRoot.registerEvent(new TicketUpdated(aggregateRoot));
         }
 
         private void doPerform(Ticket ticket, TicketResource resource) {
