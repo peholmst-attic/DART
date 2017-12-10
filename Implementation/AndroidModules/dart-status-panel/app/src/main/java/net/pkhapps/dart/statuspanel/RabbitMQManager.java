@@ -3,17 +3,15 @@ package net.pkhapps.dart.statuspanel;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 
-import net.pkhapps.dart.statuspanel.json.JsonMessage;
+import net.pkhapps.dart.statuspanel.messaging.DefaultMessageBroker;
+import net.pkhapps.dart.statuspanel.messaging.IMessageBroker;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -28,14 +26,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 class RabbitMQManager {
 
     private static final String TAG = "RabbitMQManager";
-    private static final String MESSAGE_APP_ID = "android-status-panel";
     private static final int RECOVER_INTERVAL_MS = 5000;
     private static final int CONNECTION_TIMEOUT_MS = 1000;
     private static final int HANDSHAKE_TIMEOUT_MS = 1000;
-    private static final String EXCHANGE = "";
-    private static final String MESSAGE_EXPIRATION = "10000"; // 10 seconds
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final DefaultMessageBroker messageBroker = new DefaultMessageBroker();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private ScheduledExecutorService executorService;
     private Connection connection;
@@ -43,7 +38,6 @@ class RabbitMQManager {
     private RabbitMQManagerState state = RabbitMQManagerState.DISCONNECTED;
     private final Set<IRabbitMQManagerStateListener> stateListeners = new HashSet<>();
     private ScheduledFuture<?> recoveryJob;
-    private final Set<String> declaredQueues = new HashSet<>();
 
     /**
      * Initializes the RabbitMQ manager. Call this method when the owning service is created.
@@ -78,58 +72,33 @@ class RabbitMQManager {
 
     /**
      * TODO Document me!
-     *
-     * @param queueName
-     * @param properties
-     * @param body
+     * @param job
      */
-    void publishToQueue(final String queueName, final AMQP.BasicProperties properties,
-                        final JsonMessage body) {
+    void doWithMessageBroker(final IMessageBrokerJob job) {
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                doPublishToQueue(queueName, properties, body);
+                job.doWithMessageBroker(messageBroker);
             }
         });
     }
 
-    private void doPublishToQueue(String queueName, AMQP.BasicProperties properties, JsonMessage body) {
-        lock.readLock().lock();
-        try {
-            if (state == RabbitMQManagerState.CONNECTED) {
-                if (!declaredQueues.contains(queueName)) {
-                    channel.queueDeclare(queueName, false, false, false, null);
-                    declaredQueues.add(queueName);
-                }
-                AMQP.BasicProperties.Builder builder;
-                if (properties == null) {
-                    builder = new AMQP.BasicProperties.Builder();
-                } else {
-                    builder = properties.builder();
-                }
-                builder
-                        .userId("pettersandroid") // TODO Read from some preference storage
-                        .appId(MESSAGE_APP_ID)
-                        .type("json-message")
-                        .contentType("application/json")
-                        .contentEncoding("UTF-8")
-                        .expiration(MESSAGE_EXPIRATION)
-                        .timestamp(new Date());
-                channel.basicPublish(EXCHANGE, queueName, builder.build(),
-                        objectMapper.writeValueAsBytes(body));
-            }
-        } catch (Exception ex) {
-            Log.e(TAG, "Error while publishing to queue", ex);
-        } finally {
-            lock.readLock().unlock();
-        }
+    /**
+     * TODO Document me!
+     */
+    interface IMessageBrokerJob {
+
+        /**
+         *
+         * @param messageBroker
+         */
+        void doWithMessageBroker(IMessageBroker messageBroker);
     }
 
     private void doConnect() {
         lock.writeLock().lock();
         try {
-            if (state.isOkToAttemptConnection()) {
-                cancelConnectionRetryWithoutLock();
+            if (connection == null) {
                 Log.i(TAG, "Connecting to RabbitMQ server");
                 setStateWithoutLock(RabbitMQManagerState.CONNECTING);
                 final ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -159,13 +128,13 @@ class RabbitMQManager {
                     channel = connection.createChannel();
                     channel.confirmSelect();
                     channel.basicQos(1);
+                    messageBroker.setChannel(channel);
                     Log.i(TAG, "Successfully opened RabbitMQ channel");
 
                     setStateWithoutLock(RabbitMQManagerState.CONNECTED);
                 } catch (Exception ex) {
-                    Log.e(TAG, "Error connecting to RabbitMQ server", ex);
-                    closeConnectionsWithoutLock();
-                    scheduleConnectionRetryWithoutLock();
+                    Log.e(TAG, "Error connecting to RabbitMQ", ex);
+                    scheduleReconnectWithoutLock();
                 }
             }
         } finally {
@@ -189,63 +158,40 @@ class RabbitMQManager {
     private void doDisconnect() {
         lock.writeLock().lock();
         try {
-            if (state == RabbitMQManagerState.CONNECTED) {
+            cancelConnectionRetryWithoutLock();
+            if (connection != null) {
                 Log.i(TAG, "Disconnecting from RabbitMQ server");
                 setStateWithoutLock(RabbitMQManagerState.DISCONNECTING);
-                closeConnectionsWithoutLock();
-            } else {
-                cancelConnectionRetryWithoutLock();
-                setStateWithoutLock(RabbitMQManagerState.DISCONNECTED);
-            }
-        } finally {
-            lock.writeLock().unlock();
-        }
-    }
-
-    private void closeConnectionsWithoutLock() {
-        try {
-            if (channel != null) {
-                channel.close();
-                Log.i(TAG, "Successfully closed RabbitMQ channel");
-            }
-        } catch (Exception ex) {
-            Log.e(TAG, "Error closing RabbitMQ channel", ex);
-        } finally {
-            channel = null;
-        }
-        try {
-            if (connection != null) {
                 connection.close();
-                Log.i(TAG, "Successfully closed RabbitMQ connection");
+                // The rest of the clean up work will take place in the shutdown listener.
             }
         } catch (Exception ex) {
             Log.e(TAG, "Error closing RabbitMQ connection", ex);
         } finally {
-            connection = null;
+            lock.writeLock().unlock();
         }
     }
 
     private void onShutdownCompleted(ShutdownSignalException cause) {
         lock.writeLock().lock();
         try {
-            Log.i(TAG, "RabbitMQ connection shut down completed");
-            // When explicitly disconnecting, the state will be DISCONNECTING
-            final boolean needToRecover = (state == RabbitMQManagerState.CONNECTED);
+            if (cause.isInitiatedByApplication()) {
+                Log.i(TAG, "RabbitMQ connection closed by application");
+            } else {
+                Log.w(TAG, "RabbitMQ connection closed by broker", cause);
+            }
             channel = null;
             connection = null;
-            declaredQueues.clear();
-            if (needToRecover) {
-                setStateWithoutLock(RabbitMQManagerState.CONNECTING);
-                scheduleConnectionRetryWithoutLock();
-            } else {
-                setStateWithoutLock(RabbitMQManagerState.DISCONNECTED);
-            }
+            setStateWithoutLock(RabbitMQManagerState.DISCONNECTED);
         } finally {
+            if (!cause.isInitiatedByApplication()) {
+                scheduleReconnectWithoutLock();
+            }
             lock.writeLock().unlock();
         }
     }
 
-    private void scheduleConnectionRetryWithoutLock() {
+    private void scheduleReconnectWithoutLock() {
         if (recoveryJob == null || recoveryJob.isDone() || recoveryJob.isCancelled()) {
             Log.i(TAG, "Scheduling connection retry attempt");
             recoveryJob = executorService.schedule(new Runnable() {
@@ -263,13 +209,6 @@ class RabbitMQManager {
             recoveryJob.cancel(true);
             recoveryJob = null;
         }
-    }
-
-    /**
-     * Returns whether the RabbitMQ manager is currently connected to the RabbitMQ server or not.
-     */
-    boolean isConnected() {
-        return getState() == RabbitMQManagerState.CONNECTED;
     }
 
     /**

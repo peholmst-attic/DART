@@ -2,8 +2,7 @@ package net.pkhapps.dart.modules.base.rabbitmq.messaging.consumer.util;
 
 import com.rabbitmq.client.AMQP;
 import net.pkhapps.dart.modules.base.rabbitmq.messaging.consumer.OutgoingMessageConverter;
-import net.pkhapps.dart.modules.base.rabbitmq.messaging.util.MessageConverter;
-import net.pkhapps.dart.modules.base.rabbitmq.messaging.util.MessageConvertionException;
+import net.pkhapps.dart.modules.base.rabbitmq.messaging.util.JaxbMessageConverter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,10 +15,10 @@ import java.util.Objects;
  */
 public class DefaultOutgoingMessageConverter<T> implements OutgoingMessageConverter<T> {
 
-    private final MessageConverter messageConverter;
+    private final JaxbMessageConverter messageConverter;
     private final MessageRouter messageRouter;
 
-    public DefaultOutgoingMessageConverter(@NotNull MessageConverter messageConverter,
+    public DefaultOutgoingMessageConverter(@NotNull JaxbMessageConverter messageConverter,
                                            @NotNull MessageRouter messageRouter) throws JAXBException {
         this.messageConverter = Objects.requireNonNull(messageConverter, "messageConverter must not be null");
         this.messageRouter = Objects.requireNonNull(messageRouter, "messageRouter must not be null");

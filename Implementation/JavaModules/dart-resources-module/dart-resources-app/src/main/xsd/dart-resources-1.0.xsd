@@ -136,7 +136,7 @@
         </xs:complexContent>
     </xs:complexType>
 
-    <xs:complexType name="findResourcesRequestType">
+    <xs:complexType name="findResourcesRequest">
         <xs:annotation>
             <xs:documentation>
                 Request for retrieving resources. The list of returned resources can be filtered by
@@ -159,7 +159,7 @@
         </xs:complexContent>
     </xs:complexType>
 
-    <xs:complexType name="resourcesResponseType">
+    <xs:complexType name="resourcesResponse">
         <xs:annotation>
             <xs:documentation>
                 Response containing resources.
@@ -238,10 +238,12 @@
 
     <!-- Actual format of the message documents -->
 
+    <!-- TODO JAXB is not generating classes for these root elements! WHY? -->
+
     <xs:element name="setResourceStatusCommand" type="setResourceStatusCommand"/>
     <xs:element name="setResourceLocationCommand" type="setResourceLocationCommand"/>
-    <xs:element name="findResourcesRequest" type="findResourcesRequestType"/>
+    <xs:element name="findResourcesRequest" type="findResourcesRequest"/>
     <xs:element name="statusDescriptorsResponse" type="statusDescriptorsResponse"/>
     <xs:element name="findStatusDescriptorsRequest" type="findStatusDescriptorsRequest"/>
-    <xs:element name="resourcesResponse" type="resourcesResponseType"/>
+    <xs:element name="resourcesResponse" type="resourcesResponse"/>
 </xs:schema>

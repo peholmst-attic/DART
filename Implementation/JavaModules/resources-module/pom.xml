@@ -15,7 +15,7 @@
         <project.build.encoding>UTF-8</project.build.encoding>
         <project.build.source>1.8</project.build.source>
         <project.build.target>1.8</project.build.target>
-        <rabbitmq.version>4.0.2</rabbitmq.version>
+        <rabbitmq.version>4.1.0</rabbitmq.version>
         <mongodb.version>3.4.0</mongodb.version>
         <weld.version>2.4.1.Final</weld.version>
     </properties>

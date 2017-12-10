@@ -21,6 +21,9 @@ public class DefaultRabbitMQProperties implements RabbitMQProperties {
     private static final String RABBITMQ_CONNECTION_TIMEOUT_MS = "rabbitmq.connectionTimeoutMs";
     private static final String RABBITMQ_HANDSHAKE_TIMEOUT_MS = "rabbitmq.handshakeTimeoutMs";
     private static final String RABBITMQ_RPC_RESPONSE_TIMEOUT_MS = "rabbitmq.rpc.responseTimeoutMs";
+    private static final String RABBITMQ_MESSAGE_EXPIRATION = "rabbitmq.message.expiration";
+    private static final String RABBITMQ_MESSAGE_APP_ID = "rabbitmq.message.appId";
+
 
     @Override
     public Supplier<String> getHost() {
@@ -66,4 +69,16 @@ public class DefaultRabbitMQProperties implements RabbitMQProperties {
     public Supplier<Integer> getRpcResponseTimeoutMs() {
         return DynamicPropertyFactory.getInstance().getIntProperty(RABBITMQ_RPC_RESPONSE_TIMEOUT_MS, 5000)::getValue;
     }
+
+    @Override
+    public Supplier<String> getMessageExpiration() {
+        return DynamicPropertyFactory.getInstance().getStringProperty(RABBITMQ_MESSAGE_EXPIRATION, "30000")::getValue;
+    }
+
+    @Override
+    public Supplier<String> getMessageAppId() {
+        return DynamicPropertyFactory.getInstance()
+                .getStringProperty(RABBITMQ_MESSAGE_APP_ID, getClass().getPackage().getName())::getValue;
+    }
+
 }

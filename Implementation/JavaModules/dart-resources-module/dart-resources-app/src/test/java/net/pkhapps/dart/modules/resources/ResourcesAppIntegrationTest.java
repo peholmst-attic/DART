@@ -13,10 +13,7 @@ import net.pkhapps.dart.modules.base.rabbitmq.messaging.consumer.util.MessageRou
 import net.pkhapps.dart.modules.base.rabbitmq.messaging.util.JaxbMessageConverter;
 import net.pkhapps.dart.modules.base.rabbitmq.messaging.util.MessageConverter;
 import net.pkhapps.dart.modules.resources.integration.rabbitmq.Routing;
-import net.pkhapps.dart.modules.resources.integration.xsd.Command;
-import net.pkhapps.dart.modules.resources.integration.xsd.ObjectFactory;
-import net.pkhapps.dart.modules.resources.integration.xsd.Request;
-import net.pkhapps.dart.modules.resources.integration.xsd.Response;
+import net.pkhapps.dart.modules.resources.integration.xsd.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;

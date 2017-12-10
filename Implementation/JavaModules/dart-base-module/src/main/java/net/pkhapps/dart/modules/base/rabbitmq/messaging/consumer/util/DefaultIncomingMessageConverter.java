@@ -2,8 +2,7 @@ package net.pkhapps.dart.modules.base.rabbitmq.messaging.consumer.util;
 
 import com.rabbitmq.client.AMQP;
 import net.pkhapps.dart.modules.base.rabbitmq.messaging.consumer.IncomingMessageConverter;
-import net.pkhapps.dart.modules.base.rabbitmq.messaging.util.MessageConverter;
-import net.pkhapps.dart.modules.base.rabbitmq.messaging.util.MessageConvertionException;
+import net.pkhapps.dart.modules.base.rabbitmq.messaging.util.JaxbMessageConverter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.xml.bind.JAXBException;
@@ -15,7 +14,7 @@ import java.util.Objects;
  */
 public class DefaultIncomingMessageConverter<T> implements IncomingMessageConverter<T> {
 
-    private final MessageConverter messageConverter;
+    private final JaxbMessageConverter messageConverter;
     private final Class<T> pojoClass;
 
     /**
@@ -23,7 +22,7 @@ public class DefaultIncomingMessageConverter<T> implements IncomingMessageConver
      * @param pojoClass
      * @throws JAXBException
      */
-    public DefaultIncomingMessageConverter(@NotNull MessageConverter messageConverter,
+    public DefaultIncomingMessageConverter(@NotNull JaxbMessageConverter messageConverter,
                                            @NotNull Class<T> pojoClass) throws JAXBException {
         this.messageConverter = Objects.requireNonNull(messageConverter, "messageConverter must not be null");
         this.pojoClass = Objects.requireNonNull(pojoClass, "pojoClass must not be null");

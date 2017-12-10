@@ -52,4 +52,14 @@ public interface RabbitMQProperties {
      * The number of milliseconds to wait for a response when performing an asynchronous RPC call over RabbitMQ.
      */
     Supplier<Integer> getRpcResponseTimeoutMs();
+
+    /**
+     * The expiration string for messages sent by this application.
+     */
+    Supplier<String> getMessageExpiration();
+
+    /**
+     * The application Id for messages sent by this application.
+     */
+    Supplier<String> getMessageAppId();
 }

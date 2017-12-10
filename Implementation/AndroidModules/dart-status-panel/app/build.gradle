@@ -38,6 +38,6 @@ dependencies {
     compile 'com.google.android:flexbox:0.2.6'
     compile 'com.rabbitmq:amqp-client:4.1.0'
     compile 'org.slf4j:slf4j-android:1.7.25'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
+    compile 'org.simpleframework:simple-xml:2.7.1'
     testCompile 'junit:junit:4.12'
 }

@@ -6,7 +6,7 @@
 
     <groupId>net.pkhapps.dart.modules.base</groupId>
     <artifactId>dart-base-module</artifactId>
-    <version>2017.4</version>
+    <version>2017.5</version>
 
     <properties>
         <project.build.encoding>UTF-8</project.build.encoding>
@@ -20,6 +20,8 @@
         <logback.version>1.1.7</logback.version>
         <archaius.version>0.6.0</archaius.version>
         <jandex.version>2.0.3.Final</jandex.version>
+        <jackson.version>2.9.0.pr3</jackson.version>
+        <rxjava.version>2.1.0</rxjava.version>
     </properties>
 
     <build>
@@ -87,6 +89,23 @@
             <groupId>org.jboss</groupId>
             <artifactId>jandex</artifactId>
             <version>${jandex.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>${rxjava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

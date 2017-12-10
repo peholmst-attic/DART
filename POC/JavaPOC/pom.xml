@@ -64,5 +64,6 @@
 
     <modules>
         <module>ha-msg-consumers</module>
+        <module>status-panel-server</module>
     </modules>
 </project>
