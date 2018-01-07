@@ -1,14 +1,13 @@
 package net.pkhapps.dart.modules.dispatch.domain;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import net.pkhapps.dart.base.domain.Repository;
 
 import java.util.Optional;
 
 /**
  * Repository of {@link TicketType}s.
  */
-public interface TicketTypeRepository extends MongoRepository<TicketType, ObjectId> {
+public interface TicketTypeRepository extends Repository<TicketType> {
 
     Optional<TicketType> findByCodeAndActiveTrue(String code);
 }

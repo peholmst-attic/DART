@@ -1,6 +1,6 @@
 package net.pkhapps.dart.modules.dispatch.domain;
 
-import net.pkhapps.dart.modules.dispatch.domain.base.AbstractEventSourcedAggregateRoot;
+import net.pkhapps.dart.base.domain.AbstractEventSourcedAggregateRoot;
 import net.pkhapps.dart.modules.dispatch.domain.event.TicketClosed;
 import net.pkhapps.dart.modules.dispatch.domain.event.TicketOpened;
 import net.pkhapps.dart.modules.dispatch.domain.event.TicketUpdated;

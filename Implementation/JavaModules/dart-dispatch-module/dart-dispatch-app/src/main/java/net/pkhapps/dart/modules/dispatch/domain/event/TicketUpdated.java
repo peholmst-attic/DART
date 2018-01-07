@@ -1,7 +1,7 @@
 package net.pkhapps.dart.modules.dispatch.domain.event;
 
+import net.pkhapps.dart.base.domain.MergeEqualEvents;
 import net.pkhapps.dart.modules.dispatch.domain.Ticket;
-import net.pkhapps.dart.modules.dispatch.domain.base.MergeEqualEvents;
 import org.jetbrains.annotations.NotNull;
 
 /**

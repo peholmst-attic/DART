@@ -1,6 +1,6 @@
 package net.pkhapps.dart.modules.dispatch.domain;
 
-import net.pkhapps.dart.modules.dispatch.domain.base.AbstractLocalEntity;
+import net.pkhapps.dart.base.domain.AbstractLocalEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

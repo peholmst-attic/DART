@@ -1,7 +1,7 @@
 package net.pkhapps.dart.modules.dispatch.domain;
 
-import net.pkhapps.dart.modules.dispatch.domain.base.AbstractEventSourcedAggregateRoot;
-import net.pkhapps.dart.modules.dispatch.domain.base.SoftDeletable;
+import net.pkhapps.dart.base.domain.AbstractEventSourcedAggregateRoot;
+import net.pkhapps.dart.base.domain.SoftDeletable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.PersistenceConstructor;
@@ -25,7 +25,7 @@ public class TicketType extends AbstractEventSourcedAggregateRoot implements Sof
 
     private boolean active;
 
-    public static class Initialize extends AbstractAction<TicketType> {
+    public static class Initialize extends AbstractEventSourcedAggregateRoot.AbstractAction<TicketType> {
 
         private final String code;
 

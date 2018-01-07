@@ -1,10 +1,9 @@
 package net.pkhapps.dart.modules.dispatch.domain;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import net.pkhapps.dart.base.domain.Repository;
 
 /**
  * Repository of {@link Ticket}s.
  */
-public interface TicketRepository extends MongoRepository<Ticket, ObjectId> {
+public interface TicketRepository extends Repository<Ticket> {
 }

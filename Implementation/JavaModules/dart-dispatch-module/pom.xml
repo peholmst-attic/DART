@@ -11,17 +11,18 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.7.RELEASE</version>
+        <version>1.5.9.RELEASE</version>
     </parent>
 
     <groupId>net.pkhapps.dart.modules.dispatch</groupId>
     <artifactId>dart-dispatch-module</artifactId>
-    <version>2017.10</version>
+    <version>2018.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
         <java.version>1.8</java.version>
         <dart.resources.version>2017.10</dart.resources.version>
+        <dart.base.domain.version>2018.1.RELEASE</dart.base.domain.version>
     </properties>
 
     <dependencies>
@@ -40,6 +41,11 @@
                 <groupId>net.pkhapps.dart.modules.resources</groupId>
                 <artifactId>dart-resources-messages</artifactId>
                 <version>${dart.resources.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.pkhapps.dart.base.domain</groupId>
+                <artifactId>dart-base-domain</artifactId>
+                <version>${dart.base.domain.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
