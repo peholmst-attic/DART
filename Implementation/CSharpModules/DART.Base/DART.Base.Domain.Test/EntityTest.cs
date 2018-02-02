@@ -1,3 +1,4 @@
+using DART.Base.Domain.Attributes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DART.Base.Domain.Test
@@ -39,20 +40,22 @@ namespace DART.Base.Domain.Test
             Assert.AreEqual(entity, copy);
             Assert.AreNotSame(entity, copy);
         }
+     
+    }
 
-        public class TestAggregate : AggregateRoot
+    [AggregateName("test-documents")]
+    public class TestAggregate : AggregateRoot
+    {
+    }
+
+    public class TestEntity : Entity
+    {
+        public TestEntity(TestAggregate aggregateRoot) : base(aggregateRoot)
         {
         }
 
-        public class TestEntity : Entity
+        public TestEntity(TestEntity original) : base(original)
         {
-            public TestEntity(TestAggregate aggregateRoot) : base(aggregateRoot)
-            {
-            }
-
-            public TestEntity(TestEntity original) : base(original)
-            {
-            }
         }
     }
 }

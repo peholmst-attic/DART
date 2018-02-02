@@ -14,6 +14,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DART.Base.Domain.Test", "DA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DART.Base.Messaging.Test", "DART.Base.Messaging.Test\DART.Base.Messaging.Test.csproj", "{35CF36B7-92EE-4C82-9016-C284A2E78BB4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F1A1E4CA-F1A6-418D-82C7-8BEE0B487073}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
