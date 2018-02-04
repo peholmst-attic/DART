@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using JetBrains.Annotations;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace DART.Base.Domain
 {
@@ -19,13 +20,13 @@ namespace DART.Base.Domain
         /// from the aggregate root.
         /// </summary>
         /// <param name="aggregateRoot">The aggregate root that owns the entity.</param>
-        public Entity(AggregateRoot aggregateRoot) => Id = aggregateRoot.ReturnAndIncrementNextFreeLocalId();
+        public Entity([NotNull] AggregateRoot aggregateRoot) => Id = aggregateRoot.ReturnAndIncrementNextFreeLocalId();
 
         /// <summary>
         /// Creates a new entity that is an exact (deep) copy of the specified entity.
         /// </summary>
         /// <param name="original">The original entity to copy from.</param>
-        public Entity(Entity original) => Id = original.Id;
+        public Entity([NotNull] Entity original) => Id = original.Id;
 
         public override bool Equals(object obj)
         {

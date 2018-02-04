@@ -1,4 +1,5 @@
 ﻿using DART.Base.Domain.Attributes;
+using JetBrains.Annotations;
 using System.Reflection;
 
 namespace DART.Base.Domain
@@ -14,6 +15,7 @@ namespace DART.Base.Domain
         /// </summary>
         /// <typeparam name="T">The aggregate root class.</typeparam>
         /// <returns>The name of the aggregate.</returns>
+        [NotNull]
         public static string GetAggregateName<T>() where T : AggregateRoot
         {
             var aggregateName = typeof(T).GetCustomAttribute<AggregateName>(false);

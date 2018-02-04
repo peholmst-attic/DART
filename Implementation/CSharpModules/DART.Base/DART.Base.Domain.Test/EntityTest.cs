@@ -46,6 +46,8 @@ namespace DART.Base.Domain.Test
     [AggregateName("test-documents")]
     public class TestAggregate : AggregateRoot
     {
+        public string StringProperty { get; set; }
+        public int IntProperty { get; set; }
     }
 
     public class TestEntity : Entity

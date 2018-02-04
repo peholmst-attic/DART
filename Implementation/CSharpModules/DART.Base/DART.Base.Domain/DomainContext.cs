@@ -4,7 +4,16 @@ using System.Text;
 
 namespace DART.Base.Domain
 {
-    class DomainContext
+    /// <summary>
+    /// TODO Document me
+    /// </summary>
+    public interface IDomainContext
     {
+        /// <summary>
+        /// The current date and time.
+        /// </summary>
+        DateTime CurrentDateTime { get; }
+
+        // TODO Current user
     }
 }

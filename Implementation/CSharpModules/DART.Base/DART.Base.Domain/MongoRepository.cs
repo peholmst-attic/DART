@@ -1,6 +1,4 @@
-﻿using System;
-using MongoDB.Driver;
-using MongoDB.Bson;
+﻿using MongoDB.Driver;
 
 namespace DART.Base.Domain
 {
@@ -31,19 +29,35 @@ namespace DART.Base.Domain
             mongoCollection = mongoDatabase.GetCollection<T>(collectionName);
         }
 
-        public T Find(ObjectId id)
-        {            
-            throw new NotImplementedException();
+        public T FindById(string id)
+        {
+            return mongoCollection.Find(aggregate => aggregate.Id == id).FirstOrDefault();
         }
 
-        public void Save(T aggregate)
+        public T Save(T aggregate)
         {
-            throw new NotImplementedException();
+            var copyToSave = (T) aggregate.CopyForSaving();
+            if (copyToSave.Id == null) {
+                mongoCollection.InsertOne(copyToSave);
+            }
+            else
+            {
+                var result = mongoCollection.ReplaceOne(a => (a.Id == aggregate.Id && a.Version == aggregate.Version), copyToSave);
+                if (result.ModifiedCount == 0)
+                {
+                    throw new OptimisticLockingFailureException(aggregate.Id);
+                }
+            }
+            return copyToSave;
         }
 
-        public void Delete(ObjectId id)
+        public void Delete(string id)
         {
-            throw new NotImplementedException();
+            var result = mongoCollection.DeleteOne(aggregate => aggregate.Id == id);
+            if (result.DeletedCount == 0)
+            {
+                throw new AggregateNotFoundException(id);
+            }
         }
     }
 }
