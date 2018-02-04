@@ -1,4 +1,6 @@
 ﻿
+using JetBrains.Annotations;
+
 namespace DART.Base.Domain.Attributes
 {
     /// <summary>
@@ -19,7 +21,7 @@ namespace DART.Base.Domain.Attributes
         /// Creates a new AggregateName attribute.
         /// </summary>
         /// <param name="name">The name of the aggregate.</param>
-        public AggregateName(string name)
+        public AggregateName([NotNull] string name)
         {
             Name = name;
         }

@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using JetBrains.Annotations;
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 using System;
 
@@ -34,7 +35,8 @@ namespace DART.Base.Domain
         /// </summary>
         /// <param name="domainContext">The domain context to use to get the current date and time. If null, <seealso cref="DateTime.Now"/> is used instead.</param>
         /// <returns>A shallow modified copy of this aggregate.</returns>
-        internal AggregateRoot CopyForSaving(IDomainContext domainContext = null)
+        [NotNull]
+        internal AggregateRoot CopyForSaving([CanBeNull] IDomainContext domainContext = null)
         {
             // TODO Use a DomainContext to get session info
             var copy = (AggregateRoot)MemberwiseClone();

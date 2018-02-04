@@ -15,5 +15,6 @@ namespace DART.Base.Domain
         DateTime CurrentDateTime { get; }
 
         // TODO Current user
+        // TODO Domain events
     }
 }
