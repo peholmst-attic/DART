@@ -1,5 +1,4 @@
 ﻿using JetBrains.Annotations;
-using System;
 
 namespace DART.Base.Domain
 {
@@ -31,42 +30,5 @@ namespace DART.Base.Domain
         /// <exception cref="NotSupportedException">If the repository does not support deletions.</exception>
         /// <exception cref="AggregateNotFoundException">If the aggregate does not exist.</exception>
         void Delete([NotNull] string id);
-    }
-
-    /// <summary>
-    /// Exception thrown when an operation is attempted on an aggregate that does not exist.
-    /// </summary>
-    public class AggregateNotFoundException : Exception
-    {
-        public string Id { get; }
-
-        /// <summary>
-        /// Creates a new AggregateNotFoundException.
-        /// </summary>
-        /// <param name="id">The ID that does not exist.</param>
-        /// <param name="message">An optional message.</param>
-        public AggregateNotFoundException([NotNull] string id, [CanBeNull] string message = null) : base(message)
-        {
-            Id = id;
-        }
-    }
-
-    /// <summary>
-    /// Exception thrown when an optimistic locking failure occurs, i.e. an aggregate has been modified by another client
-    /// after it was retrieved from the repository.
-    /// </summary>
-    public class OptimisticLockingFailureException : Exception
-    {
-        public string Id { get; }
-
-        /// <summary>
-        /// Creates a new OptimisticLockingFailureException.
-        /// </summary>
-        /// <param name="id">The ID of the aggregate in question.</param>
-        /// <param name="message">An optional message.</param>
-        public OptimisticLockingFailureException([NotNull] string id, [CanBeNull] string message = null) : base(message)
-        {
-            Id = id;
-        }
     }
 }
